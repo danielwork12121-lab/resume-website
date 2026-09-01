@@ -103,48 +103,36 @@
   .buddy-toggle[aria-pressed="true"] .sw{background:var(--mint-deep);border-color:var(--mint-dim)}
   .buddy-toggle[aria-pressed="true"] .sw::after{left:14px;background:var(--mint)}
 
-  #buddy{position:fixed;right:26px;top:0;width:44px;height:56px;z-index:50;pointer-events:none;opacity:0;transition:opacity .4s}
+  #buddy{position:fixed;left:0;top:0;width:52px;height:70px;z-index:50;pointer-events:none;opacity:0;transition:opacity .4s;will-change:transform}
   #buddy.on{opacity:1}
-  #buddy.dim{opacity:.45}
   #buddy svg{display:block;overflow:visible}
-  #buddy .foot{transform-origin:center;transition:opacity .15s}
-  #buddy.walk .footL{animation:stepL .34s infinite}
-  #buddy.walk .footR{animation:stepR .34s infinite}
-  @keyframes stepL{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}
-  @keyframes stepR{0%,100%{transform:translateY(-2.5px)}50%{transform:translateY(0)}}
-  #buddy.walk .body{animation:bob .34s infinite}
-  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1px)}}
-  #buddy.fly .foot{opacity:0}
-  #buddy .trail{opacity:0}
-  #buddy.fly .trail{opacity:1}
-  #buddy .trail circle{fill:var(--mint)}
-  #buddy .mouth{transition:opacity .2s}
-  #buddy.peek .mouth,#buddy.peek .footL,#buddy.peek .footR{opacity:0}
-  .bubble{position:fixed;right:80px;z-index:51;max-width:230px;background:#242825;border:1px solid var(--line);border-radius:10px;border-bottom-right-radius:2px;padding:10px 13px;font-size:12.5px;font-style:italic;color:var(--ink);line-height:1.5;opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s;pointer-events:none}
+  #buddy .rig{transform-origin:26px 30px}
+  #buddy .bodygrp{transform-origin:26px 30px}
+  #buddy.squash .bodygrp{animation:squash .45s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes squash{0%{transform:scale(1.12,.82)}45%{transform:scale(.94,1.08)}100%{transform:scale(1,1)}}
+  #buddy .eye{transform-origin:center;transform-box:fill-box}
+  #buddy.blink .eye{animation:blink .16s}
+  @keyframes blink{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.08)}}
+  #buddy .leg{transform-box:fill-box;transform-origin:top center;animation:dangleA 2.6s ease-in-out infinite}
+  #buddy .legR{animation-name:dangleB}
+  @keyframes dangleA{0%,100%{transform:rotate(4deg)}50%{transform:rotate(-6deg)}}
+  @keyframes dangleB{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(6deg)}}
+  #buddy.kick .leg{animation:kickA .32s ease-in-out infinite}
+  #buddy.kick .legR{animation-name:kickB}
+  @keyframes kickA{0%,100%{transform:rotate(26deg)}50%{transform:rotate(-14deg)}}
+  @keyframes kickB{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(18deg)}}
+  #buddy .wing{opacity:0;transform-box:fill-box;transform-origin:center right}
+  #buddy.kick .wing{opacity:.8;animation:flap .24s ease-in-out infinite}
+  #buddy .wingR{transform-origin:center left}
+  @keyframes flap{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-24deg)}}
+  .btrail{position:fixed;left:0;top:0;width:5px;height:5px;border-radius:50%;background:var(--mint-dim);pointer-events:none;z-index:49;animation:tfade .7s forwards}
+  @keyframes tfade{to{opacity:0;transform:scale(.2) translateY(6px)}}
+  .bubble{position:fixed;left:0;top:0;z-index:51;max-width:230px;background:#242825;border:1px solid var(--line);border-radius:10px;border-bottom-right-radius:2px;padding:10px 13px;font-size:12.5px;font-style:italic;color:var(--ink);line-height:1.5;opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s;pointer-events:none}
   .bubble.show{opacity:1;transform:translateY(0)}
-  .fp{position:absolute;width:3px;height:3px;border-radius:50%;background:var(--mint-dim);opacity:.5;pointer-events:none;transition:opacity 1.2s}
-  .card.buddy-glow{border-color:var(--mint-dim);box-shadow:0 0 22px rgba(159,216,180,.14)}
-  @media (max-width:990px){#buddy,.bubble{display:none!important}}
+  .buddy-here{border-color:var(--mint-dim)!important;box-shadow:0 0 22px rgba(159,216,180,.13)}
+  @media (max-width:900px){#buddy,.bubble,.btrail{display:none!important}}
   @media (prefers-reduced-motion:reduce){
-    #buddy.walk .footL,#buddy.walk .footR,#buddy.walk .body{animation:none}
-    #buddy,.bubble{transition:none}
-  }
-
-  /* ---------- responsive ---------- */
-  @media (max-width:900px){
-    .wrap{grid-template-columns:1fr;gap:0;padding:40px 20px 72px}
-    .side{position:static}
-    nav{display:flex;flex-wrap:wrap;gap:2px 18px;margin-top:22px}
-    nav a{border-left:0;padding:4px 0;font-size:13.5px}
-    nav a.on{color:var(--mint)}
-    .side hr{margin:18px 0 12px}
-    .hero{margin-top:34px}
-    .stats{grid-template-columns:1fr 1fr}
-    .stat{border-left:0;border-top:1px solid var(--line)}
-    .stat:nth-child(even){border-left:1px solid var(--line)}
-    .stat:nth-child(-n+2){border-top:0}
-    .grid{grid-template-columns:1fr}
-    section{margin-top:56px}
+    #buddy .leg,#buddy.kick .leg,#buddy.blink .eye,#buddy.squash .bodygrp,#buddy.kick .wing{animation:none}
   }
 </style>
 
@@ -378,157 +366,185 @@
 
 // ---------- the companion (opt-in) ----------
 (function(){
-  // mount
   const buddy = document.createElement('div');
   buddy.id = 'buddy';
   buddy.innerHTML = `
-  <svg width="44" height="56" viewBox="0 0 44 56" aria-hidden="true">
-    <g class="trail">
-      <circle cx="22" cy="54" r="2.2" opacity=".8"/>
-      <circle cx="17" cy="58" r="1.6" opacity=".55"/>
-      <circle cx="26" cy="61" r="1.1" opacity=".35"/>
+  <svg width="52" height="70" viewBox="0 0 52 70" aria-hidden="true">
+    <g class="rig">
+      <path class="wing" d="M9 30 Q2 26 1 20 Q7 23 10 27 Z" fill="var(--mint)" opacity=".8"/>
+      <path class="wing wingR" d="M43 30 Q50 26 51 20 Q45 23 42 27 Z" fill="var(--mint)" opacity=".8"/>
+      <g class="leg">
+        <path d="M20 46 L19 58" fill="none" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M19 58 L15 60" fill="none" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/>
+      </g>
+      <g class="leg legR">
+        <path d="M32 46 L33 58" fill="none" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M33 58 L37 60" fill="none" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/>
+      </g>
+      <g class="bodygrp">
+        <path d="M26 3 C35 3 40 13 40 26 C40 38 34 46 26 46 C18 46 12 38 12 26 C12 13 17 3 26 3 Z"
+          fill="var(--bg)" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/>
+        <circle class="eye" cx="20.5" cy="23" r="2.1" fill="var(--mint)"/>
+        <circle class="eye" cx="31.5" cy="23" r="2.1" fill="var(--mint)"/>
+        <path class="mouth" d="M21 30 Q26 34 31 30" fill="none" stroke="var(--mint)" stroke-width="2" stroke-linecap="round"/>
+      </g>
     </g>
-    <g class="body">
-      <path d="M22 4 C31 4 36 14 36 26 C36 39 30 47 22 47 C14 47 8 39 8 26 C8 14 13 4 22 4 Z"
-        fill="var(--bg)" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/>
-      <circle class="eye" cx="16.5" cy="23" r="2.1" fill="var(--mint)"/>
-      <circle class="eye" cx="27.5" cy="23" r="2.1" fill="var(--mint)"/>
-      <path class="mouth" d="M17 30 Q22 34 27 30" fill="none" stroke="var(--mint)" stroke-width="2" stroke-linecap="round"/>
-    </g>
-    <path class="foot footL" d="M15 47 Q13 52 10 53" fill="none" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/>
-    <path class="foot footR" d="M29 47 Q31 52 34 53" fill="none" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/>
   </svg>`;
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
   document.body.appendChild(buddy); document.body.appendChild(bubble);
+  const rig = buddy.querySelector('.rig');
 
   const IDLE_QUIPS = [
-    "“Daniel spent the budget on the resume, not on my arms.”",
-    "“I asked for a body. I got a sophomore year instead.”",
-    "“Legs were cut in scope review. Daniel says it was a design choice.”",
-    "“Daniel debugged for 30 hours straight and then, out of spirit, gave up on my arms too.”",
-    "“Daniel ran out of budget for my legs somewhere around finals week. I’ve made my peace with it.”"
+    "\u201CDaniel spent the budget on the resume, not on my arms.\u201D",
+    "\u201CI asked for a body. I got a sophomore year instead.\u201D",
+    "\u201CLegs were cut in scope review. Daniel says it was a design choice.\u201D",
+    "\u201CDaniel debugged for 30 hours straight and then, out of spirit, gave up on my arms too.\u201D",
+    "\u201CDaniel ran out of budget for my legs somewhere around finals week. I\u2019ve made my peace with it.\u201D"
   ];
-  const cards = [...document.querySelectorAll('.card[data-quip]')];
-  const footer = document.querySelector('footer');
   const toggle = document.getElementById('buddyToggle');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  let on = false, y = 120, lastScroll = 0, lastMoveT = 0, walkT = null, idleT = null,
-      footprints = [], lastFpY = -1, glowCard = null, bubbleT = null, flying = false;
+  // the flight path: every important beat on the page, in document order
+  const anchors = [...document.querySelectorAll(
+    '.chip, .stats .stat, #education .item, #research .item li, #research .award, #projects .card, #engineering .item, #applied .item, #leadership .item, #skills .skillgroup, footer'
+  )].map(el => ({ el, quip: (el.dataset && el.dataset.quip) || (el.closest && el.closest('.card') ? null : null) }));
+
+  let on = false, cur = -1, px = innerWidth - 90, py = 140, vx = 0, vy = 0,
+      lastT = 0, bubbleT = null, idleQuipT = null, blinkT = null, raf = null,
+      trailT = 0, hereEl = null, arrived = true;
 
   try { on = localStorage.getItem('buddy') === '1'; } catch(e){}
 
+  function targetFor(i){
+    const r = anchors[i].el.getBoundingClientRect();
+    let x = r.right + 22;
+    if (x > innerWidth - 64) x = innerWidth - 64;
+    if (x < r.left) x = Math.max(r.left, innerWidth - 64);
+    let y = r.top + r.height/2 - 38;
+    y = Math.max(8, Math.min(innerHeight - 84, y));
+    return {x, y};
+  }
+
+  // pick the beat nearest the viewport's focal line, with hysteresis
+  function pickAnchor(){
+    const focal = innerHeight * 0.42;
+    let best = -1, bd = 1e9;
+    for (let i = 0; i < anchors.length; i++){
+      const r = anchors[i].el.getBoundingClientRect();
+      if (r.bottom < -40 || r.top > innerHeight + 40) continue;
+      const d = Math.abs(r.top + r.height/2 - focal);
+      if (d < bd){ bd = d; best = i; }
+    }
+    if (best !== -1 && best !== cur){
+      cur = best; arrived = false;
+      const el = anchors[cur].el;
+      if (hereEl) hereEl.classList.remove('buddy-here');
+      hereEl = (el.classList.contains('card') || el.classList.contains('item')) ? el : null;
+    }
+  }
+
   function say(text, ms){
     bubble.textContent = text;
-    bubble.style.top = Math.max(10, y - 8) + 'px';
     bubble.classList.add('show');
     clearTimeout(bubbleT);
     bubbleT = setTimeout(()=>bubble.classList.remove('show'), ms || 4200);
   }
   function hush(){ clearTimeout(bubbleT); bubble.classList.remove('show'); }
 
-  function dropFootprint(){
-    if (reduced) return;
-    const fp = document.createElement('div');
-    fp.className = 'fp';
-    fp.style.cssText = 'position:fixed;right:' + (34 + (footprints.length%2)*8) + 'px;top:' + (y+50) + 'px';
-    document.body.appendChild(fp);
-    footprints.push(fp);
-    if (footprints.length > 14){ const old = footprints.shift(); old.remove(); }
-  }
-  function eraseFootprints(){
-    footprints.forEach(fp=>{ fp.style.opacity = 0; setTimeout(()=>fp.remove(), 1300); });
-    footprints = [];
-  }
-
-  function place(){
-    const max = document.documentElement.scrollHeight - innerHeight;
-    const frac = max > 0 ? scrollY / max : 0;
-    // peekaboo at the very bottom: duck behind the contact footer, eyes over the top
-    const fr = footer.getBoundingClientRect();
-    if (fr.top < innerHeight - 40 && frac > 0.96){
-      buddy.classList.add('peek');
-      y = fr.top - 26; // only the top of the head + eyes above the footer line
-    } else {
-      buddy.classList.remove('peek');
-      y = 90 + frac * (innerHeight - 240);
-    }
-    buddy.style.top = y + 'px';
-  }
-
-  function onScroll(){
+  function loop(t){
     if (!on) return;
-    const down = scrollY > lastScroll;
-    lastScroll = scrollY; lastMoveT = Date.now();
-    place();
-    if (!flying){
-      buddy.classList.add('walk');
-      clearTimeout(walkT);
-      walkT = setTimeout(()=>buddy.classList.remove('walk'), 220);
-    }
-    if (down){
-      buddy.classList.remove('dim');
-      if (Math.abs(y - lastFpY) > 34){ dropFootprint(); lastFpY = y; }
-      // highlight moment: a project card crossing mid-viewport
-      let hit = null;
-      for (const c of cards){
-        const r = c.getBoundingClientRect();
-        if (r.top < innerHeight*0.62 && r.bottom > innerHeight*0.35){ hit = c; break; }
+    const dt = Math.min(32, t - lastT || 16); lastT = t;
+    if (cur === -1) pickAnchor();
+    if (cur !== -1){
+      const tg = targetFor(cur);
+      // soft spring toward the target
+      const k = reduced ? 0.5 : 0.0028 * dt, damp = reduced ? 0 : Math.pow(0.90, dt/16);
+      if (reduced){ px = tg.x; py = tg.y; vx = vy = 0; }
+      else {
+        vx = vx * damp + (tg.x - px) * k;
+        vy = vy * damp + (tg.y - py) * k;
+        px += vx; py += vy;
       }
-      if (hit !== glowCard){
-        if (glowCard) glowCard.classList.remove('buddy-glow');
-        glowCard = hit;
-        if (hit){ hit.classList.add('buddy-glow'); say(hit.dataset.quip, 3600); }
+      const speed = Math.hypot(vx, vy);
+      // life: hover-bob + travel tilt
+      const bob = reduced ? 0 : Math.sin(t/520) * 3.5;
+      const tilt = reduced ? 0 : Math.max(-16, Math.min(16, vx * 1.6));
+      buddy.style.transform = `translate3d(${px}px, ${py + bob}px, 0)`;
+      rig.style.transform = `rotate(${tilt}deg)`;
+      buddy.classList.toggle('kick', speed > 1.6 && !reduced);
+      if (speed > 2.4 && !reduced && t - trailT > 70){
+        trailT = t;
+        const d = document.createElement('div');
+        d.className = 'btrail';
+        d.style.transform = `translate(${px + 23 - vx*3}px, ${py + 62 - vy*3}px)`;
+        document.body.appendChild(d);
+        setTimeout(()=>d.remove(), 750);
       }
-    } else {
-      // scrolling back up: no bubble, no glow — fade and retrace footprints
-      hush();
-      if (glowCard){ glowCard.classList.remove('buddy-glow'); glowCard = null; }
-      buddy.classList.add('dim');
-      eraseFootprints();
-      clearTimeout(idleT);
-      idleT = setTimeout(()=>buddy.classList.remove('dim'), 900);
+      // landing
+      if (!arrived && speed < 0.6 && Math.hypot(tg.x - px, tg.y - py) < 14){
+        arrived = true;
+        if (!reduced){ buddy.classList.remove('squash'); void buddy.offsetWidth; buddy.classList.add('squash'); }
+        const el = anchors[cur].el;
+        if (hereEl) hereEl.classList.add('buddy-here');
+        if (el.dataset && el.dataset.quip) say(el.dataset.quip, 3600);
+      }
+      // keep the bubble riding along
+      if (bubble.classList.contains('show')){
+        const bw = bubble.offsetWidth, bh = bubble.offsetHeight;
+        let bx = px - bw - 14; if (bx < 8) bx = px + 58;
+        let by = py - bh + 6; if (by < 8) by = py + 66;
+        bubble.style.transform = `translate(${bx}px, ${by}px)`;
+      }
     }
-    scheduleIdleQuip();
+    raf = requestAnimationFrame(loop);
   }
 
-  let idleQuipT = null;
+  function scheduleBlink(){
+    clearTimeout(blinkT);
+    blinkT = setTimeout(()=>{
+      if (on){ buddy.classList.remove('blink'); void buddy.offsetWidth; buddy.classList.add('blink'); }
+      scheduleBlink();
+    }, 2200 + Math.random()*2600);
+  }
   function scheduleIdleQuip(){
     clearTimeout(idleQuipT);
     idleQuipT = setTimeout(()=>{
-      if (on && !buddy.classList.contains('peek') && !bubble.classList.contains('show'))
+      if (on && !bubble.classList.contains('show'))
         say(IDLE_QUIPS[Math.floor(Math.random()*IDLE_QUIPS.length)], 5200);
-    }, 9000 + Math.random()*8000);
+      scheduleIdleQuip();
+    }, 10000 + Math.random()*9000);
   }
 
-  // section jumps: legs dissolve into a dot trail (~200ms) mid-flight
-  document.querySelectorAll('#nav a').forEach(a=>{
-    a.addEventListener('click', ()=>{
-      if (!on || reduced) return;
-      flying = true;
-      buddy.classList.add('fly'); buddy.classList.remove('walk');
-      hush(); eraseFootprints();
-      setTimeout(()=>{ buddy.classList.remove('fly'); flying = false; }, 700);
-    });
-  });
+  let scrollDeb = null;
+  addEventListener('scroll', ()=>{
+    if (!on) return;
+    hush();
+    if (hereEl) hereEl.classList.remove('buddy-here');
+    clearTimeout(scrollDeb);
+    scrollDeb = setTimeout(pickAnchor, 90);
+  }, {passive:true});
+  addEventListener('resize', ()=>{ if (on) pickAnchor(); });
 
   function setOn(v){
     on = v;
     toggle.setAttribute('aria-pressed', v ? 'true' : 'false');
     try { localStorage.setItem('buddy', v ? '1' : '0'); } catch(e){}
     if (v){
-      buddy.classList.add('on'); lastScroll = scrollY; place();
-      say(IDLE_QUIPS[0], 4200); scheduleIdleQuip();
+      buddy.classList.add('on');
+      px = innerWidth - 90; py = -80; vx = 0; vy = 6; cur = -1; arrived = false;
+      pickAnchor(); lastT = 0;
+      cancelAnimationFrame(raf); raf = requestAnimationFrame(loop);
+      scheduleBlink(); scheduleIdleQuip();
+      setTimeout(()=>say(IDLE_QUIPS[0], 4200), 900);
     } else {
-      buddy.classList.remove('on'); hush(); eraseFootprints();
-      if (glowCard){ glowCard.classList.remove('buddy-glow'); glowCard = null; }
-      clearTimeout(idleQuipT);
+      buddy.classList.remove('on'); hush();
+      if (hereEl) hereEl.classList.remove('buddy-here');
+      cancelAnimationFrame(raf);
+      clearTimeout(idleQuipT); clearTimeout(blinkT);
     }
   }
   toggle.addEventListener('click', ()=>setOn(!on));
-  addEventListener('scroll', onScroll, {passive:true});
-  addEventListener('resize', ()=>{ if(on) place(); });
   if (on) setOn(true); // restore a previous opt-in; default stays off
 })();
 </script>
