@@ -186,7 +186,6 @@
   #buddy.point-r .armR,#buddy.point-l .armL{animation:none;transform:rotate(var(--aim,-60deg))}
   #buddy.hammer .armR{animation:hammer .22s ease-in-out 5}
   @keyframes hammer{0%,100%{transform:rotate(-120deg)}50%{transform:rotate(-40deg)}}
-  #buddy.bow .rig{transform:rotate(14deg)}
   /* travel: he leaves the clip window and hops across the page to the next box */
   #buddy.travel{clip-path:none}
   @keyframes hop{0%,100%{transform:translateY(11px)}50%{transform:translateY(-12px)}}
@@ -207,7 +206,6 @@
   @keyframes wow{0%{transform:scale(1.14,.8)}28%{transform:translateY(-14px) scale(.95,1.1)}52%{transform:translateY(0) scale(1.07,.93)}72%{transform:translateY(-5px) scale(.98,1.03)}100%{transform:none}}
   #buddy.wow .eye{animation:wide .8s ease-in-out}
   @keyframes wide{0%,100%{transform:scale(1)}30%,65%{transform:scale(1.4)}}
-  #buddy.wow .wing{opacity:.8;animation:flap .2s ease-in-out 4}
   #buddy .eye{transform-origin:center;transform-box:fill-box}
   #buddy.blink .eye{animation:blink .16s}
   @keyframes blink{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.08)}}
@@ -220,9 +218,6 @@
   #buddy.moving .legR{animation-name:kickB}
   @keyframes kickA{0%,100%{transform:rotate(26deg)}50%{transform:rotate(-14deg)}}
   @keyframes kickB{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(18deg)}}
-  #buddy .wing{opacity:0;transform-box:fill-box;transform-origin:center right}
-  #buddy .wingR{transform-origin:center left}
-  @keyframes flap{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-24deg)}}
 
   /* the box he's perched on: a soft lift, and a little dip when he lands on it */
   /* the tools: a hard hat for the engineering sections, a .py chip balanced
@@ -246,17 +241,11 @@
   .bob-mark{background:none;color:inherit;position:relative}
   .bob-mark::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--mint);opacity:.85;transform:scaleX(0);transform-origin:left;animation:markin .5s cubic-bezier(0.23,1,0.32,1) .25s forwards}
   @keyframes markin{to{transform:scaleX(1)}}
-  /* a piece he carries over and sets on the box */
-  .brick{position:absolute;z-index:52;width:7px;height:7px;background:var(--mint);border-radius:1px;pointer-events:none;transition:transform .55s cubic-bezier(0.23,1,0.32,1),opacity .35s}
   /* skit props: floating labels, an annotation frame, a sketch, arriving members */
   .pop{position:absolute;z-index:52;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--mint);background:var(--mint-deep);border:1px solid var(--mint-dim);border-radius:4px;padding:3px 8px;pointer-events:none;animation:poprise 1.5s ease-out forwards;white-space:nowrap}
   .pop.bad{color:var(--ink-dim);background:var(--bg2);border-color:var(--line)}
   .pop.up{animation:floatup 1.4s cubic-bezier(0.23,1,0.32,1) forwards}
   @keyframes floatup{0%{opacity:0;transform:translateY(8px)}15%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-46px)}}
-  .pop.star{background:none;border:0;font-size:16px;padding:0;animation:starfall 1.3s cubic-bezier(0.23,1,0.32,1) forwards}
-  @keyframes starfall{0%{opacity:0;transform:translateY(-26px) scale(.6)}40%{opacity:1;transform:translateY(0) scale(1.15)}60%{transform:translateY(-3px) scale(1)}100%{opacity:0;transform:translateY(0)}}
-  .pop.member{width:9px;height:9px;padding:0;border-radius:50%;background:var(--mint);border:0;animation:arrive 2.6s cubic-bezier(0.23,1,0.32,1) forwards}
-  @keyframes arrive{0%{opacity:0;transform:translateX(var(--from,-90px))}25%{opacity:1;transform:translateX(0)}80%{opacity:1;transform:translateX(0)}100%{opacity:0}}
   .bbox{position:absolute;z-index:1;border:1px solid var(--mint);border-radius:2px;pointer-events:none;opacity:0;animation:bboxin 2.6s cubic-bezier(0.23,1,0.32,1) forwards}
   .bbox span{position:absolute;left:-1px;top:-16px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--mint);background:var(--bg);padding:1px 4px}
   @keyframes bboxin{0%{opacity:0;transform:scale(1.06)}15%{opacity:1;transform:scale(1)}80%{opacity:1}100%{opacity:0}}
@@ -320,7 +309,7 @@
     .bubble{transition:opacity 180ms ease;transform:none}
     .labelpop,#buddy .prop-chip,#buddy .pennant,.buddy-toggle.pulse .sw::before{animation:none}
     .nav-ind{transition:none}
-    #buddy .leg,#buddy.moving .leg,#buddy.blink .eye,#buddy.up .bodygrp,#buddy.up.squash .bodygrp,#buddy.up.soft .bodygrp,#buddy.up.nod .bodygrp,#buddy.up.wow .bodygrp,#buddy.wow .eye,#buddy.wow .wing{animation:none}
+    #buddy .leg,#buddy.moving .leg,#buddy.blink .eye,#buddy.up .bodygrp,#buddy.up.squash .bodygrp,#buddy.up.soft .bodygrp,#buddy.up.nod .bodygrp,#buddy.up.wow .bodygrp,#buddy.wow .eye{animation:none}
     .box-dip,.box-fix,.bob-read,#buddy.climb svg,#buddy .arm,.pop,.bbox,.sketch,.sketch path{animation:none}
     .bob-mark::after{animation:none;transform:none}
     #buddy{transition:opacity .3s}
@@ -852,8 +841,6 @@
     <title>Bobbie — click for a 45-second tour</title>
     <rect x="8" y="0" width="36" height="62" fill="transparent"/>
     <g class="rig">
-      <path class="wing" d="M9 30 Q2 26 1 20 Q7 23 10 27 Z" fill="var(--mint)" opacity=".8"/>
-      <path class="wing wingR" d="M43 30 Q50 26 51 20 Q45 23 42 27 Z" fill="var(--mint)" opacity=".8"/>
       <g class="leg">
         <path d="M20 46 L19 58" fill="none" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/>
         <path d="M19 58 L15 60" fill="none" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/>
@@ -937,23 +924,23 @@
   ];
   // the phrase he points at in each box, and the stamp a box has earned
   const MARKS = [
-    ['figure.fig', 'multi-scale trend decomposition'],
-    ['#education .item', 'Second Major in Mathematics'],
-    ['#research .item', 'First author'],
-    ['#projects .card:nth-child(1)', 'automatic model fallback'],
-    ['#projects .card:nth-child(2)', 'four skill-based mini-games'],
-    ['#projects .card:nth-child(3)', 'raised daily platform engagement 40%'],
-    ['#projects .card:nth-child(4)', '$800+ revenue in the first month'],
-    ['#engineering .item:nth-child(2)', '300+ paying users'],
-    ['#engineering .item:nth-child(3)', 'top 350 of 14,022'],
-    ['#engineering .item:nth-child(4)', 'top-18 regional team'],
-    ['#applied .item:nth-child(2)', 'content-classification taxonomy'],
-    ['#applied .item:nth-child(3)', '10,000+ surveillance images'],
-    ['#leadership .item:nth-child(2)', 'largest student-run club'],
-    ['#leadership .item:nth-child(3)', '700+ bilingual and international students'],
-    ['#leadership .item:nth-child(4)', '64 teams'],
-    ['#skills', 'PyTorch'],
-    ['footer', 'Read the source']
+    ['figure.fig', ['multi-scale trend decomposition']],
+    ['#education .item', ['Second Major in Mathematics']],
+    ['#research .item', ['First author', 'raising daily engagement 40%', 'matching or outperforming Transformer baselines']],
+    ['#projects .card:nth-child(1)', ['automatic model fallback', 'dual deployment for global and mainland-China access']],
+    ['#projects .card:nth-child(2)', ['four skill-based mini-games']],
+    ['#projects .card:nth-child(3)', ['raised daily platform engagement 40%']],
+    ['#projects .card:nth-child(4)', ['$800+ revenue in the first month', 'inference pipeline, backend, and frontend owned end-to-end']],
+    ['#engineering .item:nth-child(2)', ['300+ paying users', 'owned the inference pipeline, backend, and frontend end-to-end']],
+    ['#engineering .item:nth-child(3)', ['top 350 of 14,022', 'led frontend, backend, and prompt-pipeline design']],
+    ['#engineering .item:nth-child(4)', ['top-18 regional team', 'partnering with a UI/UX designer']],
+    ['#applied .item:nth-child(2)', ['content-classification taxonomy', 'recommendation and personalized-editing model development']],
+    ['#applied .item:nth-child(3)', ['10,000+ surveillance images', 'improved inter-labeler consistency']],
+    ['#leadership .item:nth-child(2)', ['largest student-run club', 'Python and algorithms curriculum']],
+    ['#leadership .item:nth-child(3)', ['700+ bilingual and international students']],
+    ['#leadership .item:nth-child(4)', ['64 teams']],
+    ['#skills', ['PyTorch', 'RAG']],
+    ['footer', ['Read the source']]
   ];
   const STAMPS = [
     ['#research .item', '✓ PUBLISHED'],
@@ -1042,7 +1029,7 @@
     setGlow(from, false);
     if (performance.now() > keepBubbleUntil) hush();
     const dive = () => {
-      clearTimeout(pointT); unmark();
+      clearTimeout(pointT); unmark(); buddy.classList.remove('point-r', 'point-l');
       buddy.classList.remove('up', 'peek', 'squash', 'soft', 'wow');
       buddy.classList.add('duck', 'moving');
     };
@@ -1054,7 +1041,7 @@
       const landed = () => {
         setTimeout(()=>buddy.classList.remove('moving'), reduced ? 0 : 340);
         fixBox(i, a.tier); setGlow(i, true); gazeAt(i);
-        setProp(i); stampFor(i); carryBrick(i, a.tier);
+        setProp(i); stampFor(i);
         busy = false;
         if (queued !== -1 && queued !== cur){ const q = queued; queued = -1; moveTo(q, then); return; }
         queued = -1;
@@ -1081,7 +1068,7 @@
     const p0 = { x: parseFloat(buddy.style.left) || 0, y: parseFloat(buddy.style.top) || 0 }, p1 = perchFor(i);
     const dx = p1.x - p0.x, dy = p1.y - p0.y, dist = Math.hypot(dx, dy);
     if (!buddy.classList.contains('up') || dist > innerHeight * 1.4){ dive(); setTimeout(surface, 280); return; }
-    clearTimeout(pointT); unmark();
+    clearTimeout(pointT); unmark(); buddy.classList.remove('point-r', 'point-l');
     const a = anchors[i], ms = Math.min(1000, 320 + dist * 0.55), hops = Math.max(1, Math.round(ms / 330));
     setGlow(from, false);
     buddy.classList.remove('squash', 'soft', 'wow', 'peek');
@@ -1097,7 +1084,7 @@
       buddy.classList.add(a.tier);
       setTimeout(()=>buddy.classList.remove('moving'), 340);
       fixBox(i, a.tier); setGlow(i, true); gazeAt(i);
-      setProp(i); stampFor(i); carryBrick(i, a.tier);
+      setProp(i); stampFor(i);
       busy = false;
       if (queued !== -1 && queued !== cur){ const q = queued; queued = -1; moveTo(q, then); return; }
       queued = -1;
@@ -1122,24 +1109,11 @@
     el.classList.remove('box-dip', 'box-fix'); void el.offsetWidth; el.classList.add(cls);
     if (touring && el.classList.contains('stats') && window.__rollStats) window.__rollStats(550);
   }
-  // he brings a piece along and sets it on the corner of a big box
-  function carryBrick(i, tier){
-    if (reduced || tier !== 'wow') return;
-    const r = anchors[i].el.getBoundingClientRect();
-    const b = document.createElement('div'); b.className = 'brick';
-    const x0 = (parseFloat(buddy.style.left) || 0) + 28, y0 = (parseFloat(buddy.style.top) || 0) + 44;
-    b.style.left = x0 + 'px'; b.style.top = y0 + 'px';
-    document.body.appendChild(b);
-    const dx = r.right + scrollX - 16 - x0, dy = r.top + scrollY + 8 - y0;
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{ b.style.transform = `translate(${dx}px, ${dy}px)`; }));
-    setTimeout(()=>{ b.style.opacity = '0'; }, 2000); setTimeout(()=>b.remove(), 2400);
-  }
   // the arm comes out toward the phrase, and a line draws under it
   let markEl = null, pointT = null;
   function unmark(){
     if (!markEl) return;
     const parent = markEl.parentNode; markEl.replaceWith(...markEl.childNodes); parent.normalize(); markEl = null;
-    buddy.classList.remove('point-r', 'point-l');
   }
   function wrapPhrase(root, phrase){
     const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -1157,19 +1131,23 @@
     const a = anchors[i];
     if (!a || !a.mark) return;
     if (!touring && a.tier !== 'wow' && Math.random() < 0.45) return;
-    pointT = setTimeout(()=>{
+    const phrases = [].concat(a.mark), hold = touring ? 2000 : 1500;
+    const step = k => {
       if (cur !== i || !buddy.classList.contains('up')) return;
-      markEl = wrapPhrase(a.el, a.mark);
-      if (!markEl) return;
+      if (k >= phrases.length){ buddy.classList.remove('point-r', 'point-l'); gazeAt(cur); return; }
+      unmark();
+      markEl = wrapPhrase(a.el, phrases[k]);
+      if (!markEl){ step(k + 1); return; }
       const m = markEl.getBoundingClientRect(), bx = parseFloat(buddy.style.left) + 26 - scrollX, by = parseFloat(buddy.style.top) + 44 - scrollY;
       const dx = m.left + m.width / 2 - bx, dy = m.top + m.height / 2 - by;
       const right = dx >= 0, deg = Math.atan2(dy, dx) * 180 / Math.PI;   // screen angle to the target
       const rot = right ? Math.max(-150, Math.min(15, deg - 71.6)) : Math.max(-15, Math.min(150, deg - 108.4));
       buddy.style.setProperty('--aim', rot + 'deg');
-      buddy.classList.add(right ? 'point-r' : 'point-l');
+      buddy.classList.remove('point-r', 'point-l'); buddy.classList.add(right ? 'point-r' : 'point-l');
       gaze.style.transform = `translate(${right ? 1.8 : -1.8}px, 2px)`;
-      setTimeout(()=>{ buddy.classList.remove('point-r', 'point-l'); gazeAt(cur); }, touring ? 4200 : 2600);
-    }, 420);
+      pointT = setTimeout(()=>step(k + 1), hold);
+    };
+    pointT = setTimeout(()=>step(0), 300);
   }
   // short stories about the work, played once per visit on the box they belong to
   const SKITS = [
@@ -1177,8 +1155,7 @@
     ['#projects .card:nth-child(4)', 'users'], ['#engineering .item:nth-child(2)', 'users'],
     ['#projects .card:nth-child(2)', 'sugar'],
     ['#applied .item', 'annotate'],
-    ['#research .item', 'present'],
-    ['#leadership .item:nth-child(2)', 'club']
+    ['#research .item', 'present']
   ];
   const skitted = new Set();
   function pop(text, x, y, ms, cls){
@@ -1196,12 +1173,12 @@
     const run = (fn, t) => setTimeout(()=>{ if (on && cur === i) fn(); }, t);
     if (kind === 'build'){
       // the build broke mid-sprint; he gets the hat on and fixes it
-      run(()=>pop('✕ build failed', boxR - 236, boxT + 8, 1500, 'bad'), 900);
-      run(()=>{ buddy.classList.add('hammer'); }, 1500);
-      run(()=>{ buddy.classList.remove('hammer'); pop('✓ build passed', boxR - 240, boxT + 8, 1800); fixBox(i, 'wow'); }, 2700);
+      run(()=>pop('✕ build failed', boxR - 236, boxT - 30, 1500, 'bad'), 700);
+      run(()=>{ buddy.classList.add('hammer'); }, 1300);
+      run(()=>{ buddy.classList.remove('hammer'); pop('✓ build passed', boxR - 240, boxT - 30, 1800); fixBox(i, 'wow'); }, 2500);
     } else if (kind === 'users'){
       // paying users, one at a time; he watches them go up
-      [0, 1, 2, 3].forEach(k => run(()=>{ pop('+1 user', boxR - 190 - k * 70, boxT - 6, 1400, 'up'); gaze.style.transform = 'translate(1px, -2.2px)'; }, 900 + k * 320));
+      [0, 1, 2, 3].forEach(k => run(()=>{ pop('+1 user', boxR - 200 - k * 72, boxT - 34, 1400, 'up'); gaze.style.transform = 'translate(1px, -2.2px)'; }, 900 + k * 320));
       run(()=>gazeAt(cur), 2600);
     } else if (kind === 'sugar'){
       // he draws a sugar painting in the air, the way the game does
@@ -1225,13 +1202,8 @@
         document.body.appendChild(bb); setTimeout(()=>bb.remove(), 2600);
       }, 1200);
     } else if (kind === 'present'){
-      // Best Session Presenter: a star comes down, he takes a bow
-      run(()=>pop('★', bx + 22, by - 30, 1300, 'star'), 1000);
-      run(()=>{ buddy.classList.add('bow'); const aw = a.el.querySelector('.award'); if (aw){ aw.classList.remove('box-dip'); void aw.offsetWidth; aw.classList.add('box-dip'); } }, 1500);
-      run(()=>buddy.classList.remove('bow'), 2300);
-    } else if (kind === 'club'){
-      // the club he founded fills up: members arrive along the ledge and line up beside him
-      [0, 1, 2, 3].forEach(k => run(()=>{ const d = pop('', bx - 14 - k * 14, by + 60, 2600, 'member'); d.style.setProperty('--from', (-90 - k * 30) + 'px'); }, 900 + k * 260));
+      // Best Session Presenter: the award gets a nudge once he has pointed at the papers
+      run(()=>{ const aw = a.el.querySelector('.award'); if (aw){ aw.classList.remove('box-dip'); void aw.offsetWidth; aw.classList.add('box-dip'); } }, 3400);
     }
   }
   // which tool he brings out where
@@ -1253,8 +1225,8 @@
     const tag = document.createElement('div');
     tag.className = 'labelpop';
     tag.textContent = a.stamp;
-    tag.style.left = (r.right + scrollX - 96) + 'px';
-    tag.style.top = (r.top + scrollY + 10) + 'px';
+    tag.style.left = (r.right + scrollX - 108) + 'px';
+    tag.style.top = (r.top + scrollY - 30) + 'px';
     document.body.appendChild(tag);
     setTimeout(()=>tag.remove(), 1600);
   }
