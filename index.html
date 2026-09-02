@@ -162,6 +162,10 @@
   #buddy.up .ledge,#buddy.peek .ledge{opacity:.9}
   #buddy.on{opacity:1}
   #buddy svg{display:block;margin:0 auto;overflow:visible;pointer-events:auto;cursor:pointer;transform:translateY(86px);transition:transform .36s cubic-bezier(.34,1.45,.64,1)}
+  @media (hover:hover) and (pointer:fine){
+    #buddy.up:not(.moving) .bodygrp{transition:filter 160ms ease-out}
+    #buddy.up:not(.moving):hover .bodygrp{filter:brightness(1.12)}
+  }
   #buddy.duck svg{transform:translateY(86px);transition-duration:.24s;transition-timing-function:cubic-bezier(.55,0,.85,.36)}
   #buddy.peek svg{transform:translateY(48px)}   /* just the eyes over the edge */
   #buddy.up svg{transform:translateY(11px)}     /* perched, feet over the edge */
@@ -264,16 +268,21 @@
   @keyframes readsweep{0%{transform:scaleX(0);opacity:1}70%{transform:scaleX(1);opacity:1}100%{transform:scaleX(1);opacity:0}}
   @keyframes boxdip{30%{transform:translateY(2.5px)}100%{transform:none}}
 
-  .bubble{position:absolute;left:0;top:0;z-index:55;max-width:250px;background:#242825;border:1px solid var(--line);border-radius:10px;border-bottom-right-radius:2px;padding:10px 13px;font-size:12.5px;color:var(--ink);line-height:1.5;opacity:0;transform:translateY(4px);transition:opacity 120ms cubic-bezier(0.23,1,0.32,1),transform 120ms cubic-bezier(0.23,1,0.32,1);pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,.35)}
-  .bubble.l{border-bottom-right-radius:10px;border-bottom-left-radius:2px}
-  .bubble.show{opacity:1;transform:translateY(0);pointer-events:auto;cursor:pointer;user-select:none;transition-duration:180ms}
-  .bubble:hover{border-color:var(--mint-dim)}
-  .bubble .hint{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--ink-faint);text-align:right;margin-top:6px}
-  .bubble:hover .hint{color:var(--mint-dim)}
-  .bubble .cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--mint-dim);margin-bottom:5px}
-  .bubble .txt{font-style:italic}
-  .bubble.tell .txt{font-style:normal;color:var(--ink)}
-  @media (max-width:900px){#buddy,.bubble{display:none!important}}
+  /* Buddy's dialogue lives in the sidebar, not on the page — it can never cover resume text
+     because the sidebar column never holds any. It rides along with the rest of .side (which is
+     already sticky), so it stays put near the toggle instead of chasing him around the content. */
+  .buddy-dock{display:none;margin-top:14px;padding:11px 12px;background:#242825;border:1px solid var(--line);border-radius:10px;font-size:12.5px;color:var(--ink);line-height:1.5;opacity:0;transform:translateY(6px) scale(.98);transition:opacity 160ms cubic-bezier(0.23,1,0.32,1),transform 160ms cubic-bezier(0.23,1,0.32,1);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+  .buddy-toggle[aria-pressed="true"] + .buddy-dock{display:block}
+  .buddy-dock.show{opacity:1;transform:none;cursor:pointer;user-select:none}
+  .buddy-dock:hover{border-color:var(--mint-dim)}
+  .dock-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .dock-face{width:20px;height:18px;flex-shrink:0}
+  .buddy-dock .cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--mint-dim)}
+  .buddy-dock .txt{font-style:italic}
+  .buddy-dock.tell .txt{font-style:normal;color:var(--ink)}
+  .buddy-dock .hint{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--ink-faint);text-align:right;margin-top:6px}
+  .buddy-dock:hover .hint{color:var(--mint-dim)}
+  @media (max-width:900px){#buddy,.buddy-dock{display:none!important}}
 
   /* ---------- responsive ---------- */
   @media (max-width:900px){
@@ -312,7 +321,7 @@
   }
   @media (prefers-reduced-motion:reduce){
     #buddy svg,#buddy .rig,#buddy .gaze{transition:none}
-    .bubble{transition:opacity 180ms ease;transform:none}
+    .buddy-dock{transition:opacity 180ms ease;transform:none}
     .labelpop,#buddy .prop-chip,#buddy .pennant,.buddy-toggle.pulse .sw::before{animation:none}
     .nav-ind{transition:none}
     #buddy .leg,#buddy.moving .leg,#buddy.blink .eye,#buddy.up .bodygrp,#buddy.up.squash .bodygrp,#buddy.up.soft .bodygrp,#buddy.up.nod .bodygrp,#buddy.up.wow .bodygrp,#buddy.wow .eye{animation:none}
@@ -341,6 +350,14 @@
     <hr>
     <div class="status"><span class="dot"></span>Open to Summer 2027<br>SWE / ML internships</div>
     <button class="buddy-toggle" id="buddyToggle" aria-pressed="false" title="Buddy is a small guide who lives behind the boxes and perches on whatever you’re reading. Off by default."><span class="sw"></span><span class="lbl">BUDDY · GUIDE<small>Turn on a 45-second guided tour</small></span></button>
+    <div class="buddy-dock" id="buddyDock" aria-live="polite">
+      <div class="dock-head">
+        <svg class="dock-face" viewBox="0 0 52 46" aria-hidden="true"><ellipse cx="26" cy="23" rx="14" ry="20" fill="var(--bg)" stroke="var(--mint)" stroke-width="2"/><circle cx="20.5" cy="20" r="1.9" fill="var(--mint)"/><circle cx="31.5" cy="20" r="1.9" fill="var(--mint)"/><path d="M21 27 Q26 31 31 27" fill="none" stroke="var(--mint)" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span class="cap" hidden></span>
+      </div>
+      <div class="txt"></div>
+      <div class="hint"></div>
+    </div>
   </aside>
 
   <main>
@@ -884,13 +901,17 @@
       </g>
     </g>
   </svg>`;
-  const bubble = document.createElement('div');
-  bubble.className = 'bubble';
-  bubble.innerHTML = '<div class="cap" hidden></div><div class="txt"></div><div class="hint"></div>';
-  document.body.appendChild(buddy); document.body.appendChild(bubble);
+  document.body.appendChild(buddy);
+  const bubble = document.getElementById('buddyDock');
   const rig = buddy.querySelector('.rig'), gaze = buddy.querySelector('.gaze'), sprite = buddy.querySelector('svg');
   const cap = bubble.querySelector('.cap'), txt = bubble.querySelector('.txt'), hint = bubble.querySelector('.hint');
 
+  // a light reaction for hovering Buddy himself, separate from starting the tour
+  const POKE_QUIPS = [
+    "\u201CHi.\u201D",
+    "\u201CStill me.\u201D",
+    "\u201CClick for the tour, or just say hi \u2014 both are fine.\u201D"
+  ];
   const IDLE_QUIPS = [
     "\u201CDaniel finally budgeted arms. Two. I mostly use them for pointing at his work.\u201D",
     "\u201CLegs were cut in scope review. Daniel says it was a design choice.\u201D",
@@ -1290,7 +1311,6 @@
     bubble.classList.add('show');
     keepBubbleUntil = o.keep ? performance.now() + o.keep : 0;
     onHide = o.then || null;
-    placeBubble();
     clearTimeout(bubbleT);
     if (ms === undefined) ms = 2600 + text.length * 55;
     if (ms) bubbleT = setTimeout(hush, ms);
@@ -1302,21 +1322,6 @@
   function nod(){
     if (reduced || !buddy.classList.contains('up')) return;
     buddy.classList.remove('nod'); void buddy.offsetWidth; buddy.classList.add('nod');
-  }
-  function placeBubble(){
-    const bw = bubble.offsetWidth, bh = bubble.offsetHeight;
-    const hx = parseFloat(buddy.style.left) || 0, hy = parseFloat(buddy.style.top) || 0;
-    // to the side of his head, above the box edge — opening rightward into
-    // empty margin whenever the bubble fits there, so it never sits on text
-    const vw = document.documentElement.clientWidth;
-    let left = hx + 64 + bw < scrollX + vw - 8;   // opens right when there's room
-    let bx = left ? hx + 56 : hx + 8 - bw;
-    bx = Math.max(scrollX + 8, Math.min(scrollX + document.documentElement.clientWidth - bw - 8, bx));
-    let by = hy - bh + 4;
-    if (by < scrollY + 6) by = hy + 84;
-    bubble.classList.toggle('l', left);
-    bubble.style.left = bx + 'px';
-    bubble.style.top = by + 'px';
   }
 
   // ---- the tour: Buddy leads, the page follows ----
@@ -1358,6 +1363,19 @@
     if (!on) return;
     if (touring) tourNext(); else startTour();
   });
+  // a poke: hover him directly (not a box) for a quick, low-stakes reaction — most of the time just
+  // a blink and a lean toward the pointer; sometimes a one-word hello. Never while he's mid-tour or
+  // mid-travel, and only once per hover so it can't spam.
+  let poked = false;
+  sprite.addEventListener('pointerenter', () => {
+    if (!on || touring || busy || reduced || poked) return;
+    poked = true;
+    buddy.classList.remove('blink'); void buddy.offsetWidth; buddy.classList.add('blink');
+    rig.style.transform = 'rotate(-6deg)';
+    setTimeout(()=>{ rig.style.transform = ''; }, 420);
+    if (Math.random() < 0.3 && !bubble.classList.contains('show')) say(POKE_QUIPS[Math.floor(Math.random()*POKE_QUIPS.length)], 1800);
+  }, { passive: true });
+  sprite.addEventListener('pointerleave', () => { poked = false; }, { passive: true });
   bubble.addEventListener('click', e=>{
     e.stopPropagation();
     if (!on) return;
@@ -1389,7 +1407,7 @@
       if (on && !touring && !bubble.classList.contains('show'))
         say(IDLE_QUIPS[Math.floor(Math.random()*IDLE_QUIPS.length)], 5200);
       scheduleIdleQuip();
-    }, 18000 + Math.random()*17000);
+    }, 14000 + Math.random()*13000);
   }
   // little bits of business while he's perched: a lean over the edge to read
   // his box, a hop that makes it dip, a duck-and-peek, a glance around
@@ -1430,7 +1448,7 @@
         }
       }
       scheduleGag();
-    }, 7000 + Math.random()*8000);
+    }, 5500 + Math.random()*6500);
   }
 
   // scrolling is the strongest signal of where the visitor is reading;
@@ -1465,7 +1483,7 @@
     hoverIdx = idx; clearTimeout(hoverT);
     if (idx !== -1 && idx !== cur) hoverT = setTimeout(()=>{ if (on && !touring && hoverIdx === idx) moveTo(idx); }, 320);
   }, {passive:true});
-  addEventListener('resize', ()=>{ if (on && cur !== -1){ placeHolder(cur); if (bubble.classList.contains('show')) placeBubble(); } });
+  addEventListener('resize', ()=>{ if (on && cur !== -1) placeHolder(cur); });
 
   function setOn(v){
     on = v;
