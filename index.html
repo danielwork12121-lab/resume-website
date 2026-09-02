@@ -294,9 +294,7 @@
   @keyframes draw{to{stroke-dashoffset:0}}
   @keyframes sketchout{0%,75%{opacity:1}100%{opacity:0}}
   /* the line he reads along */
-  .bob-read{position:absolute;z-index:0;background:rgba(159,216,180,.12);border-radius:2px;pointer-events:none;transform-origin:left;animation:readsweep 1.7s cubic-bezier(0.23,1,0.32,1) forwards}
-  @keyframes readsweep{0%{transform:scaleX(0);opacity:1}70%{transform:scaleX(1);opacity:1}100%{transform:scaleX(1);opacity:0}}
-  @keyframes boxdip{30%{transform:translateY(2.5px)}100%{transform:none}}
+    @keyframes boxdip{30%{transform:translateY(2.5px)}100%{transform:none}}
 
   /* Buddy's dialogue lives in the sidebar, not on the page — it can never cover resume text
      because the sidebar column never holds any. It rides along with the rest of .side (which is
@@ -355,7 +353,7 @@
     .labelpop,#buddy .prop-chip,#buddy .pennant{animation:none}
     .nav-ind{transition:none}
     #buddy .leg,#buddy.moving .leg,#buddy.blink .eye,#buddy.up .bodygrp,#buddy.up.squash .bodygrp,#buddy.up.soft .bodygrp,#buddy.up.nod .bodygrp,#buddy.up.wow .bodygrp,#buddy.wow .eye,#buddy.waving .armR,#buddy.waving .eye{animation:none}
-    .box-dip,.box-fix,.bob-read,#buddy.climb svg,#buddy .arm,.pop,.bbox,.sketch,.sketch path,#buddy.throwing .rig,#buddy.splat .bodygrp,#buddy.splat .leg,#buddy.splat .arm,#buddy.splat .eye,#buddy.reassembling .bodygrp,#buddy.reassembling .leg,#buddy.reassembling .arm,#buddy.reassembling .eye{animation:none}
+    .box-dip,.box-fix,#buddy.climb svg,#buddy .arm,.pop,.bbox,.sketch,.sketch path,#buddy.throwing .rig,#buddy.splat .bodygrp,#buddy.splat .leg,#buddy.splat .arm,#buddy.splat .eye,#buddy.reassembling .bodygrp,#buddy.reassembling .leg,#buddy.reassembling .arm,#buddy.reassembling .eye{animation:none}
     .callout{transition:opacity 160ms ease;transform:translate(-50%,-100%)}
     .callout.show{transform:translate(-50%,-100%)}
     .bob-mark::after{animation:none;transform:none}
@@ -894,7 +892,7 @@
   buddy.innerHTML = `
   <div class="ledge"></div>
   <svg width="52" height="70" viewBox="0 0 52 70" role="button" aria-label="Buddy — click for a quick tour of the resume">
-    <title>Buddy — click for a 45-second tour</title>
+    <title>Buddy — click for a guided tour</title>
     <rect x="8" y="0" width="36" height="62" fill="transparent"/>
     <g class="rig">
       <g class="leg">
@@ -993,10 +991,10 @@
     "\u201CThe ledge? I bring it everywhere. Daniel refused to draw me floors.\u201D",
     "\u201CYou scroll faster than the p95 recruiter. I keep metrics. I made them up, but so does every dashboard.\u201D",
     "\u201CEverything I say is sourced from the resume. I\u2019m witty, not creative with facts.\u201D",
-    "\u201CStill here. Click me for the 45-second tour \u2014 zero dependencies, one opinionated guide.\u201D"
+    "\u201CStill here. Click me for the guided tour \u2014 zero dependencies, one opinionated guide.\u201D"
   ];
   const INTRO = "Hi \u2014 I\u2019m Buddy, resident of this page. Daniel wrote me in vanilla JS: no framework, no build step.";
-  const OFFER = "Click me for the 45-second tour. He debugged me longer than he\u2019ll admit.";
+  const OFFER = "Click me for the guided tour. He debugged me longer than he\u2019ll admit.";
 
   // the boxes Buddy can perch on, in document order, with how big a deal each
   // one is (big beats get a hop on landing, small ones a quiet settle)
@@ -1068,13 +1066,17 @@
 
   // the tour: what Buddy says at each stop, in its own voice
   const TOUR = [
+    { sel: '#education .item', text: "B.S. Computer Science, second major in Mathematics, Georgia Tech, class of 2030. The math major wasn\u2019t required. He added it anyway." },
     { sel: '#research .item', text: "Two papers before his first college final: first author in the Springer AIET 2024 proceedings \u2014 with the Best Session Presenter award \u2014 and a second under review at IEEE ICDE 2026." },
     { sel: '#projects .card:nth-child(1)', text: "Stab It \u2014 top 2% of 14,022 entrants at ByteDance\u2019s hackathon. Dual-model pipeline with automatic fallback. The build broke mid-sprint; the demo didn\u2019t." },
+    { sel: '#projects .card:nth-child(2)', text: "Uncle Tian\u2019s Sugaria \u2014 top 18 of 2,589 teams at Tencent\u2019s game challenge, preserving a traditional Chinese folk craft in a browser game. Built with an actual UI/UX designer \u2014 a rarer pairing than it should be." },
     { sel: '#projects .card:nth-child(4)', text: "Hachi, co-founded: 300+ paying users and $800+ in revenue in month one. Real users, real revenue, real astrology. Two of those matter to you." },
     { sel: '#applied .item:nth-child(2)', text: "The unglamorous work, done properly: a content taxonomy at CapCut R&D, 10K+ labeled frames at Haidilao. Models eat what you feed them." },
+    { sel: '#applied .item:nth-child(3)', text: "10,000+ surveillance frames labeled at Haidilao, plus the annotation guidelines that made everyone else\u2019s labels agree. The other half of computer vision \u2014 the half nobody posts about." },
     { sel: '#leadership .item:nth-child(2)', text: "Founded his school\u2019s first CS club and grew it into the largest club on campus. He recruits better than most startups." },
+    { sel: '#leadership .item:nth-child(3)', text: "Represented 700+ bilingual and international students as Communications Director, coordinating 10+ events a year with the administration. Leadership that doesn\u2019t show up on GitHub." },
     { sel: '#skills', text: "Python, C++, PyTorch, LLM apps, RAG, computer vision. Also ships with designers and answers email. Rarer than it should be." },
-    { sel: 'footer', text: "That\u2019s 45 seconds. His interviews run longer and go deeper \u2014 zli3381@gatech.edu is one click up top. I\u2019ll be around." }
+    { sel: 'footer', text: "That\u2019s the tour. His interviews run longer and go deeper \u2014 zli3381@gatech.edu is one click up top. I\u2019ll be around." }
   ].map(s => ({ ...s, idx: indexOf.get(document.querySelector(s.sel)) })).filter(s => s.idx !== undefined);
 
   const toggle = document.getElementById('buddyToggle');
@@ -1262,11 +1264,13 @@
   const SKITS = [
     ['#projects .card:nth-child(1)', 'build'], ['#engineering .item:nth-child(3)', 'build'],
     ['#projects .card:nth-child(4)', 'users'], ['#engineering .item:nth-child(2)', 'users'],
-    ['#projects .card:nth-child(2)', 'sugar'],
+    ['#projects .card:nth-child(2)', 'sugar'], ['#engineering .item:nth-child(4)', 'sugar'],
     ['#applied .item', 'annotate'],
-    ['#research .item', 'present'],
+    ['#research .item', 'present'], ['#projects .card:nth-child(3)', 'present'],
     ['#skills', 'skills'],
-    ['#leadership .item:nth-child(2)', 'members']
+    ['#leadership .item:nth-child(2)', 'members'],
+    ['#education .item', 'degree'],
+    ['#leadership .item:nth-child(3)', 'represent']
   ];
   const skitted = new Set();
   function pop(text, x, y, ms, cls){
@@ -1321,6 +1325,12 @@
     } else if (kind === 'present'){
       // Best Session Presenter: the award gets a nudge once he has pointed at the papers
       run(()=>{ const aw = a.el.querySelector('.award'); if (aw){ aw.classList.remove('box-dip'); void aw.offsetWidth; aw.classList.add('box-dip'); } }, 3400);
+    } else if (kind === 'degree'){
+      // two majors, checked off like the skills stack
+      ['✓ Computer Science', '✓ Mathematics'].forEach((t, k) => run(()=>pop(t, bx + 4 + k * 4, by - 30 - k * 2, 1500), 700 + k * 420));
+    } else if (kind === 'represent'){
+      // 700+ students represented, counted up the way the user/member skits do
+      [0, 1, 2, 3].forEach(k => run(()=>pop('+175', boxR - 210 - k * 74, boxT - 34, 1400, 'up'), 900 + k * 300));
     }
   }
   // which tool he brings out where
@@ -1350,12 +1360,12 @@
 
   function landedSay(a){
     if (!greeted){ buddy.classList.add('waving'); return; }   // waving, not talking, until he's picked up
-    if (firstLanding){
+    if (touring){
+      tourSay();
+    } else if (firstLanding){
       firstLanding = false;
       say(INTRO, 11000, { tell: true, cap: 'BUDDY', keep: 6500,
         then: ()=>setTimeout(()=>{ if (on && !touring && !toured && !bubble.classList.contains('show')) say(OFFER, undefined, { tell: true, cap: 'BUDDY', keep: 2000 }); }, 500) });
-    } else if (touring){
-      tourSay();
     } else if (a.quip && performance.now() > keepBubbleUntil){
       say(a.quip);
     }
@@ -1432,6 +1442,8 @@
   function startTour(){
     if (!on || touring) return;
     touring = true; toured = true; tourStep = 0; saidStep = -1; hoverIdx = -1; clearTimeout(hoverT);
+    firstLanding = false;   // starting the tour is itself the introduction — its own stop 1
+                             // shouldn't get swapped out for the generic "hi, I'm Buddy" line
     say("Follow me.", 1400, { tell: true, cap: 'TOUR', hint: '', keep: 1400 });
     setTimeout(()=>{ if (touring) tourStop(); }, 700);
   }
@@ -1549,8 +1561,8 @@
     "\u201COkay \u2014 back to the content.\u201D"
   ];
   const THROW_LINES = [
-    "\u201CWorth it.\u201D",
-    "\u201COkay. Reassembling.\u201D",
+    "\u201CStill less painful than the ByteDance demo breaking mid-sprint.\u201D",
+    "\u201COkay. Reassembling \u2014 same energy as debugging me at 2am.\u201D",
     "\u201CI\u2019ve had worse code reviews.\u201D"
   ];
   function throwBuddy(vx, vy){
@@ -1654,16 +1666,6 @@
   // little bits of business while he's perched: a lean over the edge to read
   // his box, a hop that makes it dip, a duck-and-peek, a glance around
   // he leans over and reads a line of his box: a soft sweep along the first line of text
-  function readLine(i){
-    if (i === -1) return;
-    const t = anchors[i].el.querySelector('p, li, .desc, .c');
-    if (!t) return;
-    const r = t.getBoundingClientRect(), lh = parseFloat(getComputedStyle(t).lineHeight) || 24;
-    const sw = document.createElement('div'); sw.className = 'bob-read';
-    sw.style.left = (r.left + scrollX - 2) + 'px'; sw.style.top = (r.top + scrollY) + 'px';
-    sw.style.width = Math.min(r.width, 420) + 4 + 'px'; sw.style.height = lh + 'px';
-    document.body.appendChild(sw); setTimeout(()=>sw.remove(), 1800);
-  }
   function scheduleGag(){
     clearTimeout(gagT);
     gagT = setTimeout(()=>{
@@ -1671,9 +1673,8 @@
         const g = Math.random();
         if (g < 0.3){
           rig.style.transform = 'rotate(9deg)';
-          gaze.style.transform = 'translate(0.5px, 2.2px)';
-          readLine(cur);
-          setTimeout(()=>{ rig.style.transform = ''; gazeAt(cur); }, 1700);
+          pointAt(cur);   // idle time re-earns its keep: point at something real, not just lean
+          setTimeout(()=>{ rig.style.transform = ''; }, 1700);
         } else if (g < 0.55){
           buddy.classList.remove('squash','soft','wow'); void buddy.offsetWidth;
           buddy.classList.add('wow'); dipBox(cur);
