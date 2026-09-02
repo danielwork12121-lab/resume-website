@@ -155,6 +155,9 @@
   #buddy svg{display:block;margin:0 auto;overflow:visible;pointer-events:auto;cursor:grab;touch-action:none;transform:translateY(86px);transition:transform .36s cubic-bezier(.34,1.45,.64,1)}
   #buddy.dragging svg{cursor:grabbing;transform:translateY(20px) scale(1.06);transition:transform 90ms cubic-bezier(0.23,1,0.32,1);filter:brightness(1.1)}
   #buddy.dragging{transition:none}
+  /* the lean-while-dragging otherwise inherits .rig's 400ms settle transition, which can't
+     keep up with fast pointer movement — the tilt visibly lags the cursor by a beat */
+  #buddy.dragging .rig{transition:transform 90ms cubic-bezier(0.23,1,0.32,1)}
   #buddy.fallen svg{transform:translateY(28px)}
   #buddy.throwing .rig{animation:throwspin var(--tdur,300ms) linear}
   @keyframes throwspin{from{transform:rotate(0)}to{transform:rotate(1080deg)}}
@@ -192,6 +195,7 @@
      whichever is genuinely clear of real text; a tail always points back at his mouth. */
   .callout{box-sizing:border-box;position:absolute;z-index:53;max-width:230px;font-family:var(--mono);font-size:12px;line-height:1.55;letter-spacing:.005em;color:var(--mint);background:var(--mint-deep);border:1px solid var(--mint-dim);border-radius:8px;padding:10px 13px;box-shadow:0 8px 22px rgba(0,0,0,.35);pointer-events:none;opacity:0;transform:scale(.94);transition:opacity 160ms cubic-bezier(0.23,1,0.32,1),transform 160ms cubic-bezier(0.23,1,0.32,1)}
   .callout.show{opacity:1;transform:scale(1);pointer-events:auto;cursor:pointer}
+  .callout.show:active{transform:scale(0.96);transition-duration:80ms}
   .callout .c-cap{display:block;font-size:10px;letter-spacing:.14em;color:var(--mint-dim);margin-bottom:4px}
   .callout .c-txt{display:block;font-style:italic}
   .callout.tell .c-txt{font-style:normal;color:var(--ink)}
@@ -290,6 +294,7 @@
   #buddy[data-prop="glasses"] .prop-glasses{opacity:1}
   #buddy[data-prop="goggles"] .prop-goggles{opacity:1}
   #buddy[data-prop="crown"] .prop-crown{opacity:1}
+  #buddy[data-prop="headset"] .prop-headset{opacity:1}
   #buddy[data-prop="chip"] .prop-chip{opacity:1;transform-box:fill-box;transform-origin:bottom center;animation:chipwobble 3.2s ease-in-out infinite}
   @keyframes chipwobble{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(4deg)}}
   #buddy[data-prop="flag"] .prop-flag{opacity:1}
@@ -312,7 +317,7 @@
   .pop.bad{color:var(--ink-dim);background:var(--bg2);border-color:var(--line)}
   .pop.up{animation:floatup 1.4s cubic-bezier(0.23,1,0.32,1) forwards}
   @keyframes floatup{0%{opacity:0;transform:translateY(8px)}15%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-46px)}}
-  .bbox{position:absolute;z-index:1;border:1px solid var(--mint);border-radius:2px;pointer-events:none;opacity:0;animation:bboxin 2.6s cubic-bezier(0.23,1,0.32,1) forwards}
+  .bbox{position:absolute;z-index:52;border:1px solid var(--mint);border-radius:2px;pointer-events:none;opacity:0;animation:bboxin 2.6s cubic-bezier(0.23,1,0.32,1) forwards}
   .bbox span{position:absolute;left:-1px;top:-16px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--mint);background:var(--bg);padding:1px 4px}
   @keyframes bboxin{0%{opacity:0;transform:scale(1.06)}15%{opacity:1;transform:scale(1)}80%{opacity:1}100%{opacity:0}}
   .sketch{position:absolute;z-index:52;pointer-events:none;animation:sketchout 3.2s ease-out forwards}
@@ -955,6 +960,13 @@
           <rect x="15" y="-7" width="22" height="13" rx="3" fill="var(--bg)" stroke="var(--mint)" stroke-width="1.8"/>
           <text x="26" y="3" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="var(--mint)">.py</text>
         </g>
+        <g class="prop prop-headset">
+          <path d="M13 18 Q26 2 39 18" fill="none" stroke="var(--mint)" stroke-width="1.8" stroke-linecap="round"/>
+          <rect x="9.5" y="17" width="6" height="10" rx="3" fill="var(--bg)" stroke="var(--mint)" stroke-width="1.6"/>
+          <rect x="36.5" y="17" width="6" height="10" rx="3" fill="var(--bg)" stroke="var(--mint)" stroke-width="1.6"/>
+          <path d="M39.5 26 Q42 30 34 32" fill="none" stroke="var(--mint)" stroke-width="1.4" stroke-linecap="round"/>
+          <circle cx="34" cy="32" r="1.4" fill="var(--mint)"/>
+        </g>
       </g>
       <g class="prop prop-flag">
         <path d="M46 46 L46 8" stroke="var(--mint)" stroke-width="1.8" stroke-linecap="round"/>
@@ -1294,6 +1306,18 @@
     if (!markEl) return;
     const parent = markEl.parentNode; markEl.replaceWith(...markEl.childNodes); parent.normalize(); markEl = null;
   }
+  // finds a real phrase's own rect without mutating the DOM — used to fit a detection
+  // box exactly to real text instead of guessing offsets that can drift onto other lines
+  function findPhraseRect(root, phrase){
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    for (let n; (n = w.nextNode()); ){
+      const k = n.data.indexOf(phrase);
+      if (k === -1) continue;
+      const range = document.createRange(); range.setStart(n, k); range.setEnd(n, k + phrase.length);
+      return range.getBoundingClientRect();
+    }
+    return null;
+  }
   function wrapPhrase(root, phrase){
     const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     for (let n; (n = w.nextNode()); ){
@@ -1333,12 +1357,13 @@
     ['#projects .card:nth-child(1)', 'build'], ['#engineering .item:nth-child(3)', 'build'],
     ['#projects .card:nth-child(4)', 'users'], ['#engineering .item:nth-child(2)', 'users'],
     ['#projects .card:nth-child(2)', 'sugar'], ['#engineering .item:nth-child(4)', 'sugar'],
-    ['#applied .item', 'annotate'],
+    ['#applied .item:nth-child(2)', 'classify'], ['#applied .item:nth-child(3)', 'annotate'],
     ['#research .item', 'present'], ['#projects .card:nth-child(3)', 'present'],
     ['#skills', 'skills'],
     ['#leadership .item:nth-child(2)', 'members'],
     ['#education .item', 'degree'],
-    ['#leadership .item:nth-child(3)', 'represent']
+    ['#leadership .item:nth-child(3)', 'represent'],
+    ['#leadership .item:nth-child(4)', 'translate']
   ];
   const skitted = new Set();
   function pop(text, x, y, ms, cls){
@@ -1374,16 +1399,28 @@
         setTimeout(()=>buddy.classList.remove('point-r'), 2200);
       }, 900);
     } else if (kind === 'annotate'){
-      // the annotation work: a bounding box snaps onto the phrase he marked
-      run(()=>{
-        const m = markEl || a.el.querySelector('p'); if (!m) return;
-        const mr = m.getBoundingClientRect();
+      // the annotation work itself: a detection box snaps tight onto each real phrase
+      // he's already marked, one at a time, with a class + confidence score — fitted
+      // to the actual text so it can never drift over a neighbouring line
+      const LABELS = ['person · 0.94', 'shelf · 0.97', 'person · 0.89'];
+      ([].concat(a.mark || [])).slice(0, 3).forEach((phrase, k) => run(()=>{
+        const pr = findPhraseRect(a.el, phrase); if (!pr || !pr.width) return;
         const bb = document.createElement('div'); bb.className = 'bbox';
-        bb.style.left = (mr.left + scrollX - 6) + 'px'; bb.style.top = (mr.top + scrollY - 4) + 'px';
-        bb.style.width = (mr.width + 12) + 'px'; bb.style.height = (mr.height + 8) + 'px';
-        bb.innerHTML = '<span>frame · ok</span>';
-        document.body.appendChild(bb); setTimeout(()=>bb.remove(), 2600);
-      }, 1200);
+        bb.style.left = (pr.left + scrollX - 5) + 'px'; bb.style.top = (pr.top + scrollY - 4) + 'px';
+        bb.style.width = (pr.width + 10) + 'px'; bb.style.height = (pr.height + 8) + 'px';
+        bb.innerHTML = `<span>${LABELS[k % LABELS.length]}</span>`;
+        document.body.appendChild(bb); setTimeout(()=>bb.remove(), 2200);
+      }, 900 + k * 700));
+    } else if (kind === 'classify'){
+      // the taxonomy work: each modality gets tagged and filed, one at a time
+      ['✓ image', '✓ video', '✓ taxonomy mapped'].forEach((t, k) => run(()=>pop(t, bx + 4 + k * 4, by - 30 - k * 2, 1500), 700 + k * 380));
+    } else if (kind === 'translate'){
+      // he swaps the crown for an interpreter's headset, translates live, then reports the count
+      const prevProp = buddy.dataset.prop;
+      run(()=>{ buddy.dataset.prop = 'headset'; }, 500);
+      run(()=>pop('EN ↔ 中文', boxR - 220, boxT - 30, 1500), 900);
+      run(()=>pop('✓ 64 teams briefed', boxR - 240, boxT - 30, 1800), 2100);
+      run(()=>{ buddy.dataset.prop = prevProp; }, 3600);
     } else if (kind === 'skills'){
       // the stack itself, checked off one line at a time
       ['✓ Python', '✓ PyTorch', '✓ LLM apps'].forEach((t, k) => run(()=>pop(t, bx + 4 + k * 4, by - 30 - k * 2, 1500), 700 + k * 380));
