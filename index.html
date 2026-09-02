@@ -131,7 +131,7 @@
   footer .colophon{margin:0;font-family:var(--mono);font-size:var(--t-meta);color:var(--ink-faint);letter-spacing:.04em}
   footer .colophon:first-of-type{margin-top:8px}
 
-  /* ---------- Bobbie, the companion / guide (opt-in) ---------- */
+  /* ---------- Buddy, the companion / guide (opt-in) ---------- */
   .buddy-toggle{display:flex;align-items:center;gap:8px;margin-top:16px;background:none;border:0;padding:0;cursor:pointer;font-family:var(--mono);font-size:var(--t-meta);letter-spacing:.12em;color:var(--ink-faint)}
   .buddy-toggle:hover{color:var(--ink-dim)}
   .buddy-toggle{align-items:flex-start}
@@ -146,7 +146,7 @@
   .buddy-toggle[aria-pressed="true"] .sw{background:var(--mint-deep);border-color:var(--mint-dim)}
   .buddy-toggle[aria-pressed="true"] .sw::after{transform:translateX(12px);background:var(--mint)}
 
-  /* Bobbie lives IN the page now: an absolutely-positioned window whose bottom
+  /* Buddy lives IN the page now: an absolutely-positioned window whose bottom
      edge sits on the current box's top border. He slides up out of it to perch
      (feet dangling over the edge) and drops back down "behind" the box to move.
      No flight, no zooming — the page scrolls and he rides along with his box. */
@@ -171,10 +171,10 @@
   @keyframes climb{0%{transform:translateY(86px)}30%{transform:translateY(46px)}50%{transform:translateY(49px)}75%{transform:translateY(20px)}100%{transform:translateY(11px)}}
   /* arms hang from the shoulders, sway with the breathing, swing when he moves, and lift to point */
   #buddy .arm{transform-box:view-box;transition:transform .4s cubic-bezier(0.23,1,0.32,1)}
-  #buddy .armL{transform-origin:13.5px 32px;animation:swayL 3.6s ease-in-out infinite}
-  #buddy .armR{transform-origin:38.5px 32px;animation:swayR 3.6s ease-in-out infinite}
-  @keyframes swayL{0%,100%{transform:rotate(3deg)}50%{transform:rotate(-4deg)}}
-  @keyframes swayR{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(4deg)}}
+  #buddy .armL{transform-origin:13.5px 32px;animation:swayL 4.4s ease-in-out infinite}
+  #buddy .armR{transform-origin:38.5px 32px;animation:swayR 4.4s ease-in-out .2s infinite}
+  @keyframes swayL{0%,100%{transform:rotate(2deg)}50%{transform:rotate(-2deg)}}
+  @keyframes swayR{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
   #buddy.moving .armL{animation:swingL .3s ease-in-out infinite}
   #buddy.moving .armR{animation:swingR .3s ease-in-out infinite}
   @keyframes swingL{0%,100%{transform:rotate(-28deg)}50%{transform:rotate(22deg)}}
@@ -185,7 +185,12 @@
   @keyframes cheerR{0%{transform:rotate(0)}35%{transform:rotate(-150deg)}70%{transform:rotate(-140deg)}100%{transform:rotate(0)}}
   #buddy.point-r .armR,#buddy.point-l .armL{animation:none;transform:rotate(var(--aim,-60deg))}
   #buddy.hammer .armR{animation:hammer .22s ease-in-out 5}
-  @keyframes hammer{0%,100%{transform:rotate(-120deg)}50%{transform:rotate(-40deg)}}
+  @keyframes hammer{0%,100%{transform:rotate(-115deg)}50%{transform:rotate(-55deg)}}
+  /* kneel: a second pose — he crouches down over the box to work on it */
+  #buddy.kneel .bodygrp{animation:none;transform:translateY(7px) scale(1.04,.9)}
+  #buddy.kneel .leg{animation:none;transform:rotate(58deg)}
+  #buddy.kneel .legR{animation:none;transform:rotate(-58deg)}
+  #buddy.kneel .armL{animation:none;transform:rotate(18deg)}
   /* travel: he leaves the clip window and hops across the page to the next box */
   #buddy.travel{clip-path:none}
   @keyframes hop{0%,100%{transform:translateY(11px)}50%{transform:translateY(-12px)}}
@@ -223,13 +228,14 @@
   /* the tools: a hard hat for the engineering sections, a .py chip balanced
      on his head at skills, an EOF pennant planted at the footer */
   #buddy .prop{opacity:0;transition:opacity .25s}
+  #buddy.hammer .prop-hammer{opacity:1}
   #buddy[data-prop="hat"] .prop-hat{opacity:1}
   #buddy[data-prop="chip"] .prop-chip{opacity:1;transform-box:fill-box;transform-origin:bottom center;animation:chipwobble 3.2s ease-in-out infinite}
   @keyframes chipwobble{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(4deg)}}
   #buddy[data-prop="flag"] .prop-flag{opacity:1}
   #buddy .pennant{transform-box:fill-box;transform-origin:left center;animation:flagwave 2.2s ease-in-out infinite}
   @keyframes flagwave{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.82)}}
-  /* the "labeled" stamp that pops off a box when Bobbie inspects the data work */
+  /* the "labeled" stamp that pops off a box when Buddy inspects the data work */
   .labelpop{position:absolute;z-index:52;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--mint);background:var(--mint-deep);border:1px solid var(--mint-dim);border-radius:4px;padding:3px 8px;pointer-events:none;animation:poprise 1.5s ease-out forwards}
   @keyframes poprise{0%{opacity:0;transform:translateY(6px) scale(.8)}18%{opacity:1;transform:translateY(0) scale(1.05)}30%{transform:translateY(-2px) scale(1)}100%{opacity:0;transform:translateY(-22px)}}
   .buddy-here{border-color:var(--mint-dim)!important;box-shadow:0 0 20px rgba(159,216,180,.12);transition:border-color .3s,box-shadow .3s}
@@ -258,7 +264,7 @@
   @keyframes readsweep{0%{transform:scaleX(0);opacity:1}70%{transform:scaleX(1);opacity:1}100%{transform:scaleX(1);opacity:0}}
   @keyframes boxdip{30%{transform:translateY(2.5px)}100%{transform:none}}
 
-  .bubble{position:absolute;left:0;top:0;z-index:51;max-width:250px;background:#242825;border:1px solid var(--line);border-radius:10px;border-bottom-right-radius:2px;padding:10px 13px;font-size:12.5px;color:var(--ink);line-height:1.5;opacity:0;transform:translateY(4px);transition:opacity 120ms cubic-bezier(0.23,1,0.32,1),transform 120ms cubic-bezier(0.23,1,0.32,1);pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,.35)}
+  .bubble{position:absolute;left:0;top:0;z-index:55;max-width:250px;background:#242825;border:1px solid var(--line);border-radius:10px;border-bottom-right-radius:2px;padding:10px 13px;font-size:12.5px;color:var(--ink);line-height:1.5;opacity:0;transform:translateY(4px);transition:opacity 120ms cubic-bezier(0.23,1,0.32,1),transform 120ms cubic-bezier(0.23,1,0.32,1);pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,.35)}
   .bubble.l{border-bottom-right-radius:10px;border-bottom-left-radius:2px}
   .bubble.show{opacity:1;transform:translateY(0);pointer-events:auto;cursor:pointer;user-select:none;transition-duration:180ms}
   .bubble:hover{border-color:var(--mint-dim)}
@@ -280,7 +286,7 @@
     nav a{padding:6px 0;border-left:0;border-bottom:2px solid transparent;font-size:var(--t-label)}
     nav a.on{border-bottom-color:var(--mint)}
     .nav-ind{display:none}
-    .side hr,.buddy-toggle{display:none}   /* Bobbie is hidden below 900px, so the toggle would do nothing */
+    .side hr,.buddy-toggle{display:none}   /* Buddy is hidden below 900px, so the toggle would do nothing */
     h1{margin-top:18px}
     .stats{grid-template-columns:1fr 1fr}
     .stat:nth-child(odd){border-left:0}
@@ -334,7 +340,7 @@
     </nav>
     <hr>
     <div class="status"><span class="dot"></span>Open to Summer 2027<br>SWE / ML internships</div>
-    <button class="buddy-toggle" id="buddyToggle" aria-pressed="false" title="Bobbie is a small guide who lives behind the boxes and perches on whatever you’re reading. Off by default."><span class="sw"></span><span class="lbl">BOBBIE · GUIDE<small>Turn on a 45-second guided tour</small></span></button>
+    <button class="buddy-toggle" id="buddyToggle" aria-pressed="false" title="Buddy is a small guide who lives behind the boxes and perches on whatever you’re reading. Off by default."><span class="sw"></span><span class="lbl">BUDDY · GUIDE<small>Turn on a 45-second guided tour</small></span></button>
   </aside>
 
   <main>
@@ -756,7 +762,7 @@
   if (reduced) addEventListener('scroll', start, { passive: true });
 })();
 
-// stat digits roll up when they first come into view (and again when Bobbie
+// stat digits roll up when they first come into view (and again when Buddy
 // hops on them) — tabular numbers, no layout shift
 (function(){
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -827,8 +833,8 @@
   set(0); setTimeout(spy, 600);
 })();
 
-// ---------- Bobbie, the companion / guide (opt-in) ----------
-// Bobbie lives in the page. He perches on top of whatever box you're reading,
+// ---------- Buddy, the companion / guide (opt-in) ----------
+// Buddy lives in the page. He perches on top of whatever box you're reading,
 // feet dangling over its edge, and when your attention moves he drops down
 // behind his box and pops up out of the next one — sometimes eyes first.
 // Click him and he leads a short tour instead, the page following him from
@@ -837,8 +843,9 @@
   const buddy = document.createElement('div');
   buddy.id = 'buddy';
   buddy.innerHTML = `
-  <svg width="52" height="70" viewBox="0 0 52 70" role="button" aria-label="Bobbie — click for a quick tour of the resume">
-    <title>Bobbie — click for a 45-second tour</title>
+  <div class="ledge"></div>
+  <svg width="52" height="70" viewBox="0 0 52 70" role="button" aria-label="Buddy — click for a quick tour of the resume">
+    <title>Buddy — click for a 45-second tour</title>
     <rect x="8" y="0" width="36" height="62" fill="transparent"/>
     <g class="rig">
       <g class="leg">
@@ -849,6 +856,10 @@
         <path d="M32 46 L33 58" fill="none" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/>
         <path d="M33 58 L37 60" fill="none" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/>
       </g>
+      <g class="arm armL"><path d="M13.5 32 L9.5 44" fill="none" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/><circle cx="9" cy="45.6" r="2.3" fill="var(--mint)"/></g>
+      <g class="arm armR"><path d="M38.5 32 L42.5 44" fill="none" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/><circle cx="43" cy="45.6" r="2.3" fill="var(--mint)"/>
+        <g class="prop prop-hammer"><path d="M42.5 44 L49.5 37" stroke="var(--mint)" stroke-width="1.8" stroke-linecap="round"/><rect x="46" y="32.5" width="9" height="6" rx="1.3" transform="rotate(38 50.5 35.5)" fill="var(--bg)" stroke="var(--mint)" stroke-width="1.6"/></g>
+      </g>
       <g class="bodygrp">
         <path d="M26 3 C35 3 40 13 40 26 C40 38 34 46 26 46 C18 46 12 38 12 26 C12 13 17 3 26 3 Z"
           fill="var(--bg)" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/>
@@ -857,8 +868,6 @@
           <circle class="eye" cx="31.5" cy="23" r="2.1" fill="var(--mint)"/>
         </g>
         <path class="mouth" d="M21 30 Q26 34 31 30" fill="none" stroke="var(--mint)" stroke-width="2" stroke-linecap="round"/>
-        <g class="arm armL"><path d="M13.5 32 L9.5 44" fill="none" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/><circle cx="9" cy="45.6" r="2.3" fill="var(--mint)"/></g>
-        <g class="arm armR"><path d="M38.5 32 L42.5 44" fill="none" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/><circle cx="43" cy="45.6" r="2.3" fill="var(--mint)"/></g>
         <g class="prop prop-hat">
           <path d="M15 9 Q26 -3 37 9 L37 10 L15 10 Z" fill="var(--bg)" stroke="var(--mint)" stroke-width="2"/>
           <path d="M12 10 L40 10" stroke="var(--mint)" stroke-width="2.4" stroke-linecap="round"/>
@@ -874,8 +883,7 @@
         <text x="47" y="30" font-family="JetBrains Mono, monospace" font-size="6.5" fill="var(--mint-dim)" transform="rotate(90 47 30)">EOF</text>
       </g>
     </g>
-  </svg>
-  <div class="ledge"></div>`;
+  </svg>`;
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
   bubble.innerHTML = '<div class="cap" hidden></div><div class="txt"></div><div class="hint"></div>';
@@ -892,15 +900,15 @@
     "\u201CEverything I say is sourced from the resume. I\u2019m witty, not creative with facts.\u201D",
     "\u201CStill here. Click me for the 45-second tour \u2014 zero dependencies, one opinionated guide.\u201D"
   ];
-  const INTRO = "Hi \u2014 I\u2019m Bobbie, resident of this page. Daniel wrote me in vanilla JS: no framework, no build step. The arms were descoped.";
+  const INTRO = "Hi \u2014 I\u2019m Buddy, resident of this page. Daniel wrote me in vanilla JS: no framework, no build step.";
   const OFFER = "Click me for the 45-second tour. He debugged me longer than he\u2019ll admit.";
 
-  // the boxes Bobbie can perch on, in document order, with how big a deal each
+  // the boxes Buddy can perch on, in document order, with how big a deal each
   // one is (big beats get a hop on landing, small ones a quiet settle)
   const ANCHOR_SEL = '.hero h1, figure.fig, .stats, #education .item, #research .item, #projects .card, #engineering .item, #applied .item, #leadership .item, #skills, footer';
   const BIG = ['.stats', '#research .item', '#projects .card:nth-child(1)', '#projects .card:nth-child(4)', '#engineering .item:nth-child(2)'];
   const SMALL = ['#education .item', '#skills', 'footer'];
-  // what Bobbie says about each box he lands on \u2014 all of it checks out
+  // what Buddy says about each box he lands on \u2014 all of it checks out
   const LINES = [
     ['.hero h1', "\u201CThat\u2019s the name. I\u2019m the easter egg. We split the work evenly.\u201D"],
     ['figure.fig', "\u201CThis chart is hand-drawn canvas at 60fps. The forecast is the only part of this page that guesses.\u201D"],
@@ -963,7 +971,7 @@
   }));
   const indexOf = new Map(anchors.map((a, i) => [a.el, i]));
 
-  // the tour: what Bobbie says at each stop, in its own voice
+  // the tour: what Buddy says at each stop, in its own voice
   const TOUR = [
     { sel: '#research .item', text: "Two papers before his first college final: first author in the Springer AIET 2024 proceedings \u2014 with the Best Session Presenter award \u2014 and a second under review at IEEE ICDE 2026." },
     { sel: '#projects .card:nth-child(1)', text: "Stab It \u2014 top 2% of 14,022 entrants at ByteDance\u2019s hackathon. Dual-model pipeline with automatic fallback. The build broke mid-sprint; the demo didn\u2019t." },
@@ -1155,7 +1163,9 @@
     ['#projects .card:nth-child(4)', 'users'], ['#engineering .item:nth-child(2)', 'users'],
     ['#projects .card:nth-child(2)', 'sugar'],
     ['#applied .item', 'annotate'],
-    ['#research .item', 'present']
+    ['#research .item', 'present'],
+    ['#skills', 'skills'],
+    ['#leadership .item:nth-child(2)', 'members']
   ];
   const skitted = new Set();
   function pop(text, x, y, ms, cls){
@@ -1174,8 +1184,8 @@
     if (kind === 'build'){
       // the build broke mid-sprint; he gets the hat on and fixes it
       run(()=>pop('✕ build failed', boxR - 236, boxT - 30, 1500, 'bad'), 700);
-      run(()=>{ buddy.classList.add('hammer'); }, 1300);
-      run(()=>{ buddy.classList.remove('hammer'); pop('✓ build passed', boxR - 240, boxT - 30, 1800); fixBox(i, 'wow'); }, 2500);
+      run(()=>{ buddy.classList.add('hammer', 'kneel'); }, 1300);
+      run(()=>{ buddy.classList.remove('hammer', 'kneel'); pop('✓ build passed', boxR - 240, boxT - 30, 1800); fixBox(i, 'wow'); }, 2500);
     } else if (kind === 'users'){
       // paying users, one at a time; he watches them go up
       [0, 1, 2, 3].forEach(k => run(()=>{ pop('+1 user', boxR - 200 - k * 72, boxT - 34, 1400, 'up'); gaze.style.transform = 'translate(1px, -2.2px)'; }, 900 + k * 320));
@@ -1201,6 +1211,12 @@
         bb.innerHTML = '<span>frame · ok</span>';
         document.body.appendChild(bb); setTimeout(()=>bb.remove(), 2600);
       }, 1200);
+    } else if (kind === 'skills'){
+      // the stack itself, checked off one line at a time
+      ['✓ Python', '✓ PyTorch', '✓ LLM apps'].forEach((t, k) => run(()=>pop(t, bx + 4 + k * 4, by - 30 - k * 2, 1500), 700 + k * 380));
+    } else if (kind === 'members'){
+      // the club he founded, growing one member at a time — same language as the Hachi user count
+      [0, 1, 2, 3].forEach(k => run(()=>pop('+1 member', boxR - 210 - k * 74, boxT - 34, 1400, 'up'), 900 + k * 300));
     } else if (kind === 'present'){
       // Best Session Presenter: the award gets a nudge once he has pointed at the papers
       run(()=>{ const aw = a.el.querySelector('.award'); if (aw){ aw.classList.remove('box-dip'); void aw.offsetWidth; aw.classList.add('box-dip'); } }, 3400);
@@ -1234,8 +1250,8 @@
   function landedSay(a){
     if (firstLanding){
       firstLanding = false;
-      say(INTRO, 11000, { tell: true, cap: 'BOBBIE', keep: 6500,
-        then: ()=>setTimeout(()=>{ if (on && !touring && !toured && !bubble.classList.contains('show')) say(OFFER, undefined, { tell: true, cap: 'BOBBIE', keep: 2000 }); }, 500) });
+      say(INTRO, 11000, { tell: true, cap: 'BUDDY', keep: 6500,
+        then: ()=>setTimeout(()=>{ if (on && !touring && !toured && !bubble.classList.contains('show')) say(OFFER, undefined, { tell: true, cap: 'BUDDY', keep: 2000 }); }, 500) });
     } else if (touring){
       tourSay();
     } else if (a.quip && performance.now() > keepBubbleUntil){
@@ -1262,7 +1278,7 @@
     if (best !== cur && (!curVisible || bd + 70 < dCur)) moveTo(best);
   }
 
-  // the visitor sets the pace: a click on the bubble (or on Bobbie) moves on.
+  // the visitor sets the pace: a click on the bubble (or on Buddy) moves on.
   // Quips still fall away on their own after a generous, length-based grace
   // period so nothing sits over the page forever; tour lines wait for the click.
   function say(text, ms, o){
@@ -1303,7 +1319,7 @@
     bubble.style.top = by + 'px';
   }
 
-  // ---- the tour: Bobbie leads, the page follows ----
+  // ---- the tour: Buddy leads, the page follows ----
   function tourStop(){
     clearTimeout(tourSaidT);
     if (tourStep >= TOUR.length){ touring = false; hush(); return; }
