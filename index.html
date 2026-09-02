@@ -187,10 +187,30 @@
     #buddy.up:not(.moving) .bodygrp{transition:filter 160ms ease-out}
     #buddy.up:not(.moving):hover .bodygrp{filter:brightness(1.12)}
   }
-  /* a short preview above his head — same safe zone the skit labels already use,
-     so it never lands on the box he's perched on, and it never covers article text */
-  .callout{position:absolute;z-index:53;transform:translate(-50%,-96%);max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;color:var(--mint);background:var(--mint-deep);border:1px solid var(--mint-dim);border-radius:5px;padding:3px 9px;pointer-events:none;opacity:0;transition:opacity 160ms cubic-bezier(0.23,1,0.32,1),transform 160ms cubic-bezier(0.23,1,0.32,1)}
-  .callout.show{opacity:1;transform:translate(-50%,-106%)}
+  /* Buddy's speech bubble — docked right beside him, so there's never any doubt who's
+     talking. It tries the right, then the left, then below, then above him, and takes
+     whichever is genuinely clear of real text; a tail always points back at his mouth. */
+  .callout{box-sizing:border-box;position:absolute;z-index:53;max-width:230px;font-family:var(--mono);font-size:12px;line-height:1.55;letter-spacing:.005em;color:var(--mint);background:var(--mint-deep);border:1px solid var(--mint-dim);border-radius:8px;padding:10px 13px;box-shadow:0 8px 22px rgba(0,0,0,.35);pointer-events:none;opacity:0;transform:scale(.94);transition:opacity 160ms cubic-bezier(0.23,1,0.32,1),transform 160ms cubic-bezier(0.23,1,0.32,1)}
+  .callout.show{opacity:1;transform:scale(1);pointer-events:auto;cursor:pointer}
+  .callout .c-cap{display:block;font-size:10px;letter-spacing:.14em;color:var(--mint-dim);margin-bottom:4px}
+  .callout .c-txt{display:block;font-style:italic}
+  .callout.tell .c-txt{font-style:normal;color:var(--ink)}
+  .callout .c-hint{display:block;font-size:10px;letter-spacing:.14em;color:var(--mint-dim);text-align:right;margin-top:6px;opacity:.85}
+  .callout:hover .c-hint{color:var(--mint)}
+  .callout .c-cap[hidden],.callout .c-hint[hidden]{display:none}
+  /* the tail: a border-colour triangle behind a slightly smaller fill-colour one, so it
+     reads as one continuous outline fused to whichever edge faces him */
+  .callout::before,.callout::after{content:"";position:absolute;border:8px solid transparent}
+  .callout::after{border-width:7px}
+  .callout[data-side="above"]::before{left:calc(var(--tailx,50%) - 8px);bottom:-8px;border-top-color:var(--mint-dim)}
+  .callout[data-side="above"]::after{left:calc(var(--tailx,50%) - 7px);bottom:-6.5px;border-top-color:var(--mint-deep)}
+  .callout[data-side="below"]::before{left:calc(var(--tailx,50%) - 8px);top:-8px;border-bottom-color:var(--mint-dim)}
+  .callout[data-side="below"]::after{left:calc(var(--tailx,50%) - 7px);top:-6.5px;border-bottom-color:var(--mint-deep)}
+  .callout[data-side="right"]::before{top:calc(var(--taily,50%) - 8px);left:-8px;border-right-color:var(--mint-dim)}
+  .callout[data-side="right"]::after{top:calc(var(--taily,50%) - 7px);left:-6.5px;border-right-color:var(--mint-deep)}
+  .callout[data-side="left"]::before{top:calc(var(--taily,50%) - 8px);right:-8px;border-left-color:var(--mint-dim)}
+  .callout[data-side="left"]::after{top:calc(var(--taily,50%) - 7px);right:-6.5px;border-left-color:var(--mint-deep)}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
   #buddy.duck svg{transform:translateY(86px);transition-duration:.24s;transition-timing-function:cubic-bezier(.55,0,.85,.36)}
   #buddy.peek svg{transform:translateY(48px)}   /* just the eyes over the edge */
   #buddy.up svg{transform:translateY(11px)}     /* perched, feet over the edge */
@@ -260,11 +280,16 @@
   @keyframes kickB{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(18deg)}}
 
   /* the box he's perched on: a soft lift, and a little dip when he lands on it */
-  /* the tools: a hard hat for the engineering sections, a .py chip balanced
-     on his head at skills, an EOF pennant planted at the footer */
+  /* his wardrobe, one piece per kind of section: a mortarboard for education, reading
+     glasses for research, a hard hat for engineering/projects, safety goggles for the
+     data work, a crown for leadership, a .py chip at skills, an EOF pennant at the footer */
   #buddy .prop{opacity:0;transition:opacity .25s}
   #buddy.hammer .prop-hammer{opacity:1}
   #buddy[data-prop="hat"] .prop-hat{opacity:1}
+  #buddy[data-prop="cap"] .prop-cap{opacity:1}
+  #buddy[data-prop="glasses"] .prop-glasses{opacity:1}
+  #buddy[data-prop="goggles"] .prop-goggles{opacity:1}
+  #buddy[data-prop="crown"] .prop-crown{opacity:1}
   #buddy[data-prop="chip"] .prop-chip{opacity:1;transform-box:fill-box;transform-origin:bottom center;animation:chipwobble 3.2s ease-in-out infinite}
   @keyframes chipwobble{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(4deg)}}
   #buddy[data-prop="flag"] .prop-flag{opacity:1}
@@ -297,21 +322,10 @@
   /* the line he reads along */
     @keyframes boxdip{30%{transform:translateY(2.5px)}100%{transform:none}}
 
-  /* Buddy's dialogue lives in the sidebar, not on the page — it can never cover resume text
-     because the sidebar column never holds any. It rides along with the rest of .side (which is
-     already sticky), so it stays put near the toggle instead of chasing him around the content. */
-  .buddy-dock{display:none;margin-top:14px;padding:11px 12px;background:#242825;border:1px solid var(--line);border-radius:10px;font-size:12.5px;color:var(--ink);line-height:1.5;opacity:0;transform:translateY(6px) scale(.98);transition:opacity 160ms cubic-bezier(0.23,1,0.32,1),transform 160ms cubic-bezier(0.23,1,0.32,1);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
-  .buddy-toggle[aria-pressed="true"] + .buddy-dock{display:block}
-  .buddy-dock.show{opacity:1;transform:none;cursor:pointer;user-select:none}
-  .buddy-dock:hover{border-color:var(--mint-dim)}
-  .dock-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-  .dock-face{width:20px;height:18px;flex-shrink:0}
-  .buddy-dock .cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--mint-dim)}
-  .buddy-dock .txt{font-style:italic}
-  .buddy-dock.tell .txt{font-style:normal;color:var(--ink)}
-  .buddy-dock .hint{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--ink-faint);text-align:right;margin-top:6px}
-  .buddy-dock:hover .hint{color:var(--mint-dim)}
-  @media (max-width:900px){#buddy,.buddy-dock,.callout{display:none!important}}
+  /* below this width the speech bubble can no longer reliably find a spot beside him
+     that's clear of real text — rather than ship a guide who sometimes covers the
+     resume, he (and the toggle for him) simply isn't offered at all */
+  @media (max-width:1279px){#buddy,.callout,.buddy-toggle{display:none!important}}
 
   /* ---------- responsive ---------- */
   @media (max-width:900px){
@@ -324,7 +338,7 @@
     nav a{padding:6px 0;border-left:0;border-bottom:2px solid transparent;font-size:var(--t-label)}
     nav a.on{border-bottom-color:var(--mint)}
     .nav-ind{display:none}
-    .side hr,.buddy-toggle{display:none}   /* Buddy is hidden below 900px, so the toggle would do nothing */
+    .side hr{display:none}
     h1{margin-top:18px}
     .stats{grid-template-columns:1fr 1fr}
     .stat:nth-child(odd){border-left:0}
@@ -350,13 +364,11 @@
   }
   @media (prefers-reduced-motion:reduce){
     #buddy svg,#buddy .rig,#buddy .gaze{transition:none}
-    .buddy-dock{transition:opacity 180ms ease;transform:none}
     .labelpop,#buddy .prop-chip,#buddy .pennant{animation:none}
     .nav-ind{transition:none}
     #buddy .leg,#buddy.moving .leg,#buddy.blink .eye,#buddy.up .bodygrp,#buddy.up.squash .bodygrp,#buddy.up.soft .bodygrp,#buddy.up.nod .bodygrp,#buddy.up.wow .bodygrp,#buddy.wow .eye,#buddy.waving .armR,#buddy.waving .eye{animation:none}
     .box-dip,.box-fix,#buddy.climb svg,#buddy .arm,.pop,.bbox,.sketch,.sketch path,#buddy.throwing .rig,#buddy.splat .bodygrp,#buddy.splat .leg,#buddy.splat .arm,#buddy.splat .eye,#buddy.reassembling .bodygrp,#buddy.reassembling .leg,#buddy.reassembling .arm,#buddy.reassembling .eye{animation:none}
-    .callout{transition:opacity 160ms ease;transform:translate(-50%,-100%)}
-    .callout.show{transform:translate(-50%,-100%)}
+    .callout,.callout.show{transition:opacity 160ms ease;transform:none}
     .bob-mark::after{animation:none;transform:none}
     #buddy{transition:opacity .3s}
     .btn,.buddy-toggle,nav a,.card .links a,footer a,.card h3 a::after{transition:none}
@@ -381,14 +393,7 @@
     <hr>
     <div class="status"><span class="dot"></span>Open to Summer 2027<br>SWE / ML internships</div>
     <button class="buddy-toggle" id="buddyToggle" aria-pressed="true" title="Buddy lives on the page. Pick him up and drop him on a section for more detail, or hide him here.">Hide guide</button>
-    <div class="buddy-dock" id="buddyDock" aria-live="polite">
-      <div class="dock-head">
-        <svg class="dock-face" viewBox="0 0 52 46" aria-hidden="true"><ellipse cx="26" cy="23" rx="14" ry="20" fill="var(--bg)" stroke="var(--mint)" stroke-width="2"/><circle cx="20.5" cy="20" r="1.9" fill="var(--mint)"/><circle cx="31.5" cy="20" r="1.9" fill="var(--mint)"/><path d="M21 27 Q26 31 31 27" fill="none" stroke="var(--mint)" stroke-width="1.8" stroke-linecap="round"/></svg>
-        <span class="cap" hidden></span>
-      </div>
-      <div class="txt"></div>
-      <div class="hint"></div>
-    </div>
+    <div id="buddyLive" class="sr-only" aria-live="polite"></div>
   </aside>
 
   <main>
@@ -917,8 +922,34 @@
         </g>
         <path class="mouth" d="M21 30 Q26 34 31 30" fill="none" stroke="var(--mint)" stroke-width="2" stroke-linecap="round"/>
         <g class="prop prop-hat">
-          <path d="M15 9 Q26 -3 37 9 L37 10 L15 10 Z" fill="var(--bg)" stroke="var(--mint)" stroke-width="2"/>
-          <path d="M12 10 L40 10" stroke="var(--mint)" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M13 9 Q26 -6 39 9 Z" fill="var(--bg)" stroke="var(--mint)" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M26 -6 L26 9" stroke="var(--mint)" stroke-width="1.3" opacity=".75"/>
+          <ellipse cx="26" cy="9.5" rx="15" ry="2.6" fill="var(--bg)" stroke="var(--mint)" stroke-width="1.8"/>
+        </g>
+        <g class="prop prop-cap">
+          <path d="M9 7 L26 0 L43 7 L26 14 Z" fill="var(--bg)" stroke="var(--mint)" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M26 14 L26 8.5" stroke="var(--mint)" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="26" cy="0" r="1.6" fill="var(--mint)"/>
+          <path d="M41 6 L41 13.5 Q41 16 38.5 17" fill="none" stroke="var(--mint)" stroke-width="1.4" stroke-linecap="round"/>
+          <circle cx="38.2" cy="17.3" r="1.5" fill="var(--mint)"/>
+        </g>
+        <g class="prop prop-glasses">
+          <circle cx="20.3" cy="23" r="5.2" fill="none" stroke="var(--mint)" stroke-width="1.6"/>
+          <circle cx="31.7" cy="23" r="5.2" fill="none" stroke="var(--mint)" stroke-width="1.6"/>
+          <path d="M25.5 22.6 L26.5 22.6" stroke="var(--mint)" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M15.1 21.5 L11.5 19.3" stroke="var(--mint)" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M36.9 21.5 L40.5 19.3" stroke="var(--mint)" stroke-width="1.4" stroke-linecap="round"/>
+        </g>
+        <g class="prop prop-goggles">
+          <rect x="12.5" y="18.5" width="27" height="9.5" rx="4.75" fill="var(--bg)" stroke="var(--mint)" stroke-width="1.8"/>
+          <path d="M12.5 23.5 L6 21.5 M39.5 23.5 L46 21.5" stroke="var(--mint)" stroke-width="1.3" stroke-linecap="round" opacity=".7"/>
+        </g>
+        <g class="prop prop-crown">
+          <path d="M11 10 L15 -2 L21 5 L26 -5 L31 5 L37 -2 L41 10 Z" fill="var(--bg)" stroke="var(--mint)" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M11 10 L41 10" stroke="var(--mint)" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="15" cy="-2" r="1.3" fill="var(--mint)"/>
+          <circle cx="26" cy="-5" r="1.5" fill="var(--mint)"/>
+          <circle cx="37" cy="-2" r="1.3" fill="var(--mint)"/>
         </g>
         <g class="prop prop-chip">
           <rect x="15" y="-7" width="22" height="13" rx="3" fill="var(--bg)" stroke="var(--mint)" stroke-width="1.8"/>
@@ -933,51 +964,87 @@
     </g>
   </svg>`;
   document.body.appendChild(buddy);
+  // Buddy's one speech surface: a bubble docked to whichever side of him is actually
+  // clear of real content, full sentences (never truncated), with a tail that always
+  // points back at his mouth so it's unmistakable that he's the one talking.
   const callout = document.createElement('div');
   callout.className = 'callout'; callout.setAttribute('aria-hidden', 'true');
+  callout.innerHTML = '<span class="c-cap" hidden></span><span class="c-txt"></span><span class="c-hint" hidden></span>';
   document.body.appendChild(callout);
-  let calloutT = null;
-  // a few words above his head, for the reader who never looks at the sidebar
+  const cCap = callout.querySelector('.c-cap'), cTxt = callout.querySelector('.c-txt'), cHint = callout.querySelector('.c-hint');
+  // a screen-reader-only mirror of the same line — sighted visitors read the bubble,
+  // everyone else gets it announced without a second visible box on the page
+  const live = document.getElementById('buddyLive');
   // the real text on the page to check a candidate callout position against — cached once,
   // since nothing in the resume content changes shape after load
-  const CALLOUT_PROBE = [...document.querySelectorAll('h1, h3, p, li, .role, .desc, .ctx, .tag, .bio, .when, .n, .c, .award')];
-  function showCallout(text){
+  const CALLOUT_PROBE = [...document.querySelectorAll('h1, h2, h3, p, li, .role, .desc, .ctx, .tag, .bio, .when, .n, .c, .award, .tags span, .g')];
+  const mainEl = document.querySelector('main'), sideEl = document.querySelector('.side');
+  const DEFAULT_BW = 220, MIN_BW = 92;
+  function showCallout(){
     if (!on || !buddy.classList.contains('up') || cur === -1) return;
-    const el = anchors[cur].el;
-    const br = buddy.getBoundingClientRect(), ar = el.getBoundingClientRect();
-    const cx = br.left + br.width / 2, calloutW = 150, calloutH = 27;
-    const cl = cx - calloutW / 2, cr = cx + calloutW / 2;
-    // try a few heights above the box, closest first, and use whichever is genuinely clear of
-    // real text — this page's own spacing is tight enough that guessing one fixed offset is
-    // exactly how the old bubble ended up covering someone else's content
-    let top = null;
-    search: for (const off of [18, 28, 40, 56]){
-      const ct = ar.top - off - calloutH, cb = ar.top - off;
-      if (cb > ar.top + 2) continue;
+    const br = buddy.getBoundingClientRect();
+    const mx = br.left + br.width / 2, my = br.top + br.height * 0.42;
+    const mainR = mainEl.getBoundingClientRect(), sideR = sideEl.getBoundingClientRect();
+    const gap = 8, pad = 6;
+    // right and left aren't fixed-width: this is a single narrow content column, so
+    // "beside him" only really works when the real margin outside that column can fit
+    // a readable bubble — otherwise it's narrowed to fit, or (below MIN_BW) skipped
+    const rightW = Math.min(DEFAULT_BW, innerWidth - mainR.right - gap - pad);
+    const leftW = Math.min(DEFAULT_BW, mainR.left - sideR.right - gap - pad);
+    function measure(w){ callout.style.maxWidth = Math.max(w, MIN_BW) + 'px'; return { w: callout.offsetWidth, h: callout.offsetHeight }; }
+    const candidates = [];
+    if (rightW >= MIN_BW){ const { w, h } = measure(rightW); candidates.push({ side: 'right', w, h, x: mainR.right + gap, y: my - h / 2 }); }
+    if (leftW >= MIN_BW){ const { w, h } = measure(leftW); candidates.push({ side: 'left', w, h, x: mainR.left - gap - w, y: my - h / 2 }); }
+    // below/above also get a few gap distances, not just the nearest one — this is a
+    // single narrow column, so the nearest gap is often mid-line, but reaching a little
+    // further up or down frequently clears the neighbouring item's text entirely
+    { const { w, h } = measure(DEFAULT_BW);
+      for (const g of [gap, 30, 55, 90]){
+        candidates.push({ side: 'below', w, h, x: mx - w / 2, y: br.bottom + g });
+        candidates.push({ side: 'above', w, h, x: mx - w / 2, y: br.top - g - h });
+      }
+    }
+    // whichever is genuinely clear of real text wins; if none are fully clear, the one
+    // with the least overlap still shows — he should have something to say wherever he
+    // lands, not go silent, but never at the cost of covering Buddy himself
+    let best = null, bestOverlap = Infinity;
+    for (const c of candidates){
+      let x = Math.max(pad, Math.min(innerWidth - c.w - pad, c.x));
+      let y = Math.max(pad, Math.min(innerHeight - c.h - pad, c.y));
+      // the viewport clamp above is soft — it can slide a candidate back over Buddy
+      // when he's near an edge and the bubble doesn't quite fit; these hard clamps
+      // are the actual promise that he stays clickable no matter how tight it gets
+      if (c.side === 'right') x = Math.max(x, br.right + 2);
+      else if (c.side === 'left') x = Math.min(x, br.left - c.w - 2);
+      else if (c.side === 'below') y = Math.max(y, br.bottom + 2);
+      else if (c.side === 'above') y = Math.min(y, br.top - c.h - 2);
+      const rect = { left: x, top: y, right: x + c.w, bottom: y + c.h };
+      let overlap = 0;
+      const selfOx = Math.min(rect.right, br.right) - Math.max(rect.left, br.left);
+      const selfOy = Math.min(rect.bottom, br.bottom) - Math.max(rect.top, br.top);
+      if (selfOx > 0 && selfOy > 0) overlap += (selfOx * selfOy) * 50;
       for (const pel of CALLOUT_PROBE){
-        if (pel === el || el.contains(pel)) continue;
         const er = pel.getBoundingClientRect();
         if (er.width === 0 && er.height === 0) continue;
-        if (cb <= er.top || ct >= er.bottom || cr <= er.left || cl >= er.right) continue;
-        continue search;
+        const ox = Math.min(rect.right, er.right) - Math.max(rect.left, er.left);
+        const oy = Math.min(rect.bottom, er.bottom) - Math.max(rect.top, er.top);
+        if (ox > 0 && oy > 0) overlap += ox * oy;
       }
-      top = ct; break;
+      if (overlap < bestOverlap){ bestOverlap = overlap; best = { side: c.side, w: c.w, h: c.h, x, y }; }
+      if (overlap === 0) break;
     }
-    if (top === null) return;   // no clean spot near him this time — the dock still has the line
-    const words = text.replace(/[\u201C\u201D]/g, '').split(/\s+/);
-    let short = words.slice(0, 5).join(' ');
-    if (short.length < text.length) short += '\u2026';
-    callout.textContent = short;
-    callout.style.left = cx + scrollX + 'px';
-    callout.style.top = (top + calloutH + scrollY) + 'px';
+    callout.style.maxWidth = best.w + 'px';
+    callout.dataset.side = best.side;
+    if (best.side === 'above' || best.side === 'below')
+      callout.style.setProperty('--tailx', Math.max(14, Math.min(best.w - 14, mx - best.x)) + 'px');
+    else
+      callout.style.setProperty('--taily', Math.max(14, Math.min(best.h - 14, my - best.y)) + 'px');
+    callout.style.left = (best.x + scrollX) + 'px';
+    callout.style.top = (best.y + scrollY) + 'px';
     callout.classList.add('show');
-    clearTimeout(calloutT);
-    calloutT = setTimeout(()=>callout.classList.remove('show'), 3200);
   }
-  function hideCallout(){ clearTimeout(calloutT); callout.classList.remove('show'); }
-  const bubble = document.getElementById('buddyDock');
+  function hideCallout(){ callout.classList.remove('show'); }
   const rig = buddy.querySelector('.rig'), gaze = buddy.querySelector('.gaze'), sprite = buddy.querySelector('svg');
-  const cap = bubble.querySelector('.cap'), txt = bubble.querySelector('.txt'), hint = bubble.querySelector('.hint');
 
   // a light reaction for hovering Buddy himself, separate from starting the tour
   const POKE_QUIPS = [
@@ -1338,7 +1405,11 @@
   function setProp(i){
     const el = anchors[i].el;
     buddy.dataset.prop =
+      el.closest('#education') ? 'cap' :
+      el.closest('#research') ? 'glasses' :
       el.closest('#engineering') || el.closest('#projects') ? 'hat' :
+      el.closest('#applied') ? 'goggles' :
+      el.closest('#leadership') ? 'crown' :
       el.closest('#skills') ? 'chip' :
       el.matches('footer') ? 'flag' : '';
   }
@@ -1366,7 +1437,7 @@
     } else if (firstLanding){
       firstLanding = false;
       say(INTRO, 11000, { tell: true, cap: 'BUDDY', keep: 6500,
-        then: ()=>setTimeout(()=>{ if (on && !touring && !toured && !bubble.classList.contains('show')) say(OFFER, undefined, { tell: true, cap: 'BUDDY', keep: 2000 }); }, 500) });
+        then: ()=>setTimeout(()=>{ if (on && !touring && !toured && !callout.classList.contains('show')) say(OFFER, undefined, { tell: true, cap: 'BUDDY', keep: 2000 }); }, 500) });
     } else if (a.quip && performance.now() > keepBubbleUntil){
       say(a.quip);
     }
@@ -1396,12 +1467,13 @@
   // period so nothing sits over the page forever; tour lines wait for the click.
   function say(text, ms, o){
     o = o || {};
-    bubble.classList.toggle('tell', !!o.tell);
-    cap.textContent = o.cap || ''; cap.hidden = !o.cap;
-    txt.textContent = text;
-    hint.textContent = o.hint === undefined ? 'OK' : o.hint;
-    bubble.classList.add('show');
-    showCallout(text);
+    callout.classList.toggle('tell', !!o.tell);
+    cCap.textContent = o.cap || ''; cCap.hidden = !o.cap;
+    cTxt.textContent = text;
+    const hintText = o.hint === undefined ? 'OK' : o.hint;
+    cHint.textContent = hintText; cHint.hidden = !hintText;
+    live.textContent = (o.cap ? o.cap + ': ' : '') + text;
+    showCallout();
     keepBubbleUntil = o.keep ? performance.now() + o.keep : 0;
     onHide = o.then || null;
     clearTimeout(bubbleT);
@@ -1409,7 +1481,7 @@
     if (ms) bubbleT = setTimeout(hush, ms);
   }
   function hush(){
-    clearTimeout(bubbleT); bubble.classList.remove('show'); hideCallout();
+    clearTimeout(bubbleT); callout.classList.remove('show');
     const cb = onHide; onHide = null; if (cb) cb();
   }
   function nod(){
@@ -1628,10 +1700,10 @@
     buddy.classList.remove('blink'); void buddy.offsetWidth; buddy.classList.add('blink');
     rig.style.transform = 'rotate(-6deg)';
     setTimeout(()=>{ rig.style.transform = ''; }, 420);
-    if (Math.random() < 0.3 && !bubble.classList.contains('show')) say(POKE_QUIPS[Math.floor(Math.random()*POKE_QUIPS.length)], 1800);
+    if (Math.random() < 0.3 && !callout.classList.contains('show')) say(POKE_QUIPS[Math.floor(Math.random()*POKE_QUIPS.length)], 1800);
   }, { passive: true });
   sprite.addEventListener('pointerleave', () => { poked = false; }, { passive: true });
-  bubble.addEventListener('click', e=>{
+  callout.addEventListener('click', e=>{
     e.stopPropagation();
     if (!on) return;
     nod();
@@ -1659,7 +1731,7 @@
   function scheduleIdleQuip(){
     clearTimeout(idleQuipT);
     idleQuipT = setTimeout(()=>{
-      if (on && !touring && !bubble.classList.contains('show'))
+      if (on && !touring && !callout.classList.contains('show'))
         say(IDLE_QUIPS[Math.floor(Math.random()*IDLE_QUIPS.length)], 5200);
       scheduleIdleQuip();
     }, 14000 + Math.random()*13000);
