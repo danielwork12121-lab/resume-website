@@ -1225,7 +1225,7 @@
     const tag = document.createElement('div');
     tag.className = 'labelpop';
     tag.textContent = a.stamp;
-    tag.style.left = (r.right + scrollX - 108) + 'px';
+    tag.style.left = (r.left + scrollX + 12) + 'px';
     tag.style.top = (r.top + scrollY - 30) + 'px';
     document.body.appendChild(tag);
     setTimeout(()=>tag.remove(), 1600);
