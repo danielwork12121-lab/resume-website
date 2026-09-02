@@ -93,6 +93,7 @@
 
   footer{margin-top:90px;border-top:1px solid var(--line);padding-top:26px;color:var(--ink-faint);font-size:13.5px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   footer a{color:var(--ink-dim)}
+  footer .colophon{flex-basis:100%;font-family:var(--mono);font-size:11px;color:var(--ink-faint);letter-spacing:.04em;margin-top:4px}
 
   /* ---------- Bobbie, the companion / guide (opt-in) ---------- */
   .buddy-toggle{display:flex;align-items:center;gap:9px;margin-top:14px;background:none;border:0;padding:0;cursor:pointer;font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;color:var(--ink-faint)}
@@ -338,6 +339,7 @@
     <footer>
       <span>Zilin “Daniel” Li — Atlanta, GA</span>
       <span><a href="mailto:zli3381@gatech.edu">zli3381@gatech.edu</a> · <a href="https://www.linkedin.com/in/zilin-daniel-li/" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://github.com/danielwork12121-lab" target="_blank" rel="noopener">GitHub</a></span>
+      <span class="colophon">this page: one hand-written HTML file · no frameworks, no build step · <a href="https://github.com/danielwork12121-lab/resume-website" target="_blank" rel="noopener">read the source</a> — it’s meant to be read</span>
     </footer>
   </main>
 </div>
@@ -373,6 +375,42 @@
     requestAnimationFrame(draw);
   }
   draw();
+})();
+
+// stat digits roll up when they first come into view (and again when Bobbie
+// hops on them) — tabular numbers, no layout shift
+(function(){
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const specs = [
+    { end: 2,     fmt: v => 'Top ' + Math.round(v) + '%', start: 99 },
+    { end: 300,   fmt: v => Math.round(v) + '+',          start: 0 },
+    { end: 13,    fmt: v => String(Math.round(v)),        start: 0 },
+    { end: 10000, fmt: v => (v >= 10000 ? '10K' : (v/1000).toFixed(1) + 'K') + '+', start: 0 }
+  ];
+  const els = [...document.querySelectorAll('.stats .stat .n')];
+  let rolling = false;
+  function roll(ms){
+    if (reduced || rolling || els.length !== specs.length) return;
+    rolling = true;
+    const t0 = performance.now();
+    (function tick(t){
+      const p = Math.min(1, (t - t0) / (ms || 900));
+      const e = 1 - Math.pow(1 - p, 3);
+      els.forEach((el, i) => {
+        const s = specs[i];
+        el.textContent = s.fmt(s.start + (s.end - s.start) * e);
+      });
+      if (p < 1) requestAnimationFrame(tick); else rolling = false;
+    })(t0);
+  }
+  window.__rollStats = roll;
+  const stats = document.querySelector('.stats');
+  if (stats && 'IntersectionObserver' in window){
+    const io = new IntersectionObserver(en => {
+      if (en[0].isIntersecting){ roll(900); io.disconnect(); }
+    }, { threshold: 0.4 });
+    io.observe(stats);
+  }
 })();
 
 // scrollspy
@@ -435,39 +473,63 @@
   const cap = bubble.querySelector('.cap'), txt = bubble.querySelector('.txt');
 
   const IDLE_QUIPS = [
-    "“Daniel spent the budget on the resume, not on my arms.”",
-    "“I asked for a body. I got a sophomore year instead.”",
-    "“Legs were cut in scope review. Daniel says it was a design choice.”",
-    "“Daniel debugged for 30 hours straight and then, out of spirit, gave up on my arms too.”",
-    "“Daniel ran out of budget for my legs somewhere around finals week. I’ve made my peace with it.”",
-    "“Still here. Click me if you want the 45-second tour.”"
+    "\u201CDaniel spent the budget on the resume, not on my arms.\u201D",
+    "\u201CLegs were cut in scope review. Daniel says it was a design choice.\u201D",
+    "\u201CI\u2019m a few KB of hand-written JavaScript. No framework. I feel lighter than I look.\u201D",
+    "\u201CThis page has zero dependencies and exactly one of me.\u201D",
+    "\u201CYou scroll faster than the p95 recruiter. I keep metrics. I made them up, but so does every dashboard.\u201D",
+    "\u201CEverything I say is sourced from the resume. I\u2019m witty, not creative with facts.\u201D",
+    "\u201CStill here. Click me for the 45-second tour \u2014 zero dependencies, one opinionated guide.\u201D"
   ];
-  const INTRO = "Hi — I’m Bobbie. I live behind these boxes. Daniel didn’t give me arms, so I use my whole body.";
-  const OFFER = "Click me any time for a 45-second tour of the highlights.";
+  const INTRO = "Hi \u2014 I\u2019m Bobbie, resident of this page. Daniel wrote me in vanilla JS: no framework, no build step. The arms were descoped.";
+  const OFFER = "Click me for the 45-second tour. He debugged me longer than he\u2019ll admit.";
 
   // the boxes Bobbie can perch on, in document order, with how big a deal each
   // one is (big beats get a hop on landing, small ones a quiet settle)
-  const ANCHOR_SEL = '.hero h1, .stats, #education .item, #research .item, #projects .card, #engineering .item, #applied .item, #leadership .item, #skills, footer';
+  const ANCHOR_SEL = '.hero h1, figure.fig, .stats, #education .item, #research .item, #projects .card, #engineering .item, #applied .item, #leadership .item, #skills, footer';
   const BIG = ['.stats', '#research .item', '#projects .card:nth-child(1)', '#projects .card:nth-child(4)', '#engineering .item:nth-child(2)'];
   const SMALL = ['#education .item', '#skills', 'footer'];
+  // what Bobbie says about each box he lands on \u2014 all of it checks out
+  const LINES = [
+    ['.hero h1', "\u201CThat\u2019s the name. I\u2019m the easter egg. We split the work evenly.\u201D"],
+    ['figure.fig', "\u201CThis chart is hand-drawn canvas at 60fps. The forecast is the only part of this page that guesses.\u201D"],
+    ['.stats', "\u201CFour numbers, zero padding. I checked the sources \u2014 they compile.\u201D"],
+    ['#education .item', "\u201CCS plus a second major in Math. He optimizes for hard problems; I optimize for ledge stability.\u201D"],
+    ['#research .item', "\u201CTwo papers before his first college final. Peer review is just code review with higher stakes.\u201D"],
+    ['#projects .card:nth-child(1)', "\u201CTop 2% of 14,022. Primary model with automatic fallback \u2014 Daniel doesn\u2019t trust single points of failure. Except me.\u201D"],
+    ['#projects .card:nth-child(2)', "\u201CA game that preserves sugar painting \u2014 top 18 of 2,589 teams. The physics are sweeter than they had to be.\u201D"],
+    ['#projects .card:nth-child(3)', "\u201CShipped for visually impaired learners; engagement up 40% in pilot. The rare demo where \u2018it works\u2019 met \u2018it matters.\u2019\u201D"],
+    ['#projects .card:nth-child(4)', "\u201C300+ paying users in month one. Revenue shipped before my legs. I\u2019ve seen the roadmap \u2014 it\u2019s revenue again.\u201D"],
+    ['#engineering .item:nth-child(2)', "\u201CCo-founder who also does the plumbing: inference pipeline, backend, frontend. The org chart is a dot.\u201D"],
+    ['#engineering .item:nth-child(3)', "\u201C14,022 entered. 350 remain. He wrote prompts until the model behaved. I know the feeling.\u201D"],
+    ['#engineering .item:nth-child(4)', "\u201CTop 18 of 2,589, shipped with a UI/UX designer. Yes \u2014 an engineer who works with designers. They exist.\u201D"],
+    ['#applied .item:nth-child(2)', "\u201CHe wrote the taxonomy that labels the data that trains the model that edits your videos. House-that-Jack-built, but multimodal.\u201D"],
+    ['#applied .item:nth-child(3)', "\u201C10,000+ frames labeled, plus guidelines that made other people\u2019s labels agree. Consistency is a feature.\u201D"],
+    ['#leadership .item:nth-child(2)', "\u201CFounded the school\u2019s first CS club; it became the biggest club on campus. Growth hacking, but with for-loops.\u201D"],
+    ['#leadership .item:nth-child(3)', "\u201CRepresented 700+ students in two languages. A diplomatic API, stable under load.\u201D"],
+    ['#leadership .item:nth-child(4)', "\u201CThe only high schooler on the volunteer roster of a televised fintech competition. The badge said staff; the job said everything.\u201D"],
+    ['#skills', "\u201CEverything in this stack is load-bearing. Nothing here is keyword confetti.\u201D"],
+    ['footer', "\u201CEnd of page. The email is real and he reads it. Mention me \u2014 I\u2019m due a performance review.\u201D"]
+  ];
+  const lineFor = el => { const hit = LINES.find(([s]) => el.matches(s)); return hit ? hit[1] : null; };
   const anchors = [...document.querySelectorAll(ANCHOR_SEL)].map(el => ({
     el,
-    quip: el.dataset.quip || null,
+    quip: lineFor(el) || el.dataset.quip || null,
     tier: BIG.some(s => el.matches(s)) ? 'wow' : SMALL.some(s => el.matches(s)) ? 'soft' : 'squash',
     card: el.classList.contains('card'),
-    boxy: el.matches('.card, .item, .stats')
+    boxy: el.matches('.card, .item, .stats, figure.fig')
   }));
   const indexOf = new Map(anchors.map((a, i) => [a.el, i]));
 
   // the tour: what Bobbie says at each stop, in its own voice
   const TOUR = [
-    { sel: '#research .item', text: "Start here: first-author paper, published in the Springer AIET 2024 proceedings. A second one is under review at IEEE ICDE 2026." },
-    { sel: '#projects .card:nth-child(1)', text: "Stab It — top 2% of 14,022 entrants at ByteDance’s TRAE hackathon. The build pipeline broke. Daniel didn’t." },
-    { sel: '#projects .card:nth-child(4)', text: "Hachi, co-founded: 300+ paying users and $800+ in revenue in month one. Still no budget for my legs." },
-    { sel: '#applied .item:nth-child(2)', text: "Applied AI: a content taxonomy for multimodal data at CapCut R&D, and 10K+ labeled frames at Haidilao before that." },
-    { sel: '#leadership .item:nth-child(2)', text: "Founded his school’s first CS club and grew it into the largest on campus. I was not consulted." },
-    { sel: '#skills', text: "Python, C++, PyTorch, LLM apps, RAG, computer vision. Not listed: drawing arms." },
-    { sel: 'footer', text: "That’s the tour. Email is one click up top — Daniel reads it. I’ll keep hanging around." }
+    { sel: '#research .item', text: "Two papers before his first college final: first author in the Springer AIET 2024 proceedings \u2014 with the Best Session Presenter award \u2014 and a second under review at IEEE ICDE 2026." },
+    { sel: '#projects .card:nth-child(1)', text: "Stab It \u2014 top 2% of 14,022 entrants at ByteDance\u2019s hackathon. Dual-model pipeline with automatic fallback. The build broke mid-sprint; the demo didn\u2019t." },
+    { sel: '#projects .card:nth-child(4)', text: "Hachi, co-founded: 300+ paying users and $800+ in revenue in month one. Real users, real revenue, real astrology. Two of those matter to you." },
+    { sel: '#applied .item:nth-child(2)', text: "The unglamorous work, done properly: a content taxonomy at CapCut R&D, 10K+ labeled frames at Haidilao. Models eat what you feed them." },
+    { sel: '#leadership .item:nth-child(2)', text: "Founded his school\u2019s first CS club and grew it into the largest club on campus. He recruits better than most startups." },
+    { sel: '#skills', text: "Python, C++, PyTorch, LLM apps, RAG, computer vision. Also ships with designers and answers email. Rarer than it should be." },
+    { sel: 'footer', text: "That\u2019s 45 seconds. His interviews run longer and go deeper \u2014 zli3381@gatech.edu is one click up top. I\u2019ll be around." }
   ].map(s => ({ ...s, idx: indexOf.get(document.querySelector(s.sel)) })).filter(s => s.idx !== undefined);
 
   const toggle = document.getElementById('buddyToggle');
@@ -504,6 +566,7 @@
     if (reduced || i === -1 || !anchors[i].boxy) return;
     const el = anchors[i].el;
     el.classList.remove('box-dip'); void el.offsetWidth; el.classList.add('box-dip');
+    if (el.classList.contains('stats') && window.__rollStats) window.__rollStats(550);
   }
   // eyes drift down toward the box he's sitting on
   function gazeAt(i){
@@ -596,11 +659,11 @@
   function placeBubble(){
     const bw = bubble.offsetWidth, bh = bubble.offsetHeight;
     const hx = parseFloat(buddy.style.left) || 0, hy = parseFloat(buddy.style.top) || 0;
-    // to the side of his head, above the box edge — opening toward the empty
-    // side of the page so it doesn't sit down on headings and card text
-    const half = scrollX + document.documentElement.clientWidth / 2;
-    let left = hx < half;                 // he's on the left → bubble opens right
-    let bx = left ? hx : hx + 64 - bw;
+    // to the side of his head, above the box edge — opening rightward into
+    // empty margin whenever the bubble fits there, so it never sits on text
+    const vw = document.documentElement.clientWidth;
+    let left = hx + 64 + bw < scrollX + vw - 8;   // opens right when there's room
+    let bx = left ? hx + 56 : hx + 8 - bw;
     bx = Math.max(scrollX + 8, Math.min(scrollX + document.documentElement.clientWidth - bw - 8, bx));
     let by = hy - bh + 4;
     if (by < scrollY + 6) by = hy + 84;
