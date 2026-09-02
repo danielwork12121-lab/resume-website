@@ -150,7 +150,11 @@
      edge sits on the current box's top border. He slides up out of it to perch
      (feet dangling over the edge) and drops back down "behind" the box to move.
      No flight, no zooming — the page scrolls and he rides along with his box. */
-  #buddy{position:absolute;left:0;top:0;width:64px;height:82px;z-index:50;pointer-events:none;overflow:hidden;opacity:0;transition:opacity .3s}
+  /* clipped only below the ledge, so he can arrive from above or along the edge */
+  #buddy{position:absolute;left:0;top:0;width:64px;height:82px;z-index:50;pointer-events:none;clip-path:inset(-160px -60px 0 -60px);opacity:0;transition:opacity .3s,transform .5s cubic-bezier(0.23,1,0.32,1)}
+  #buddy.jump,#buddy.jump svg{transition:none!important}
+  #buddy.slide-l{transform:translateX(-150px)}
+  #buddy.slide-r{transform:translateX(150px)}
   /* the ledge he stands on — he brings his own, so his feet are never on air */
   #buddy .ledge{position:absolute;left:7px;right:7px;bottom:9px;height:2px;background:var(--mint-dim);border-radius:1px;opacity:0;transition:opacity .3s .15s}
   #buddy .ledge::before,#buddy .ledge::after{content:"";position:absolute;top:2px;width:2px;height:4px;background:var(--mint-dim);opacity:.7}
@@ -161,6 +165,15 @@
   #buddy.duck svg{transform:translateY(86px);transition-duration:.24s;transition-timing-function:cubic-bezier(.55,0,.85,.36)}
   #buddy.peek svg{transform:translateY(48px)}   /* just the eyes over the edge */
   #buddy.up svg{transform:translateY(11px)}     /* perched, feet over the edge */
+  /* the other entrances: a drop from above, a two-pull climb */
+  #buddy.drop svg{transform:translateY(-120px);transition:none}
+  #buddy.climb svg{animation:climb .9s cubic-bezier(0.23,1,0.32,1) forwards}
+  @keyframes climb{0%{transform:translateY(86px)}30%{transform:translateY(46px)}50%{transform:translateY(49px)}75%{transform:translateY(20px)}100%{transform:translateY(11px)}}
+  /* the one arm: comes out to point, aimed at the thing he is talking about */
+  #buddy .arm{opacity:0;transform-box:fill-box;transition:opacity .2s,transform .35s cubic-bezier(0.23,1,0.32,1)}
+  #buddy .armR{transform-origin:left center;transform:rotate(40deg)}
+  #buddy .armL{transform-origin:right center;transform:rotate(-40deg)}
+  #buddy.point-r .armR,#buddy.point-l .armL{opacity:1;transform:rotate(var(--aim,20deg))}
   #buddy .rig{transform-origin:26px 34px;transition:transform 400ms cubic-bezier(0.23,1,0.32,1)}
   #buddy .bodygrp{transform-origin:26px 44px}
   #buddy .gaze{transition:transform .35s ease-out}
@@ -210,6 +223,18 @@
   @keyframes poprise{0%{opacity:0;transform:translateY(6px) scale(.8)}18%{opacity:1;transform:translateY(0) scale(1.05)}30%{transform:translateY(-2px) scale(1)}100%{opacity:0;transform:translateY(-22px)}}
   .buddy-here{border-color:var(--mint-dim)!important;box-shadow:0 0 20px rgba(159,216,180,.12);transition:border-color .3s,box-shadow .3s}
   .box-dip{animation:boxdip .32s ease-out}
+  /* he shoves the box straight when he lands on a big one */
+  .box-fix{animation:boxfix .5s cubic-bezier(0.23,1,0.32,1)}
+  @keyframes boxfix{0%{transform:translate(-2px,2px) rotate(-.35deg)}55%{transform:translate(1px,0) rotate(.15deg)}100%{transform:none}}
+  /* the mark he draws under the phrase he points at */
+  .bob-mark{background:none;color:inherit;position:relative}
+  .bob-mark::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--mint);opacity:.85;transform:scaleX(0);transform-origin:left;animation:markin .5s cubic-bezier(0.23,1,0.32,1) .25s forwards}
+  @keyframes markin{to{transform:scaleX(1)}}
+  /* a piece he carries over and sets on the box */
+  .brick{position:absolute;z-index:52;width:7px;height:7px;background:var(--mint);border-radius:1px;pointer-events:none;transition:transform .55s cubic-bezier(0.23,1,0.32,1),opacity .35s}
+  /* the line he reads along */
+  .bob-read{position:absolute;z-index:0;background:rgba(159,216,180,.12);border-radius:2px;pointer-events:none;transform-origin:left;animation:readsweep 1.7s cubic-bezier(0.23,1,0.32,1) forwards}
+  @keyframes readsweep{0%{transform:scaleX(0);opacity:1}70%{transform:scaleX(1);opacity:1}100%{transform:scaleX(1);opacity:0}}
   @keyframes boxdip{30%{transform:translateY(2.5px)}100%{transform:none}}
 
   .bubble{position:absolute;left:0;top:0;z-index:51;max-width:250px;background:#242825;border:1px solid var(--line);border-radius:10px;border-bottom-right-radius:2px;padding:10px 13px;font-size:12.5px;color:var(--ink);line-height:1.5;opacity:0;transform:translateY(4px);transition:opacity 120ms cubic-bezier(0.23,1,0.32,1),transform 120ms cubic-bezier(0.23,1,0.32,1);pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,.35)}
@@ -264,7 +289,9 @@
     .labelpop,#buddy .prop-chip,#buddy .pennant,.buddy-toggle.pulse .sw::before{animation:none}
     .nav-ind{transition:none}
     #buddy .leg,#buddy.moving .leg,#buddy.blink .eye,#buddy.up .bodygrp,#buddy.up.squash .bodygrp,#buddy.up.soft .bodygrp,#buddy.up.nod .bodygrp,#buddy.up.wow .bodygrp,#buddy.wow .eye,#buddy.wow .wing{animation:none}
-    .box-dip{animation:none}
+    .box-dip,.box-fix,.bob-read,#buddy.climb svg{animation:none}
+    .bob-mark::after{animation:none;transform:none}
+    #buddy{transition:opacity .3s}
     .btn,.buddy-toggle,nav a,.card .links a,footer a,.card h3 a::after{transition:none}
   }
 </style>
@@ -811,6 +838,8 @@
           <circle class="eye" cx="31.5" cy="23" r="2.1" fill="var(--mint)"/>
         </g>
         <path class="mouth" d="M21 30 Q26 34 31 30" fill="none" stroke="var(--mint)" stroke-width="2" stroke-linecap="round"/>
+        <g class="arm armR"><path d="M38 33 L60 24" fill="none" stroke="var(--mint)" stroke-width="2.4" stroke-linecap="round"/><circle cx="61.5" cy="23.4" r="2.6" fill="var(--mint)"/></g>
+        <g class="arm armL"><path d="M14 33 L-8 24" fill="none" stroke="var(--mint)" stroke-width="2.4" stroke-linecap="round"/><circle cx="-9.5" cy="23.4" r="2.6" fill="var(--mint)"/></g>
         <g class="prop prop-hat">
           <path d="M15 9 Q26 -3 37 9 L37 10 L15 10 Z" fill="var(--bg)" stroke="var(--mint)" stroke-width="2"/>
           <path d="M12 10 L40 10" stroke="var(--mint)" stroke-width="2.4" stroke-linecap="round"/>
@@ -836,7 +865,7 @@
   const cap = bubble.querySelector('.cap'), txt = bubble.querySelector('.txt'), hint = bubble.querySelector('.hint');
 
   const IDLE_QUIPS = [
-    "\u201CDaniel spent the budget on the resume, not on my arms.\u201D",
+    "\u201CDaniel spent the budget on the resume, not on my arms. I got one back, for pointing.\u201D",
     "\u201CLegs were cut in scope review. Daniel says it was a design choice.\u201D",
     "\u201CI\u2019m a few KB of hand-written JavaScript. No framework. I feel lighter than I look.\u201D",
     "\u201CThe ledge? I bring it everywhere. Daniel refused to draw me floors.\u201D",
@@ -874,12 +903,43 @@
     ['#skills', "\u201CEverything in this stack is load-bearing. Nothing here is keyword confetti.\u201D"],
     ['footer', "\u201CEnd of page. The email is real and he reads it. Mention me \u2014 I\u2019m due a performance review.\u201D"]
   ];
+  // the phrase he points at in each box, and the stamp a box has earned
+  const MARKS = [
+    ['figure.fig', 'multi-scale trend decomposition'],
+    ['#education .item', 'Second Major in Mathematics'],
+    ['#research .item', 'First author'],
+    ['#projects .card:nth-child(1)', 'automatic model fallback'],
+    ['#projects .card:nth-child(2)', 'four skill-based mini-games'],
+    ['#projects .card:nth-child(3)', 'raised daily platform engagement 40%'],
+    ['#projects .card:nth-child(4)', '$800+ revenue in the first month'],
+    ['#engineering .item:nth-child(2)', '300+ paying users'],
+    ['#engineering .item:nth-child(3)', 'top 350 of 14,022'],
+    ['#engineering .item:nth-child(4)', 'top-18 regional team'],
+    ['#applied .item:nth-child(2)', 'content-classification taxonomy'],
+    ['#applied .item:nth-child(3)', '10,000+ surveillance images'],
+    ['#leadership .item:nth-child(2)', 'largest student-run club'],
+    ['#leadership .item:nth-child(3)', '700+ bilingual and international students'],
+    ['#leadership .item:nth-child(4)', '64 teams'],
+    ['#skills', 'PyTorch'],
+    ['footer', 'Read the source']
+  ];
+  const STAMPS = [
+    ['#research .item', '✓ PUBLISHED'],
+    ['#projects .card:nth-child(1)', '● LIVE'],
+    ['#projects .card:nth-child(2)', '● LIVE'],
+    ['#projects .card:nth-child(3)', '✓ OPEN SOURCE'],
+    ['#projects .card:nth-child(4)', '✓ PAYING USERS'],
+    ['#engineering .item:nth-child(2)', '✓ SHIPPED'],
+    ['#applied .item', '✓ LABELED']
+  ];
+  const pick = (list, el) => { const hit = list.find(([s]) => el.matches(s)); return hit ? hit[1] : null; };
   const lineFor = el => { const hit = LINES.find(([s]) => el.matches(s)); return hit ? hit[1] : null; };
   const anchors = [...document.querySelectorAll(ANCHOR_SEL)].map(el => ({
     el,
     quip: lineFor(el) || el.dataset.quip || null,
     tier: BIG.some(s => el.matches(s)) ? 'wow' : SMALL.some(s => el.matches(s)) ? 'soft' : 'squash',
     card: el.classList.contains('card'),
+    mark: pick(MARKS, el), stamp: pick(STAMPS, el),
     boxy: el.matches('.card, .item, .stats, figure.fig')
   }));
   const indexOf = new Map(anchors.map((a, i) => [a.el, i]));
@@ -950,6 +1010,7 @@
     setGlow(from, false);
     if (performance.now() > keepBubbleUntil) hush();
     const dive = () => {
+      clearTimeout(pointT); unmark();
       buddy.classList.remove('up', 'peek', 'squash', 'soft', 'wow');
       buddy.classList.add('duck', 'moving');
     };
@@ -958,27 +1019,99 @@
       placeHolder(i);
       buddy.classList.remove('duck');
       const a = anchors[i];
-      const peekFirst = !reduced && !touring && Math.random() < 0.35;
-      const rise = () => {
-        buddy.classList.remove('peek');
-        buddy.classList.add('up', a.tier);
+      const landed = () => {
         setTimeout(()=>buddy.classList.remove('moving'), reduced ? 0 : 340);
-        dipBox(i); setGlow(i, true); gazeAt(i);
-        setProp(i); stampIfData(i);
+        fixBox(i, a.tier); setGlow(i, true); gazeAt(i);
+        setProp(i); stampFor(i); carryBrick(i, a.tier);
         busy = false;
         if (queued !== -1 && queued !== cur){ const q = queued; queued = -1; moveTo(q, then); return; }
         queued = -1;
         landedSay(a);
+        pointAt(i);
         if (then) then();
       };
-      if (peekFirst){ buddy.classList.add('peek'); setTimeout(rise, 520); }
-      else rise();
+      const up = () => { buddy.classList.remove('peek'); buddy.classList.add('up', a.tier); };
+      const how = pickEntrance(from);
+      if (how === 'peek'){ buddy.classList.add('peek'); setTimeout(()=>{ up(); landed(); }, 520); }
+      else if (how === 'drop'){ buddy.classList.add('drop'); void sprite.offsetWidth; buddy.classList.remove('drop'); up(); landed(); }
+      else if (how === 'climb'){ buddy.classList.add('climb'); up(); setTimeout(()=>buddy.classList.remove('climb'), 950); setTimeout(landed, 700); }
+      else if (how === 'slide'){
+        const side = 'slide-' + (Math.random() < 0.5 ? 'l' : 'r');
+        buddy.classList.add('jump', side); up(); void buddy.offsetWidth;
+        buddy.classList.remove('jump'); requestAnimationFrame(()=>buddy.classList.remove(side));
+        setTimeout(landed, 480);
+      }
+      else { up(); landed(); }
     };
     if (reduced){ dive(); surface(); return; }
     if (from === -1){ dive(); setTimeout(surface, 60); }
     else { dive(); setTimeout(surface, 280); }
   }
 
+  // five ways in, never the same one twice in a row; first appearance is a drop
+  let lastEntrance = '';
+  function pickEntrance(from){
+    if (reduced) return 'rise';
+    if (from === -1) return lastEntrance = 'drop';
+    const bag = ['rise','rise','peek','drop','slide','climb'].filter(e => e !== lastEntrance);
+    return lastEntrance = bag[Math.floor(Math.random() * bag.length)];
+  }
+  // big landings get a shove that straightens the box; small ones a dip
+  function fixBox(i, tier){
+    if (reduced || i === -1 || !anchors[i].boxy) return;
+    const el = anchors[i].el, cls = tier === 'wow' ? 'box-fix' : 'box-dip';
+    el.classList.remove('box-dip', 'box-fix'); void el.offsetWidth; el.classList.add(cls);
+    if (touring && el.classList.contains('stats') && window.__rollStats) window.__rollStats(550);
+  }
+  // he brings a piece along and sets it on the corner of a big box
+  function carryBrick(i, tier){
+    if (reduced || tier !== 'wow') return;
+    const r = anchors[i].el.getBoundingClientRect();
+    const b = document.createElement('div'); b.className = 'brick';
+    const x0 = (parseFloat(buddy.style.left) || 0) + 28, y0 = (parseFloat(buddy.style.top) || 0) + 44;
+    b.style.left = x0 + 'px'; b.style.top = y0 + 'px';
+    document.body.appendChild(b);
+    const dx = r.right + scrollX - 16 - x0, dy = r.top + scrollY + 8 - y0;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ b.style.transform = `translate(${dx}px, ${dy}px)`; }));
+    setTimeout(()=>{ b.style.opacity = '0'; }, 2000); setTimeout(()=>b.remove(), 2400);
+  }
+  // the arm comes out toward the phrase, and a line draws under it
+  let markEl = null, pointT = null;
+  function unmark(){
+    if (!markEl) return;
+    const parent = markEl.parentNode; markEl.replaceWith(...markEl.childNodes); parent.normalize(); markEl = null;
+    buddy.classList.remove('point-r', 'point-l');
+  }
+  function wrapPhrase(root, phrase){
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    for (let n; (n = w.nextNode()); ){
+      const k = n.data.indexOf(phrase);
+      if (k === -1) continue;
+      const range = document.createRange(); range.setStart(n, k); range.setEnd(n, k + phrase.length);
+      const m = document.createElement('mark'); m.className = 'bob-mark'; range.surroundContents(m);
+      return m;
+    }
+    return null;
+  }
+  function pointAt(i){
+    clearTimeout(pointT); unmark();
+    const a = anchors[i];
+    if (!a || !a.mark) return;
+    if (!touring && a.tier !== 'wow' && Math.random() < 0.45) return;
+    pointT = setTimeout(()=>{
+      if (cur !== i || !buddy.classList.contains('up')) return;
+      markEl = wrapPhrase(a.el, a.mark);
+      if (!markEl) return;
+      const m = markEl.getBoundingClientRect(), bx = parseFloat(buddy.style.left) + 26 - scrollX, by = parseFloat(buddy.style.top) + 44 - scrollY;
+      const dx = m.left + m.width / 2 - bx, dy = m.top + m.height / 2 - by;
+      const right = dx >= 0, deg = Math.atan2(dy, Math.abs(dx)) * 180 / Math.PI;
+      const rot = Math.max(-10, Math.min(85, deg + 30));
+      buddy.style.setProperty('--aim', (right ? rot : -rot) + 'deg');
+      buddy.classList.add(right ? 'point-r' : 'point-l');
+      gaze.style.transform = `translate(${right ? 1.8 : -1.8}px, 2px)`;
+      setTimeout(()=>{ buddy.classList.remove('point-r', 'point-l'); gazeAt(cur); }, touring ? 4200 : 2600);
+    }, 420);
+  }
   // which tool he brings out where
   function setProp(i){
     const el = anchors[i].el;
@@ -987,15 +1120,17 @@
       el.closest('#skills') ? 'chip' :
       el.matches('footer') ? 'flag' : '';
   }
-  // at the data-annotation work he does what the work is: stamps the box as labeled
-  function stampIfData(i){
+  // boxes that earned a stamp get one, once per visit (the tour can re-stamp)
+  const stamped = new Set();
+  function stampFor(i){
     if (reduced) return;
-    const el = anchors[i].el;
-    if (!el.closest('#applied')) return;
+    const a = anchors[i], el = a.el;
+    if (!a.stamp || (stamped.has(i) && !touring)) return;
+    stamped.add(i);
     const r = el.getBoundingClientRect();
     const tag = document.createElement('div');
     tag.className = 'labelpop';
-    tag.textContent = '✓ LABELED';
+    tag.textContent = a.stamp;
     tag.style.left = (r.right + scrollX - 96) + 'px';
     tag.style.top = (r.top + scrollY + 10) + 'px';
     document.body.appendChild(tag);
@@ -1082,7 +1217,7 @@
     const r = anchors[s.idx].el.getBoundingClientRect();
     const top = scrollY + r.top - (innerHeight * 0.42 - Math.min(r.height/2, 110));
     scrollTo({ top: Math.max(0, top), behavior: reduced ? 'instant' : 'smooth' });
-    if (s.idx === cur){ dipBox(cur); tourSay(); }
+    if (s.idx === cur){ dipBox(cur); tourSay(); pointAt(cur); }
     else moveTo(s.idx);
     // if the landing runs late, speak anyway so the tour keeps its rhythm
     tourSaidT = setTimeout(tourSay, 1600);
@@ -1148,6 +1283,17 @@
   }
   // little bits of business while he's perched: a lean over the edge to read
   // his box, a hop that makes it dip, a duck-and-peek, a glance around
+  // he leans over and reads a line of his box: a soft sweep along the first line of text
+  function readLine(i){
+    if (i === -1) return;
+    const t = anchors[i].el.querySelector('p, li, .desc, .c');
+    if (!t) return;
+    const r = t.getBoundingClientRect(), lh = parseFloat(getComputedStyle(t).lineHeight) || 24;
+    const sw = document.createElement('div'); sw.className = 'bob-read';
+    sw.style.left = (r.left + scrollX - 2) + 'px'; sw.style.top = (r.top + scrollY) + 'px';
+    sw.style.width = Math.min(r.width, 420) + 4 + 'px'; sw.style.height = lh + 'px';
+    document.body.appendChild(sw); setTimeout(()=>sw.remove(), 1800);
+  }
   function scheduleGag(){
     clearTimeout(gagT);
     gagT = setTimeout(()=>{
@@ -1156,7 +1302,8 @@
         if (g < 0.3){
           rig.style.transform = 'rotate(9deg)';
           gaze.style.transform = 'translate(0.5px, 2.2px)';
-          setTimeout(()=>{ rig.style.transform = ''; gazeAt(cur); }, 1400);
+          readLine(cur);
+          setTimeout(()=>{ rig.style.transform = ''; gazeAt(cur); }, 1700);
         } else if (g < 0.55){
           buddy.classList.remove('squash','soft','wow'); void buddy.offsetWidth;
           buddy.classList.add('wow'); dipBox(cur);
@@ -1186,10 +1333,22 @@
     scrollDeb = setTimeout(pickAnchor, 120);
   }, {passive:true});
   let lpx = -1, lpy = -1;
+  let gazeRaf = 0, gazeNear = false;
   addEventListener('pointermove', e=>{
-    if (!on || touring || !e.target.closest) return;
+    if (!on || !e.target.closest) return;
     if (Math.abs(e.clientX - lpx) < 2 && Math.abs(e.clientY - lpy) < 2) return;
     lpx = e.clientX; lpy = e.clientY;
+    // eyes track a pointer that comes near, and settle back on the box when it leaves
+    if (!gazeRaf && buddy.classList.contains('up') && !buddy.classList.contains('point-r') && !buddy.classList.contains('point-l')){
+      gazeRaf = requestAnimationFrame(()=>{
+        gazeRaf = 0;
+        const bx = parseFloat(buddy.style.left) + 26 - scrollX, by = parseFloat(buddy.style.top) + 34 - scrollY;
+        const dx = lpx - bx, dy = lpy - by, d = Math.hypot(dx, dy);
+        if (d < 260){ gazeNear = true; gaze.style.transform = `translate(${(dx / d * 2.4).toFixed(2)}px, ${(dy / d * 2).toFixed(2)}px)`; }
+        else if (gazeNear){ gazeNear = false; gazeAt(cur); }
+      });
+    }
+    if (touring) return;
     const el = e.target.closest(ANCHOR_SEL);
     const idx = el ? indexOf.get(el) : -1;
     if (idx === hoverIdx) return;
