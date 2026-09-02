@@ -157,15 +157,23 @@
   #buddy.slide-r{transform:translateX(150px)}
   /* the ledge he stands on — he brings his own, so his feet are never on air */
   #buddy .ledge{position:absolute;left:7px;right:7px;bottom:9px;height:2px;background:var(--mint-dim);border-radius:1px;opacity:0;transition:opacity .3s .15s}
+  #buddy.dragging .ledge,#buddy.fallen .ledge{opacity:0}
   #buddy .ledge::before,#buddy .ledge::after{content:"";position:absolute;top:2px;width:2px;height:4px;background:var(--mint-dim);opacity:.7}
   #buddy .ledge::before{left:3px}#buddy .ledge::after{right:3px}
   #buddy.up .ledge,#buddy.peek .ledge{opacity:.9}
   #buddy.on{opacity:1}
-  #buddy svg{display:block;margin:0 auto;overflow:visible;pointer-events:auto;cursor:pointer;transform:translateY(86px);transition:transform .36s cubic-bezier(.34,1.45,.64,1)}
+  #buddy svg{display:block;margin:0 auto;overflow:visible;pointer-events:auto;cursor:grab;touch-action:none;transform:translateY(86px);transition:transform .36s cubic-bezier(.34,1.45,.64,1)}
+  #buddy.dragging svg{cursor:grabbing;transform:translateY(20px) scale(1.06);transition:transform 90ms cubic-bezier(0.23,1,0.32,1);filter:brightness(1.1)}
+  #buddy.dragging{transition:none}
+  #buddy.fallen svg{transform:translateY(28px)}
   @media (hover:hover) and (pointer:fine){
     #buddy.up:not(.moving) .bodygrp{transition:filter 160ms ease-out}
     #buddy.up:not(.moving):hover .bodygrp{filter:brightness(1.12)}
   }
+  /* a short preview above his head — same safe zone the skit labels already use,
+     so it never lands on the box he's perched on, and it never covers article text */
+  .callout{position:absolute;z-index:53;transform:translate(-50%,-96%);max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;color:var(--mint);background:var(--mint-deep);border:1px solid var(--mint-dim);border-radius:5px;padding:3px 9px;pointer-events:none;opacity:0;transition:opacity 160ms cubic-bezier(0.23,1,0.32,1),transform 160ms cubic-bezier(0.23,1,0.32,1)}
+  .callout.show{opacity:1;transform:translate(-50%,-106%)}
   #buddy.duck svg{transform:translateY(86px);transition-duration:.24s;transition-timing-function:cubic-bezier(.55,0,.85,.36)}
   #buddy.peek svg{transform:translateY(48px)}   /* just the eyes over the edge */
   #buddy.up svg{transform:translateY(11px)}     /* perched, feet over the edge */
@@ -282,7 +290,7 @@
   .buddy-dock.tell .txt{font-style:normal;color:var(--ink)}
   .buddy-dock .hint{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--ink-faint);text-align:right;margin-top:6px}
   .buddy-dock:hover .hint{color:var(--mint-dim)}
-  @media (max-width:900px){#buddy,.buddy-dock{display:none!important}}
+  @media (max-width:900px){#buddy,.buddy-dock,.callout{display:none!important}}
 
   /* ---------- responsive ---------- */
   @media (max-width:900px){
@@ -326,6 +334,8 @@
     .nav-ind{transition:none}
     #buddy .leg,#buddy.moving .leg,#buddy.blink .eye,#buddy.up .bodygrp,#buddy.up.squash .bodygrp,#buddy.up.soft .bodygrp,#buddy.up.nod .bodygrp,#buddy.up.wow .bodygrp,#buddy.wow .eye{animation:none}
     .box-dip,.box-fix,.bob-read,#buddy.climb svg,#buddy .arm,.pop,.bbox,.sketch,.sketch path{animation:none}
+    .callout{transition:opacity 160ms ease;transform:translate(-50%,-100%)}
+    .callout.show{transform:translate(-50%,-100%)}
     .bob-mark::after{animation:none;transform:none}
     #buddy{transition:opacity .3s}
     .btn,.buddy-toggle,nav a,.card .links a,footer a,.card h3 a::after{transition:none}
@@ -902,6 +912,48 @@
     </g>
   </svg>`;
   document.body.appendChild(buddy);
+  const callout = document.createElement('div');
+  callout.className = 'callout'; callout.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(callout);
+  let calloutT = null;
+  // a few words above his head, for the reader who never looks at the sidebar
+  // the real text on the page to check a candidate callout position against — cached once,
+  // since nothing in the resume content changes shape after load
+  const CALLOUT_PROBE = [...document.querySelectorAll('h1, h3, p, li, .role, .desc, .ctx, .tag, .bio, .when, .n, .c, .award')];
+  function showCallout(text){
+    if (!on || !buddy.classList.contains('up') || cur === -1) return;
+    const el = anchors[cur].el;
+    const br = buddy.getBoundingClientRect(), ar = el.getBoundingClientRect();
+    const cx = br.left + br.width / 2, calloutW = 150, calloutH = 27;
+    const cl = cx - calloutW / 2, cr = cx + calloutW / 2;
+    // try a few heights above the box, closest first, and use whichever is genuinely clear of
+    // real text — this page's own spacing is tight enough that guessing one fixed offset is
+    // exactly how the old bubble ended up covering someone else's content
+    let top = null;
+    search: for (const off of [18, 28, 40, 56]){
+      const ct = ar.top - off - calloutH, cb = ar.top - off;
+      if (cb > ar.top + 2) continue;
+      for (const pel of CALLOUT_PROBE){
+        if (pel === el || el.contains(pel)) continue;
+        const er = pel.getBoundingClientRect();
+        if (er.width === 0 && er.height === 0) continue;
+        if (cb <= er.top || ct >= er.bottom || cr <= er.left || cl >= er.right) continue;
+        continue search;
+      }
+      top = ct; break;
+    }
+    if (top === null) return;   // no clean spot near him this time — the dock still has the line
+    const words = text.replace(/[\u201C\u201D]/g, '').split(/\s+/);
+    let short = words.slice(0, 5).join(' ');
+    if (short.length < text.length) short += '\u2026';
+    callout.textContent = short;
+    callout.style.left = cx + scrollX + 'px';
+    callout.style.top = (top + calloutH + scrollY) + 'px';
+    callout.classList.add('show');
+    clearTimeout(calloutT);
+    calloutT = setTimeout(()=>callout.classList.remove('show'), 3200);
+  }
+  function hideCallout(){ clearTimeout(calloutT); callout.classList.remove('show'); }
   const bubble = document.getElementById('buddyDock');
   const rig = buddy.querySelector('.rig'), gaze = buddy.querySelector('.gaze'), sprite = buddy.querySelector('svg');
   const cap = bubble.querySelector('.cap'), txt = bubble.querySelector('.txt'), hint = bubble.querySelector('.hint');
@@ -1009,7 +1061,8 @@
   let on = false, cur = -1, busy = false, queued = -1,
       bubbleT = null, idleQuipT = null, blinkT = null, gagT = null,
       keepBubbleUntil = 0, firstLanding = true, hoverIdx = -1, hoverT = null,
-      touring = false, toured = false, tourStep = 0, tourSaidT = null, saidStep = -1, onHide = null;
+      touring = false, toured = false, tourStep = 0, tourSaidT = null, saidStep = -1, onHide = null,
+      dragging = false, wasDrag = false;
 
   try { on = localStorage.getItem('buddy') === '1'; } catch(e){}
 
@@ -1058,7 +1111,7 @@
     setGlow(from, false);
     if (performance.now() > keepBubbleUntil) hush();
     const dive = () => {
-      clearTimeout(pointT); unmark(); buddy.classList.remove('point-r', 'point-l');
+      clearTimeout(pointT); unmark(); buddy.classList.remove('point-r', 'point-l'); hideCallout();
       buddy.classList.remove('up', 'peek', 'squash', 'soft', 'wow');
       buddy.classList.add('duck', 'moving');
     };
@@ -1309,6 +1362,7 @@
     txt.textContent = text;
     hint.textContent = o.hint === undefined ? 'OK' : o.hint;
     bubble.classList.add('show');
+    showCallout(text);
     keepBubbleUntil = o.keep ? performance.now() + o.keep : 0;
     onHide = o.then || null;
     clearTimeout(bubbleT);
@@ -1316,7 +1370,7 @@
     if (ms) bubbleT = setTimeout(hush, ms);
   }
   function hush(){
-    clearTimeout(bubbleT); bubble.classList.remove('show');
+    clearTimeout(bubbleT); bubble.classList.remove('show'); hideCallout();
     const cb = onHide; onHide = null; if (cb) cb();
   }
   function nod(){
@@ -1360,15 +1414,87 @@
   }
   sprite.addEventListener('click', e=>{
     e.stopPropagation();
+    if (wasDrag){ wasDrag = false; return; }   // a drag ending on him shouldn't also start the tour
     if (!on) return;
     if (touring) tourNext(); else startTour();
   });
+
+  // pick him up and drop him on any box — he reacts to wherever he lands. Miss the content
+  // column entirely and he takes a quick stumble instead of vanishing or freezing mid-air.
+  let dragDX = 0, dragDY = 0, dragStartX = 0, dragStartY = 0, dragMoved = 0;
+  sprite.addEventListener('pointerdown', e=>{
+    if (!on || touring || busy || !buddy.classList.contains('up') || e.button > 0) return;
+    e.preventDefault();
+    dragging = true; dragMoved = 0; wasDrag = false;
+    dragStartX = e.clientX; dragStartY = e.clientY;
+    const bx = parseFloat(buddy.style.left) || 0, by = parseFloat(buddy.style.top) || 0;
+    dragDX = e.clientX + scrollX - bx; dragDY = e.clientY + scrollY - by;
+    hideCallout(); clearTimeout(pointT); unmark(); buddy.classList.remove('point-r', 'point-l');
+    setGlow(cur, false);
+    buddy.classList.remove('up', 'peek', 'squash', 'soft', 'wow', 'nod');
+    buddy.classList.add('dragging');
+    try { sprite.setPointerCapture(e.pointerId); } catch(err){}
+  });
+  sprite.addEventListener('pointermove', e=>{
+    if (!dragging) return;
+    dragMoved = Math.max(dragMoved, Math.abs(e.clientX - dragStartX), Math.abs(e.clientY - dragStartY));
+    if (dragMoved > 6) wasDrag = true;
+    buddy.style.left = (e.clientX + scrollX - dragDX) + 'px';
+    buddy.style.top = (e.clientY + scrollY - dragDY) + 'px';
+    if (!reduced){
+      const lean = Math.max(-22, Math.min(22, (e.movementX || 0) * 3.2));
+      rig.style.transform = `rotate(${lean}deg)`;
+    }
+  });
+  sprite.addEventListener('pointerup', e=>{
+    if (!dragging) return;
+    dragging = false;
+    buddy.classList.remove('dragging');
+    try { sprite.releasePointerCapture(e.pointerId); } catch(err){}
+    if (!wasDrag){ rig.style.transform = ''; return; }   // a plain click, no real drag — let the click handler run the tour
+    rig.style.transform = '';
+    const dropX = e.clientX, dropY = e.clientY;
+    let hit = -1, hitD = 1e9;
+    for (let i = 0; i < anchors.length; i++){
+      const r = anchors[i].el.getBoundingClientRect();
+      const pad = 22;
+      if (dropX < r.left - pad || dropX > r.right + pad || dropY < r.top - pad || dropY > r.bottom + pad) continue;
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      const d = Math.hypot(dropX - cx, dropY - cy);
+      if (d < hitD){ hitD = d; hit = i; }
+    }
+    if (hit !== -1){ cur = -1; moveTo(hit); }
+    else stumble();
+  });
+  sprite.addEventListener('lostpointercapture', () => {
+    if (dragging){ dragging = false; buddy.classList.remove('dragging'); rig.style.transform = ''; stumble(); }
+  });
+
+  // a miss: he tips over where he landed, rights himself, and hops back onto the nearest section —
+  // resilient, not hurt. Ties into the same "the build broke; I fixed it" persistence the tour tells.
+  const STUMBLE_LINES = [
+    "\u201CMissed the ledge. I\u2019m fine.\u201D",
+    "\u201CThat wasn\u2019t the landing I planned.\u201D",
+    "\u201COkay \u2014 back to the content.\u201D"
+  ];
+  function stumble(){
+    buddy.classList.add('fallen');
+    if (!reduced){
+      rig.style.transition = 'transform 110ms cubic-bezier(0.34,1.2,0.64,1)';
+      rig.style.transform = 'rotate(37deg)';
+      setTimeout(()=>{ rig.style.transform = 'rotate(-13deg)'; }, 130);
+      setTimeout(()=>{ rig.style.transform = 'rotate(4deg)'; }, 270);
+      setTimeout(()=>{ rig.style.transform = ''; rig.style.transition = ''; }, 400);
+    }
+    say(STUMBLE_LINES[Math.floor(Math.random() * STUMBLE_LINES.length)], 1400);
+    setTimeout(()=>{ buddy.classList.remove('fallen'); cur = -1; pickAnchor(); }, reduced ? 0 : 900);
+  }
   // a poke: hover him directly (not a box) for a quick, low-stakes reaction — most of the time just
   // a blink and a lean toward the pointer; sometimes a one-word hello. Never while he's mid-tour or
   // mid-travel, and only once per hover so it can't spam.
   let poked = false;
   sprite.addEventListener('pointerenter', () => {
-    if (!on || touring || busy || reduced || poked) return;
+    if (!on || touring || busy || dragging || reduced || poked) return;
     poked = true;
     buddy.classList.remove('blink'); void buddy.offsetWidth; buddy.classList.add('blink');
     rig.style.transform = 'rotate(-6deg)';
@@ -1455,7 +1581,7 @@
   // a lingering pointer over a box is the next best
   let scrollDeb = null;
   addEventListener('scroll', ()=>{
-    if (!on || touring) return;
+    if (!on || touring || dragging) return;
     hoverIdx = -1; clearTimeout(hoverT);
     clearTimeout(scrollDeb);
     scrollDeb = setTimeout(pickAnchor, 120);
@@ -1476,7 +1602,7 @@
         else if (gazeNear){ gazeNear = false; gazeAt(cur); }
       });
     }
-    if (touring) return;
+    if (touring || dragging) return;
     const el = e.target.closest(ANCHOR_SEL);
     const idx = el ? indexOf.get(el) : -1;
     if (idx === hoverIdx) return;
