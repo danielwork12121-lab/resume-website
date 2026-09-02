@@ -94,7 +94,7 @@
   footer{margin-top:90px;border-top:1px solid var(--line);padding-top:26px;color:var(--ink-faint);font-size:13.5px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   footer a{color:var(--ink-dim)}
 
-  /* ---------- companion (opt-in) ---------- */
+  /* ---------- Bobbie, the companion / guide (opt-in) ---------- */
   .buddy-toggle{display:flex;align-items:center;gap:9px;margin-top:14px;background:none;border:0;padding:0;cursor:pointer;font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;color:var(--ink-faint)}
   .buddy-toggle:hover{color:var(--ink-dim)}
   .buddy-toggle .sw{width:28px;height:16px;border-radius:8px;border:1px solid var(--line);background:var(--bg2);position:relative;transition:background .2s,border-color .2s}
@@ -103,36 +103,64 @@
   .buddy-toggle[aria-pressed="true"] .sw{background:var(--mint-deep);border-color:var(--mint-dim)}
   .buddy-toggle[aria-pressed="true"] .sw::after{left:14px;background:var(--mint)}
 
-  #buddy{position:fixed;left:0;top:0;width:52px;height:70px;z-index:50;pointer-events:none;opacity:0;transition:opacity .4s;will-change:transform}
+  /* Bobbie lives IN the page now: an absolutely-positioned window whose bottom
+     edge sits on the current box's top border. He slides up out of it to perch
+     (feet dangling over the edge) and drops back down "behind" the box to move.
+     No flight, no zooming — the page scrolls and he rides along with his box. */
+  #buddy{position:absolute;left:0;top:0;width:64px;height:82px;z-index:50;pointer-events:none;overflow:hidden;opacity:0;transition:opacity .3s}
   #buddy.on{opacity:1}
-  #buddy svg{display:block;overflow:visible}
-  #buddy .rig{transform-origin:26px 30px}
-  #buddy .bodygrp{transform-origin:26px 30px}
-  #buddy.squash .bodygrp{animation:squash .45s cubic-bezier(.34,1.56,.64,1)}
-  @keyframes squash{0%{transform:scale(1.12,.82)}45%{transform:scale(.94,1.08)}100%{transform:scale(1,1)}}
+  #buddy svg{display:block;margin:0 auto;overflow:visible;pointer-events:auto;cursor:pointer;transform:translateY(86px);transition:transform .36s cubic-bezier(.34,1.45,.64,1)}
+  #buddy.duck svg{transform:translateY(86px);transition-duration:.24s;transition-timing-function:cubic-bezier(.55,0,.85,.36)}
+  #buddy.peek svg{transform:translateY(48px)}   /* just the eyes over the edge */
+  #buddy.up svg{transform:translateY(12px)}     /* perched, feet over the edge */
+  #buddy .rig{transform-origin:26px 34px;transition:transform .5s ease}
+  #buddy .bodygrp{transform-origin:26px 44px}
+  #buddy .gaze{transition:transform .35s ease-out}
+  /* perched breathing, and the landing tiers layered on top of it:
+     a plain squash, a quiet settle, or — for the big beats — a hop with a wing flutter */
+  #buddy.up .bodygrp{animation:breathe 3.6s ease-in-out infinite}
+  @keyframes breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.015,.985)}}
+  #buddy.up.squash .bodygrp{animation:squash .45s cubic-bezier(.34,1.56,.64,1),breathe 3.6s ease-in-out .45s infinite}
+  @keyframes squash{0%{transform:scale(1.14,.8)}45%{transform:scale(.94,1.08)}100%{transform:scale(1,1)}}
+  #buddy.up.soft .bodygrp{animation:softland .4s ease-out,breathe 3.6s ease-in-out .4s infinite}
+  @keyframes softland{0%{transform:scale(1.05,.95)}100%{transform:scale(1,1)}}
+  #buddy.up.wow .bodygrp{animation:wow .8s cubic-bezier(.34,1.4,.64,1),breathe 3.6s ease-in-out .8s infinite}
+  @keyframes wow{0%{transform:scale(1.14,.8)}28%{transform:translateY(-14px) scale(.95,1.1)}52%{transform:translateY(0) scale(1.07,.93)}72%{transform:translateY(-5px) scale(.98,1.03)}100%{transform:none}}
+  #buddy.wow .eye{animation:wide .8s ease-in-out}
+  @keyframes wide{0%,100%{transform:scale(1)}30%,65%{transform:scale(1.4)}}
+  #buddy.wow .wing{opacity:.8;animation:flap .2s ease-in-out 4}
   #buddy .eye{transform-origin:center;transform-box:fill-box}
   #buddy.blink .eye{animation:blink .16s}
   @keyframes blink{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.08)}}
+  /* legs dangle over the box edge while perched; they paddle during a rise */
   #buddy .leg{transform-box:fill-box;transform-origin:top center;animation:dangleA 2.6s ease-in-out infinite}
   #buddy .legR{animation-name:dangleB}
   @keyframes dangleA{0%,100%{transform:rotate(4deg)}50%{transform:rotate(-6deg)}}
   @keyframes dangleB{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(6deg)}}
-  #buddy.kick .leg{animation:kickA .32s ease-in-out infinite}
-  #buddy.kick .legR{animation-name:kickB}
+  #buddy.moving .leg{animation:kickA .3s ease-in-out infinite}
+  #buddy.moving .legR{animation-name:kickB}
   @keyframes kickA{0%,100%{transform:rotate(26deg)}50%{transform:rotate(-14deg)}}
   @keyframes kickB{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(18deg)}}
   #buddy .wing{opacity:0;transform-box:fill-box;transform-origin:center right}
-  #buddy.kick .wing{opacity:.8;animation:flap .24s ease-in-out infinite}
   #buddy .wingR{transform-origin:center left}
   @keyframes flap{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-24deg)}}
-  .btrail{position:fixed;left:0;top:0;width:5px;height:5px;border-radius:50%;background:var(--mint-dim);pointer-events:none;z-index:49;animation:tfade .7s forwards}
-  @keyframes tfade{to{opacity:0;transform:scale(.2) translateY(6px)}}
-  .bubble{position:fixed;left:0;top:0;z-index:51;max-width:230px;background:#242825;border:1px solid var(--line);border-radius:10px;border-bottom-right-radius:2px;padding:10px 13px;font-size:12.5px;font-style:italic;color:var(--ink);line-height:1.5;opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s;pointer-events:none}
+
+  /* the box he's perched on: a soft lift, and a little dip when he lands on it */
+  .buddy-here{border-color:var(--mint-dim)!important;box-shadow:0 0 20px rgba(159,216,180,.12);transition:border-color .3s,box-shadow .3s}
+  .box-dip{animation:boxdip .32s ease-out}
+  @keyframes boxdip{30%{transform:translateY(2.5px)}100%{transform:none}}
+
+  .bubble{position:absolute;left:0;top:0;z-index:51;max-width:250px;background:#242825;border:1px solid var(--line);border-radius:10px;border-bottom-right-radius:2px;padding:10px 13px;font-size:12.5px;color:var(--ink);line-height:1.5;opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s;pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,.35)}
+  .bubble.l{border-bottom-right-radius:10px;border-bottom-left-radius:2px}
   .bubble.show{opacity:1;transform:translateY(0)}
-  .buddy-here{border-color:var(--mint-dim)!important;box-shadow:0 0 22px rgba(159,216,180,.13)}
-  @media (max-width:900px){#buddy,.bubble,.btrail{display:none!important}}
+  .bubble .cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--mint-dim);margin-bottom:5px}
+  .bubble .txt{font-style:italic}
+  .bubble.tell .txt{font-style:normal;color:var(--ink)}
+  @media (max-width:900px){#buddy,.bubble{display:none!important}}
   @media (prefers-reduced-motion:reduce){
-    #buddy .leg,#buddy.kick .leg,#buddy.blink .eye,#buddy.squash .bodygrp,#buddy.kick .wing{animation:none}
+    #buddy svg,#buddy .rig,#buddy .gaze,.bubble{transition:none}
+    #buddy .leg,#buddy.moving .leg,#buddy.blink .eye,#buddy.up .bodygrp,#buddy.up.squash .bodygrp,#buddy.up.soft .bodygrp,#buddy.up.wow .bodygrp,#buddy.wow .eye,#buddy.wow .wing{animation:none}
+    .box-dip{animation:none}
   }
 </style>
 
@@ -150,7 +178,7 @@
     </nav>
     <hr>
     <div class="status"><span class="dot"></span>Open to Summer 2027<br>SWE / ML internships</div>
-    <button class="buddy-toggle" id="buddyToggle" aria-pressed="false" title="A small companion walks the margin as you scroll"><span class="sw"></span>COMPANION</button>
+    <button class="buddy-toggle" id="buddyToggle" aria-pressed="false" title="Bobbie is a small guide who lives behind the boxes and perches on whatever you’re reading. Off by default."><span class="sw"></span>BOBBIE · GUIDE</button>
   </aside>
 
   <main>
@@ -364,12 +392,19 @@
   set(0); setTimeout(spy, 600);
 })();
 
-// ---------- the companion (opt-in) ----------
+// ---------- Bobbie, the companion / guide (opt-in) ----------
+// Bobbie lives in the page. He perches on top of whatever box you're reading,
+// feet dangling over its edge, and when your attention moves he drops down
+// behind his box and pops up out of the next one — sometimes eyes first.
+// Click him and he leads a short tour instead, the page following him from
+// stop to stop until you scroll, click, or press a key.
 (function(){
   const buddy = document.createElement('div');
   buddy.id = 'buddy';
   buddy.innerHTML = `
-  <svg width="52" height="70" viewBox="0 0 52 70" aria-hidden="true">
+  <svg width="52" height="70" viewBox="0 0 52 70" role="button" aria-label="Bobbie — click for a quick tour of the resume">
+    <title>Bobbie — click for a 45-second tour</title>
+    <rect x="8" y="0" width="36" height="62" fill="transparent"/>
     <g class="rig">
       <path class="wing" d="M9 30 Q2 26 1 20 Q7 23 10 27 Z" fill="var(--mint)" opacity=".8"/>
       <path class="wing wingR" d="M43 30 Q50 26 51 20 Q45 23 42 27 Z" fill="var(--mint)" opacity=".8"/>
@@ -384,49 +419,151 @@
       <g class="bodygrp">
         <path d="M26 3 C35 3 40 13 40 26 C40 38 34 46 26 46 C18 46 12 38 12 26 C12 13 17 3 26 3 Z"
           fill="var(--bg)" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/>
-        <circle class="eye" cx="20.5" cy="23" r="2.1" fill="var(--mint)"/>
-        <circle class="eye" cx="31.5" cy="23" r="2.1" fill="var(--mint)"/>
+        <g class="gaze">
+          <circle class="eye" cx="20.5" cy="23" r="2.1" fill="var(--mint)"/>
+          <circle class="eye" cx="31.5" cy="23" r="2.1" fill="var(--mint)"/>
+        </g>
         <path class="mouth" d="M21 30 Q26 34 31 30" fill="none" stroke="var(--mint)" stroke-width="2" stroke-linecap="round"/>
       </g>
     </g>
   </svg>`;
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
+  bubble.innerHTML = '<div class="cap" hidden></div><div class="txt"></div>';
   document.body.appendChild(buddy); document.body.appendChild(bubble);
-  const rig = buddy.querySelector('.rig');
+  const rig = buddy.querySelector('.rig'), gaze = buddy.querySelector('.gaze'), sprite = buddy.querySelector('svg');
+  const cap = bubble.querySelector('.cap'), txt = bubble.querySelector('.txt');
 
   const IDLE_QUIPS = [
-    "\u201CDaniel spent the budget on the resume, not on my arms.\u201D",
-    "\u201CI asked for a body. I got a sophomore year instead.\u201D",
-    "\u201CLegs were cut in scope review. Daniel says it was a design choice.\u201D",
-    "\u201CDaniel debugged for 30 hours straight and then, out of spirit, gave up on my arms too.\u201D",
-    "\u201CDaniel ran out of budget for my legs somewhere around finals week. I\u2019ve made my peace with it.\u201D"
+    "“Daniel spent the budget on the resume, not on my arms.”",
+    "“I asked for a body. I got a sophomore year instead.”",
+    "“Legs were cut in scope review. Daniel says it was a design choice.”",
+    "“Daniel debugged for 30 hours straight and then, out of spirit, gave up on my arms too.”",
+    "“Daniel ran out of budget for my legs somewhere around finals week. I’ve made my peace with it.”",
+    "“Still here. Click me if you want the 45-second tour.”"
   ];
+  const INTRO = "Hi — I’m Bobbie. I live behind these boxes. Daniel didn’t give me arms, so I use my whole body.";
+  const OFFER = "Click me any time for a 45-second tour of the highlights.";
+
+  // the boxes Bobbie can perch on, in document order, with how big a deal each
+  // one is (big beats get a hop on landing, small ones a quiet settle)
+  const ANCHOR_SEL = '.hero h1, .stats, #education .item, #research .item, #projects .card, #engineering .item, #applied .item, #leadership .item, #skills, footer';
+  const BIG = ['.stats', '#research .item', '#projects .card:nth-child(1)', '#projects .card:nth-child(4)', '#engineering .item:nth-child(2)'];
+  const SMALL = ['#education .item', '#skills', 'footer'];
+  const anchors = [...document.querySelectorAll(ANCHOR_SEL)].map(el => ({
+    el,
+    quip: el.dataset.quip || null,
+    tier: BIG.some(s => el.matches(s)) ? 'wow' : SMALL.some(s => el.matches(s)) ? 'soft' : 'squash',
+    card: el.classList.contains('card'),
+    boxy: el.matches('.card, .item, .stats')
+  }));
+  const indexOf = new Map(anchors.map((a, i) => [a.el, i]));
+
+  // the tour: what Bobbie says at each stop, in its own voice
+  const TOUR = [
+    { sel: '#research .item', text: "Start here: first-author paper, published in the Springer AIET 2024 proceedings. A second one is under review at IEEE ICDE 2026." },
+    { sel: '#projects .card:nth-child(1)', text: "Stab It — top 2% of 14,022 entrants at ByteDance’s TRAE hackathon. The build pipeline broke. Daniel didn’t." },
+    { sel: '#projects .card:nth-child(4)', text: "Hachi, co-founded: 300+ paying users and $800+ in revenue in month one. Still no budget for my legs." },
+    { sel: '#applied .item:nth-child(2)', text: "Applied AI: a content taxonomy for multimodal data at CapCut R&D, and 10K+ labeled frames at Haidilao before that." },
+    { sel: '#leadership .item:nth-child(2)', text: "Founded his school’s first CS club and grew it into the largest on campus. I was not consulted." },
+    { sel: '#skills', text: "Python, C++, PyTorch, LLM apps, RAG, computer vision. Not listed: drawing arms." },
+    { sel: 'footer', text: "That’s the tour. Email is one click up top — Daniel reads it. I’ll keep hanging around." }
+  ].map(s => ({ ...s, idx: indexOf.get(document.querySelector(s.sel)) })).filter(s => s.idx !== undefined);
+
   const toggle = document.getElementById('buddyToggle');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // the flight path: every important beat on the page, in document order
-  const anchors = [...document.querySelectorAll(
-    '.chip, .stats .stat, #education .item, #research .item li, #research .award, #projects .card, #engineering .item, #applied .item, #leadership .item, #skills .skillgroup, footer'
-  )].map(el => ({ el, quip: (el.dataset && el.dataset.quip) || (el.closest && el.closest('.card') ? null : null) }));
-
-  let on = false, cur = -1, px = innerWidth - 90, py = 140, vx = 0, vy = 0,
-      lastT = 0, bubbleT = null, idleQuipT = null, blinkT = null, raf = null,
-      trailT = 0, hereEl = null, arrived = true;
+  let on = false, cur = -1, busy = false, queued = -1,
+      bubbleT = null, idleQuipT = null, blinkT = null, gagT = null,
+      keepBubbleUntil = 0, firstLanding = true, hoverIdx = -1, hoverT = null,
+      touring = false, toured = false, tourStep = 0, tourT = null, tourSaidT = null, saidStep = -1;
 
   try { on = localStorage.getItem('buddy') === '1'; } catch(e){}
 
-  function targetFor(i){
-    const r = anchors[i].el.getBoundingClientRect();
-    let x = r.right + 22;
-    if (x > innerWidth - 64) x = innerWidth - 64;
-    if (x < r.left) x = Math.max(r.left, innerWidth - 64);
-    let y = r.top + r.height/2 - 38;
-    y = Math.max(8, Math.min(innerHeight - 84, y));
-    return {x, y};
+  // where the perch window sits for an anchor: bottom edge overlapping the
+  // box's top border by a few px, so his feet dangle over the front of it.
+  // Cards perch near the top-right corner; wide rows perch about 2/3 along.
+  function perchFor(i){
+    const a = anchors[i], r = a.el.getBoundingClientRect();
+    const docX = r.left + scrollX, docY = r.top + scrollY;
+    let x = a.card ? docX + r.width - 86 : docX + Math.min(r.width * 0.68, r.width - 84);
+    x = Math.max(docX + 6, x);
+    return { x, y: docY - 68 };
+  }
+  function placeHolder(i){
+    const p = perchFor(i);
+    buddy.style.left = p.x + 'px';
+    buddy.style.top = p.y + 'px';
   }
 
-  // pick the beat nearest the viewport's focal line, with hysteresis
+  function setGlow(i, onoff){
+    if (i === -1 || !anchors[i].boxy) return;
+    anchors[i].el.classList.toggle('buddy-here', onoff);
+  }
+  function dipBox(i){
+    if (reduced || i === -1 || !anchors[i].boxy) return;
+    const el = anchors[i].el;
+    el.classList.remove('box-dip'); void el.offsetWidth; el.classList.add('box-dip');
+  }
+  // eyes drift down toward the box he's sitting on
+  function gazeAt(i){
+    if (i === -1) return;
+    const a = anchors[i];
+    gaze.style.transform = a.card ? 'translate(-1.2px, 1.6px)' : 'translate(1.2px, 1.6px)';
+  }
+
+  // move = duck down behind the current box, then rise out of the next one —
+  // sometimes eyes first. No travel in between: he's behind the page, not over it.
+  function moveTo(i, then){
+    if (i === -1 || (i === cur && buddy.classList.contains('up'))){ if (then) then(); return; }
+    if (busy){ queued = i; return; }
+    busy = true;
+    const from = cur;
+    setGlow(from, false);
+    if (performance.now() > keepBubbleUntil) hush();
+    const dive = () => {
+      buddy.classList.remove('up', 'peek', 'squash', 'soft', 'wow');
+      buddy.classList.add('duck', 'moving');
+    };
+    const surface = () => {
+      cur = i;
+      placeHolder(i);
+      buddy.classList.remove('duck');
+      const a = anchors[i];
+      const peekFirst = !reduced && !touring && Math.random() < 0.35;
+      const rise = () => {
+        buddy.classList.remove('peek');
+        buddy.classList.add('up', a.tier);
+        setTimeout(()=>buddy.classList.remove('moving'), reduced ? 0 : 340);
+        dipBox(i); setGlow(i, true); gazeAt(i);
+        busy = false;
+        if (queued !== -1 && queued !== cur){ const q = queued; queued = -1; moveTo(q, then); return; }
+        queued = -1;
+        landedSay(a);
+        if (then) then();
+      };
+      if (peekFirst){ buddy.classList.add('peek'); setTimeout(rise, 520); }
+      else rise();
+    };
+    if (reduced){ dive(); surface(); return; }
+    if (from === -1){ dive(); setTimeout(surface, 60); }
+    else { dive(); setTimeout(surface, 280); }
+  }
+
+  function landedSay(a){
+    if (firstLanding){
+      firstLanding = false;
+      say(INTRO, 6500, { tell: true, cap: 'BOBBIE', keep: 6500 });
+      setTimeout(()=>{ if (on && !touring && !toured) say(OFFER, 4500, { tell: true, cap: 'BOBBIE', keep: 2000 }); }, 7200);
+    } else if (touring){
+      tourSay();
+    } else if (a.quip && performance.now() > keepBubbleUntil){
+      say(a.quip, 3600);
+    }
+  }
+
+  // pick the box nearest the viewport's focal line, with a deadband so he
+  // doesn't hop between neighbours over a few pixels of scroll
   function pickAnchor(){
     const focal = innerHeight * 0.42;
     let best = -1, bd = 1e9;
@@ -436,69 +573,84 @@
       const d = Math.abs(r.top + r.height/2 - focal);
       if (d < bd){ bd = d; best = i; }
     }
-    if (best !== -1 && best !== cur){
-      cur = best; arrived = false;
-      const el = anchors[cur].el;
-      if (hereEl) hereEl.classList.remove('buddy-here');
-      hereEl = (el.classList.contains('card') || el.classList.contains('item')) ? el : null;
-    }
+    if (best === -1) return;
+    if (cur === -1){ moveTo(best); return; }
+    const cr = anchors[cur].el.getBoundingClientRect();
+    const curVisible = cr.bottom > 40 && cr.top < innerHeight - 40;
+    const dCur = Math.abs(cr.top + cr.height/2 - focal);
+    if (best !== cur && (!curVisible || bd + 70 < dCur)) moveTo(best);
   }
 
-  function say(text, ms){
-    bubble.textContent = text;
+  function say(text, ms, o){
+    o = o || {};
+    bubble.classList.toggle('tell', !!o.tell);
+    cap.textContent = o.cap || ''; cap.hidden = !o.cap;
+    txt.textContent = text;
     bubble.classList.add('show');
+    keepBubbleUntil = o.keep ? performance.now() + o.keep : 0;
+    placeBubble();
     clearTimeout(bubbleT);
     bubbleT = setTimeout(()=>bubble.classList.remove('show'), ms || 4200);
   }
   function hush(){ clearTimeout(bubbleT); bubble.classList.remove('show'); }
-
-  function loop(t){
-    if (!on) return;
-    const dt = Math.min(32, t - lastT || 16); lastT = t;
-    if (cur === -1) pickAnchor();
-    if (cur !== -1){
-      const tg = targetFor(cur);
-      // soft spring toward the target
-      const k = reduced ? 0.5 : 0.0028 * dt, damp = reduced ? 0 : Math.pow(0.90, dt/16);
-      if (reduced){ px = tg.x; py = tg.y; vx = vy = 0; }
-      else {
-        vx = vx * damp + (tg.x - px) * k;
-        vy = vy * damp + (tg.y - py) * k;
-        px += vx; py += vy;
-      }
-      const speed = Math.hypot(vx, vy);
-      // life: hover-bob + travel tilt
-      const bob = reduced ? 0 : Math.sin(t/520) * 3.5;
-      const tilt = reduced ? 0 : Math.max(-16, Math.min(16, vx * 1.6));
-      buddy.style.transform = `translate3d(${px}px, ${py + bob}px, 0)`;
-      rig.style.transform = `rotate(${tilt}deg)`;
-      buddy.classList.toggle('kick', speed > 1.6 && !reduced);
-      if (speed > 2.4 && !reduced && t - trailT > 70){
-        trailT = t;
-        const d = document.createElement('div');
-        d.className = 'btrail';
-        d.style.transform = `translate(${px + 23 - vx*3}px, ${py + 62 - vy*3}px)`;
-        document.body.appendChild(d);
-        setTimeout(()=>d.remove(), 750);
-      }
-      // landing
-      if (!arrived && speed < 0.6 && Math.hypot(tg.x - px, tg.y - py) < 14){
-        arrived = true;
-        if (!reduced){ buddy.classList.remove('squash'); void buddy.offsetWidth; buddy.classList.add('squash'); }
-        const el = anchors[cur].el;
-        if (hereEl) hereEl.classList.add('buddy-here');
-        if (el.dataset && el.dataset.quip) say(el.dataset.quip, 3600);
-      }
-      // keep the bubble riding along
-      if (bubble.classList.contains('show')){
-        const bw = bubble.offsetWidth, bh = bubble.offsetHeight;
-        let bx = px - bw - 14; if (bx < 8) bx = px + 58;
-        let by = py - bh + 6; if (by < 8) by = py + 66;
-        bubble.style.transform = `translate(${bx}px, ${by}px)`;
-      }
-    }
-    raf = requestAnimationFrame(loop);
+  function placeBubble(){
+    const bw = bubble.offsetWidth, bh = bubble.offsetHeight;
+    const hx = parseFloat(buddy.style.left) || 0, hy = parseFloat(buddy.style.top) || 0;
+    // to the side of his head, above the box edge — opening toward the empty
+    // side of the page so it doesn't sit down on headings and card text
+    const half = scrollX + document.documentElement.clientWidth / 2;
+    let left = hx < half;                 // he's on the left → bubble opens right
+    let bx = left ? hx : hx + 64 - bw;
+    bx = Math.max(scrollX + 8, Math.min(scrollX + document.documentElement.clientWidth - bw - 8, bx));
+    let by = hy - bh + 4;
+    if (by < scrollY + 6) by = hy + 84;
+    bubble.classList.toggle('l', left);
+    bubble.style.left = bx + 'px';
+    bubble.style.top = by + 'px';
   }
+
+  // ---- the tour: Bobbie leads, the page follows ----
+  function tourStop(){
+    clearTimeout(tourT); clearTimeout(tourSaidT);
+    if (tourStep >= TOUR.length){ touring = false; return; }
+    const s = TOUR[tourStep];
+    const r = anchors[s.idx].el.getBoundingClientRect();
+    const top = scrollY + r.top - (innerHeight * 0.42 - Math.min(r.height/2, 110));
+    scrollTo({ top: Math.max(0, top), behavior: reduced ? 'instant' : 'smooth' });
+    if (s.idx === cur){ dipBox(cur); tourSay(); }
+    else moveTo(s.idx);
+    // if the landing runs late, speak anyway so the tour keeps its rhythm
+    tourSaidT = setTimeout(tourSay, 1600);
+    tourT = setTimeout(()=>{ tourStep++; tourStop(); }, tourStep === TOUR.length - 1 ? 6000 : 5600);
+  }
+  function tourSay(){
+    if (!touring || saidStep === tourStep) return;
+    saidStep = tourStep;
+    const n = tourStep + 1;
+    say(TOUR[tourStep].text, tourStep === TOUR.length - 1 ? 5800 : 5200,
+        { tell: true, cap: n === 1 ? `1/${TOUR.length} · SCROLL TO TAKE OVER` : `TOUR · ${n}/${TOUR.length}`, keep: 5200 });
+  }
+  function startTour(){
+    if (!on || touring) return;
+    touring = true; toured = true; tourStep = 0; saidStep = -1; hoverIdx = -1; clearTimeout(hoverT);
+    say("Follow me.", 1400, { tell: true, cap: 'TOUR', keep: 1400 });
+    setTimeout(()=>{ if (touring) tourStop(); }, 700);
+  }
+  function endTour(interrupted){
+    if (!touring) return;
+    touring = false; clearTimeout(tourT); clearTimeout(tourSaidT);
+    if (interrupted) say("Okay, you drive. I’ll be around.", 3200, { tell: true, keep: 3200 });
+  }
+  sprite.addEventListener('click', e=>{
+    e.stopPropagation();
+    if (!on) return;
+    if (touring){ tourStep++; tourStop(); } else startTour();
+  });
+  const takeOver = e=>{ if (e.type === 'pointerdown' && e.target && sprite.contains(e.target)) return; endTour(true); };
+  addEventListener('wheel', takeOver, { passive: true });
+  addEventListener('touchstart', takeOver, { passive: true });
+  addEventListener('keydown', takeOver);
+  addEventListener('pointerdown', takeOver);
 
   function scheduleBlink(){
     clearTimeout(blinkT);
@@ -510,21 +662,62 @@
   function scheduleIdleQuip(){
     clearTimeout(idleQuipT);
     idleQuipT = setTimeout(()=>{
-      if (on && !bubble.classList.contains('show'))
+      if (on && !touring && !bubble.classList.contains('show'))
         say(IDLE_QUIPS[Math.floor(Math.random()*IDLE_QUIPS.length)], 5200);
       scheduleIdleQuip();
     }, 10000 + Math.random()*9000);
   }
+  // little bits of business while he's perched: a lean over the edge to read
+  // his box, a hop that makes it dip, a duck-and-peek, a glance around
+  function scheduleGag(){
+    clearTimeout(gagT);
+    gagT = setTimeout(()=>{
+      if (on && !touring && !busy && buddy.classList.contains('up') && !reduced){
+        const g = Math.random();
+        if (g < 0.3){
+          rig.style.transform = 'rotate(9deg)';
+          gaze.style.transform = 'translate(0.5px, 2.2px)';
+          setTimeout(()=>{ rig.style.transform = ''; gazeAt(cur); }, 1400);
+        } else if (g < 0.55){
+          buddy.classList.remove('squash','soft','wow'); void buddy.offsetWidth;
+          buddy.classList.add('wow'); dipBox(cur);
+        } else if (g < 0.8 && cur !== -1){
+          busy = true;
+          buddy.classList.remove('up','squash','soft','wow'); buddy.classList.add('duck');
+          setTimeout(()=>{ buddy.classList.remove('duck'); buddy.classList.add('peek'); }, 420);
+          setTimeout(()=>{ buddy.classList.remove('peek'); buddy.classList.add('up','soft'); busy = false;
+                           if (queued !== -1){ const q = queued; queued = -1; moveTo(q); } }, 1500);
+        } else {
+          gaze.style.transform = 'translate(-2px, -0.6px)';
+          setTimeout(()=>gaze.style.transform = 'translate(2px, -0.6px)', 700);
+          setTimeout(()=>gazeAt(cur), 1500);
+        }
+      }
+      scheduleGag();
+    }, 7000 + Math.random()*8000);
+  }
 
+  // scrolling is the strongest signal of where the visitor is reading;
+  // a lingering pointer over a box is the next best
   let scrollDeb = null;
   addEventListener('scroll', ()=>{
-    if (!on) return;
-    hush();
-    if (hereEl) hereEl.classList.remove('buddy-here');
+    if (!on || touring) return;
+    hoverIdx = -1; clearTimeout(hoverT);
     clearTimeout(scrollDeb);
-    scrollDeb = setTimeout(pickAnchor, 90);
+    scrollDeb = setTimeout(pickAnchor, 120);
   }, {passive:true});
-  addEventListener('resize', ()=>{ if (on) pickAnchor(); });
+  let lpx = -1, lpy = -1;
+  addEventListener('pointermove', e=>{
+    if (!on || touring || !e.target.closest) return;
+    if (Math.abs(e.clientX - lpx) < 2 && Math.abs(e.clientY - lpy) < 2) return;
+    lpx = e.clientX; lpy = e.clientY;
+    const el = e.target.closest(ANCHOR_SEL);
+    const idx = el ? indexOf.get(el) : -1;
+    if (idx === hoverIdx) return;
+    hoverIdx = idx; clearTimeout(hoverT);
+    if (idx !== -1 && idx !== cur) hoverT = setTimeout(()=>{ if (on && !touring && hoverIdx === idx) moveTo(idx); }, 320);
+  }, {passive:true});
+  addEventListener('resize', ()=>{ if (on && cur !== -1){ placeHolder(cur); if (bubble.classList.contains('show')) placeBubble(); } });
 
   function setOn(v){
     on = v;
@@ -532,19 +725,19 @@
     try { localStorage.setItem('buddy', v ? '1' : '0'); } catch(e){}
     if (v){
       buddy.classList.add('on');
-      px = innerWidth - 90; py = -80; vx = 0; vy = 6; cur = -1; arrived = false;
-      pickAnchor(); lastT = 0;
-      cancelAnimationFrame(raf); raf = requestAnimationFrame(loop);
-      scheduleBlink(); scheduleIdleQuip();
-      setTimeout(()=>say(IDLE_QUIPS[0], 4200), 900);
+      cur = -1; busy = false; queued = -1; firstLanding = true;
+      pickAnchor();
+      scheduleBlink(); scheduleIdleQuip(); scheduleGag();
     } else {
-      buddy.classList.remove('on'); hush();
-      if (hereEl) hereEl.classList.remove('buddy-here');
-      cancelAnimationFrame(raf);
-      clearTimeout(idleQuipT); clearTimeout(blinkT);
+      endTour(false);
+      setGlow(cur, false);
+      buddy.classList.remove('up', 'peek'); buddy.classList.add('duck');
+      setTimeout(()=>buddy.classList.remove('on', 'duck'), 300);
+      hush(); cur = -1;
+      clearTimeout(idleQuipT); clearTimeout(blinkT); clearTimeout(gagT); clearTimeout(hoverT);
     }
   }
-  toggle.addEventListener('click', ()=>setOn(!on));
+  toggle.addEventListener('click', e=>{ e.stopPropagation(); setOn(!on); });
   if (on) setOn(true); // restore a previous opt-in; default stays off
 })();
 </script>
