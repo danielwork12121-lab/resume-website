@@ -169,11 +169,27 @@
   #buddy.drop svg{transform:translateY(-120px);transition:none}
   #buddy.climb svg{animation:climb .9s cubic-bezier(0.23,1,0.32,1) forwards}
   @keyframes climb{0%{transform:translateY(86px)}30%{transform:translateY(46px)}50%{transform:translateY(49px)}75%{transform:translateY(20px)}100%{transform:translateY(11px)}}
-  /* the one arm: comes out to point, aimed at the thing he is talking about */
-  #buddy .arm{opacity:0;transform-box:fill-box;transition:opacity .2s,transform .35s cubic-bezier(0.23,1,0.32,1)}
-  #buddy .armR{transform-origin:left center;transform:rotate(40deg)}
-  #buddy .armL{transform-origin:right center;transform:rotate(-40deg)}
-  #buddy.point-r .armR,#buddy.point-l .armL{opacity:1;transform:rotate(var(--aim,20deg))}
+  /* arms hang from the shoulders, sway with the breathing, swing when he moves, and lift to point */
+  #buddy .arm{transform-box:view-box;transition:transform .4s cubic-bezier(0.23,1,0.32,1)}
+  #buddy .armL{transform-origin:13.5px 32px;animation:swayL 3.6s ease-in-out infinite}
+  #buddy .armR{transform-origin:38.5px 32px;animation:swayR 3.6s ease-in-out infinite}
+  @keyframes swayL{0%,100%{transform:rotate(3deg)}50%{transform:rotate(-4deg)}}
+  @keyframes swayR{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(4deg)}}
+  #buddy.moving .armL{animation:swingL .3s ease-in-out infinite}
+  #buddy.moving .armR{animation:swingR .3s ease-in-out infinite}
+  @keyframes swingL{0%,100%{transform:rotate(-28deg)}50%{transform:rotate(22deg)}}
+  @keyframes swingR{0%,100%{transform:rotate(22deg)}50%{transform:rotate(-28deg)}}
+  #buddy.wow .armL{animation:cheerL .8s cubic-bezier(.34,1.4,.64,1)}
+  #buddy.wow .armR{animation:cheerR .8s cubic-bezier(.34,1.4,.64,1)}
+  @keyframes cheerL{0%{transform:rotate(0)}35%{transform:rotate(150deg)}70%{transform:rotate(140deg)}100%{transform:rotate(0)}}
+  @keyframes cheerR{0%{transform:rotate(0)}35%{transform:rotate(-150deg)}70%{transform:rotate(-140deg)}100%{transform:rotate(0)}}
+  #buddy.point-r .armR,#buddy.point-l .armL{animation:none;transform:rotate(var(--aim,-60deg))}
+  #buddy.hammer .armR{animation:hammer .22s ease-in-out 5}
+  @keyframes hammer{0%,100%{transform:rotate(-120deg)}50%{transform:rotate(-40deg)}}
+  #buddy.bow .rig{transform:rotate(14deg)}
+  /* travel: he leaves the clip window and hops across the page to the next box */
+  #buddy.travel{clip-path:none}
+  @keyframes hop{0%,100%{transform:translateY(11px)}50%{transform:translateY(-12px)}}
   #buddy .rig{transform-origin:26px 34px;transition:transform 400ms cubic-bezier(0.23,1,0.32,1)}
   #buddy .bodygrp{transform-origin:26px 44px}
   #buddy .gaze{transition:transform .35s ease-out}
@@ -232,6 +248,22 @@
   @keyframes markin{to{transform:scaleX(1)}}
   /* a piece he carries over and sets on the box */
   .brick{position:absolute;z-index:52;width:7px;height:7px;background:var(--mint);border-radius:1px;pointer-events:none;transition:transform .55s cubic-bezier(0.23,1,0.32,1),opacity .35s}
+  /* skit props: floating labels, an annotation frame, a sketch, arriving members */
+  .pop{position:absolute;z-index:52;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--mint);background:var(--mint-deep);border:1px solid var(--mint-dim);border-radius:4px;padding:3px 8px;pointer-events:none;animation:poprise 1.5s ease-out forwards;white-space:nowrap}
+  .pop.bad{color:var(--ink-dim);background:var(--bg2);border-color:var(--line)}
+  .pop.up{animation:floatup 1.4s cubic-bezier(0.23,1,0.32,1) forwards}
+  @keyframes floatup{0%{opacity:0;transform:translateY(8px)}15%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-46px)}}
+  .pop.star{background:none;border:0;font-size:16px;padding:0;animation:starfall 1.3s cubic-bezier(0.23,1,0.32,1) forwards}
+  @keyframes starfall{0%{opacity:0;transform:translateY(-26px) scale(.6)}40%{opacity:1;transform:translateY(0) scale(1.15)}60%{transform:translateY(-3px) scale(1)}100%{opacity:0;transform:translateY(0)}}
+  .pop.member{width:9px;height:9px;padding:0;border-radius:50%;background:var(--mint);border:0;animation:arrive 2.6s cubic-bezier(0.23,1,0.32,1) forwards}
+  @keyframes arrive{0%{opacity:0;transform:translateX(var(--from,-90px))}25%{opacity:1;transform:translateX(0)}80%{opacity:1;transform:translateX(0)}100%{opacity:0}}
+  .bbox{position:absolute;z-index:1;border:1px solid var(--mint);border-radius:2px;pointer-events:none;opacity:0;animation:bboxin 2.6s cubic-bezier(0.23,1,0.32,1) forwards}
+  .bbox span{position:absolute;left:-1px;top:-16px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--mint);background:var(--bg);padding:1px 4px}
+  @keyframes bboxin{0%{opacity:0;transform:scale(1.06)}15%{opacity:1;transform:scale(1)}80%{opacity:1}100%{opacity:0}}
+  .sketch{position:absolute;z-index:52;pointer-events:none;animation:sketchout 3.2s ease-out forwards}
+  .sketch path{stroke-dasharray:260;stroke-dashoffset:260;animation:draw 1.8s cubic-bezier(0.23,1,0.32,1) forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes sketchout{0%,75%{opacity:1}100%{opacity:0}}
   /* the line he reads along */
   .bob-read{position:absolute;z-index:0;background:rgba(159,216,180,.12);border-radius:2px;pointer-events:none;transform-origin:left;animation:readsweep 1.7s cubic-bezier(0.23,1,0.32,1) forwards}
   @keyframes readsweep{0%{transform:scaleX(0);opacity:1}70%{transform:scaleX(1);opacity:1}100%{transform:scaleX(1);opacity:0}}
@@ -289,7 +321,7 @@
     .labelpop,#buddy .prop-chip,#buddy .pennant,.buddy-toggle.pulse .sw::before{animation:none}
     .nav-ind{transition:none}
     #buddy .leg,#buddy.moving .leg,#buddy.blink .eye,#buddy.up .bodygrp,#buddy.up.squash .bodygrp,#buddy.up.soft .bodygrp,#buddy.up.nod .bodygrp,#buddy.up.wow .bodygrp,#buddy.wow .eye,#buddy.wow .wing{animation:none}
-    .box-dip,.box-fix,.bob-read,#buddy.climb svg{animation:none}
+    .box-dip,.box-fix,.bob-read,#buddy.climb svg,#buddy .arm,.pop,.bbox,.sketch,.sketch path{animation:none}
     .bob-mark::after{animation:none;transform:none}
     #buddy{transition:opacity .3s}
     .btn,.buddy-toggle,nav a,.card .links a,footer a,.card h3 a::after{transition:none}
@@ -838,8 +870,8 @@
           <circle class="eye" cx="31.5" cy="23" r="2.1" fill="var(--mint)"/>
         </g>
         <path class="mouth" d="M21 30 Q26 34 31 30" fill="none" stroke="var(--mint)" stroke-width="2" stroke-linecap="round"/>
-        <g class="arm armR"><path d="M38 33 L60 24" fill="none" stroke="var(--mint)" stroke-width="2.4" stroke-linecap="round"/><circle cx="61.5" cy="23.4" r="2.6" fill="var(--mint)"/></g>
-        <g class="arm armL"><path d="M14 33 L-8 24" fill="none" stroke="var(--mint)" stroke-width="2.4" stroke-linecap="round"/><circle cx="-9.5" cy="23.4" r="2.6" fill="var(--mint)"/></g>
+        <g class="arm armL"><path d="M13.5 32 L9.5 44" fill="none" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/><circle cx="9" cy="45.6" r="2.3" fill="var(--mint)"/></g>
+        <g class="arm armR"><path d="M38.5 32 L42.5 44" fill="none" stroke="var(--mint)" stroke-width="2.2" stroke-linecap="round"/><circle cx="43" cy="45.6" r="2.3" fill="var(--mint)"/></g>
         <g class="prop prop-hat">
           <path d="M15 9 Q26 -3 37 9 L37 10 L15 10 Z" fill="var(--bg)" stroke="var(--mint)" stroke-width="2"/>
           <path d="M12 10 L40 10" stroke="var(--mint)" stroke-width="2.4" stroke-linecap="round"/>
@@ -865,7 +897,7 @@
   const cap = bubble.querySelector('.cap'), txt = bubble.querySelector('.txt'), hint = bubble.querySelector('.hint');
 
   const IDLE_QUIPS = [
-    "\u201CDaniel spent the budget on the resume, not on my arms. I got one back, for pointing.\u201D",
+    "\u201CDaniel finally budgeted arms. Two. I mostly use them for pointing at his work.\u201D",
     "\u201CLegs were cut in scope review. Daniel says it was a design choice.\u201D",
     "\u201CI\u2019m a few KB of hand-written JavaScript. No framework. I feel lighter than I look.\u201D",
     "\u201CThe ledge? I bring it everywhere. Daniel refused to draw me floors.\u201D",
@@ -1027,7 +1059,7 @@
         if (queued !== -1 && queued !== cur){ const q = queued; queued = -1; moveTo(q, then); return; }
         queued = -1;
         landedSay(a);
-        pointAt(i);
+        pointAt(i); skitFor(i);
         if (then) then();
       };
       const up = () => { buddy.classList.remove('peek'); buddy.classList.add('up', a.tier); };
@@ -1044,8 +1076,35 @@
       else { up(); landed(); }
     };
     if (reduced){ dive(); surface(); return; }
-    if (from === -1){ dive(); setTimeout(surface, 60); }
-    else { dive(); setTimeout(surface, 280); }
+    if (from === -1){ dive(); setTimeout(surface, 60); return; }
+    // within reach: hop across the page in the open. Too far: slip behind the page and come out elsewhere.
+    const p0 = { x: parseFloat(buddy.style.left) || 0, y: parseFloat(buddy.style.top) || 0 }, p1 = perchFor(i);
+    const dx = p1.x - p0.x, dy = p1.y - p0.y, dist = Math.hypot(dx, dy);
+    if (!buddy.classList.contains('up') || dist > innerHeight * 1.4){ dive(); setTimeout(surface, 280); return; }
+    clearTimeout(pointT); unmark();
+    const a = anchors[i], ms = Math.min(1000, 320 + dist * 0.55), hops = Math.max(1, Math.round(ms / 330));
+    setGlow(from, false);
+    buddy.classList.remove('squash', 'soft', 'wow', 'peek');
+    buddy.classList.add('travel', 'moving');
+    buddy.style.transitionDuration = '.3s,' + ms + 'ms';
+    buddy.style.transform = `translate(${dx}px, ${dy}px)`;
+    sprite.style.animation = `hop ${ms / hops}ms ease-in-out ${hops}`;
+    gaze.style.transform = `translate(${dx > 0 ? 2 : -2}px, ${dy > 0 ? 1.5 : -1}px)`;
+    setTimeout(()=>{
+      buddy.classList.add('jump'); buddy.style.transform = ''; buddy.style.transitionDuration = ''; sprite.style.animation = '';
+      cur = i; placeHolder(i); void buddy.offsetWidth;
+      buddy.classList.remove('jump', 'travel');
+      buddy.classList.add(a.tier);
+      setTimeout(()=>buddy.classList.remove('moving'), 340);
+      fixBox(i, a.tier); setGlow(i, true); gazeAt(i);
+      setProp(i); stampFor(i); carryBrick(i, a.tier);
+      busy = false;
+      if (queued !== -1 && queued !== cur){ const q = queued; queued = -1; moveTo(q, then); return; }
+      queued = -1;
+      landedSay(a);
+      pointAt(i); skitFor(i);
+      if (then) then();
+    }, ms);
   }
 
   // five ways in, never the same one twice in a row; first appearance is a drop
@@ -1104,13 +1163,76 @@
       if (!markEl) return;
       const m = markEl.getBoundingClientRect(), bx = parseFloat(buddy.style.left) + 26 - scrollX, by = parseFloat(buddy.style.top) + 44 - scrollY;
       const dx = m.left + m.width / 2 - bx, dy = m.top + m.height / 2 - by;
-      const right = dx >= 0, deg = Math.atan2(dy, Math.abs(dx)) * 180 / Math.PI;
-      const rot = Math.max(-10, Math.min(85, deg + 30));
-      buddy.style.setProperty('--aim', (right ? rot : -rot) + 'deg');
+      const right = dx >= 0, deg = Math.atan2(dy, dx) * 180 / Math.PI;   // screen angle to the target
+      const rot = right ? Math.max(-150, Math.min(15, deg - 71.6)) : Math.max(-15, Math.min(150, deg - 108.4));
+      buddy.style.setProperty('--aim', rot + 'deg');
       buddy.classList.add(right ? 'point-r' : 'point-l');
       gaze.style.transform = `translate(${right ? 1.8 : -1.8}px, 2px)`;
       setTimeout(()=>{ buddy.classList.remove('point-r', 'point-l'); gazeAt(cur); }, touring ? 4200 : 2600);
     }, 420);
+  }
+  // short stories about the work, played once per visit on the box they belong to
+  const SKITS = [
+    ['#projects .card:nth-child(1)', 'build'], ['#engineering .item:nth-child(3)', 'build'],
+    ['#projects .card:nth-child(4)', 'users'], ['#engineering .item:nth-child(2)', 'users'],
+    ['#projects .card:nth-child(2)', 'sugar'],
+    ['#applied .item', 'annotate'],
+    ['#research .item', 'present'],
+    ['#leadership .item:nth-child(2)', 'club']
+  ];
+  const skitted = new Set();
+  function pop(text, x, y, ms, cls){
+    const el = document.createElement('div'); el.className = 'pop ' + (cls || '');
+    el.textContent = text; el.style.left = x + 'px'; el.style.top = y + 'px';
+    document.body.appendChild(el); setTimeout(()=>el.remove(), ms || 1600); return el;
+  }
+  function skitFor(i){
+    if (reduced || i === -1) return;
+    const a = anchors[i], kind = pick(SKITS, a.el);
+    if (!kind || (skitted.has(i) && !touring)) return;
+    skitted.add(i);
+    const r = a.el.getBoundingClientRect(), bx = parseFloat(buddy.style.left), by = parseFloat(buddy.style.top);
+    const boxR = r.right + scrollX, boxT = r.top + scrollY;
+    const run = (fn, t) => setTimeout(()=>{ if (on && cur === i) fn(); }, t);
+    if (kind === 'build'){
+      // the build broke mid-sprint; he gets the hat on and fixes it
+      run(()=>pop('✕ build failed', boxR - 236, boxT + 8, 1500, 'bad'), 900);
+      run(()=>{ buddy.classList.add('hammer'); }, 1500);
+      run(()=>{ buddy.classList.remove('hammer'); pop('✓ build passed', boxR - 240, boxT + 8, 1800); fixBox(i, 'wow'); }, 2700);
+    } else if (kind === 'users'){
+      // paying users, one at a time; he watches them go up
+      [0, 1, 2, 3].forEach(k => run(()=>{ pop('+1 user', boxR - 190 - k * 70, boxT - 6, 1400, 'up'); gaze.style.transform = 'translate(1px, -2.2px)'; }, 900 + k * 320));
+      run(()=>gazeAt(cur), 2600);
+    } else if (kind === 'sugar'){
+      // he draws a sugar painting in the air, the way the game does
+      run(()=>{
+        const sk = document.createElement('div'); sk.className = 'sketch';
+        sk.innerHTML = '<svg viewBox="0 0 120 60" width="120" height="60"><path d="M6 40 C18 8 30 8 40 30 S60 52 70 30 S92 6 104 30 C110 42 100 50 92 44" fill="none" stroke="var(--mint)" stroke-width="2" stroke-linecap="round"/></svg>';
+        sk.style.left = (bx + 66) + 'px'; sk.style.top = (by - 6) + 'px';
+        document.body.appendChild(sk); setTimeout(()=>sk.remove(), 3200);
+        buddy.style.setProperty('--aim', '-95deg'); buddy.classList.add('point-r');
+        setTimeout(()=>buddy.classList.remove('point-r'), 2200);
+      }, 900);
+    } else if (kind === 'annotate'){
+      // the annotation work: a bounding box snaps onto the phrase he marked
+      run(()=>{
+        const m = markEl || a.el.querySelector('p'); if (!m) return;
+        const mr = m.getBoundingClientRect();
+        const bb = document.createElement('div'); bb.className = 'bbox';
+        bb.style.left = (mr.left + scrollX - 6) + 'px'; bb.style.top = (mr.top + scrollY - 4) + 'px';
+        bb.style.width = (mr.width + 12) + 'px'; bb.style.height = (mr.height + 8) + 'px';
+        bb.innerHTML = '<span>frame · ok</span>';
+        document.body.appendChild(bb); setTimeout(()=>bb.remove(), 2600);
+      }, 1200);
+    } else if (kind === 'present'){
+      // Best Session Presenter: a star comes down, he takes a bow
+      run(()=>pop('★', bx + 22, by - 30, 1300, 'star'), 1000);
+      run(()=>{ buddy.classList.add('bow'); const aw = a.el.querySelector('.award'); if (aw){ aw.classList.remove('box-dip'); void aw.offsetWidth; aw.classList.add('box-dip'); } }, 1500);
+      run(()=>buddy.classList.remove('bow'), 2300);
+    } else if (kind === 'club'){
+      // the club he founded fills up: members arrive along the ledge and line up beside him
+      [0, 1, 2, 3].forEach(k => run(()=>{ const d = pop('', bx - 14 - k * 14, by + 60, 2600, 'member'); d.style.setProperty('--from', (-90 - k * 30) + 'px'); }, 900 + k * 260));
+    }
   }
   // which tool he brings out where
   function setProp(i){
