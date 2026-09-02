@@ -65,7 +65,8 @@
   /* ---------- sections ---------- */
   section{margin-top:76px;scroll-margin-top:40px}
   h2{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--mint);margin:0 0 8px}
-  h2::after{content:"";display:block;width:44px;border-top:1px solid var(--mint-dim);margin-top:10px;opacity:.5}
+  h2::after{content:"";display:block;width:0;border-top:1px solid var(--mint-dim);margin-top:10px;opacity:.5;transition:width .7s cubic-bezier(.2,.8,.3,1) .15s}
+  section.seen h2::after{width:44px}
   .item{padding:26px 0;border-bottom:1px solid var(--line)}
   .item:last-child{border-bottom:0}
   .row{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:baseline}
@@ -113,11 +114,16 @@
      (feet dangling over the edge) and drops back down "behind" the box to move.
      No flight, no zooming — the page scrolls and he rides along with his box. */
   #buddy{position:absolute;left:0;top:0;width:64px;height:82px;z-index:50;pointer-events:none;overflow:hidden;opacity:0;transition:opacity .3s}
+  /* the ledge he stands on — he brings his own, so his feet are never on air */
+  #buddy .ledge{position:absolute;left:7px;right:7px;bottom:9px;height:2px;background:var(--mint-dim);border-radius:1px;opacity:0;transition:opacity .3s .15s}
+  #buddy .ledge::before,#buddy .ledge::after{content:"";position:absolute;top:2px;width:2px;height:4px;background:var(--mint-dim);opacity:.7}
+  #buddy .ledge::before{left:3px}#buddy .ledge::after{right:3px}
+  #buddy.up .ledge,#buddy.peek .ledge{opacity:.9}
   #buddy.on{opacity:1}
   #buddy svg{display:block;margin:0 auto;overflow:visible;pointer-events:auto;cursor:pointer;transform:translateY(86px);transition:transform .36s cubic-bezier(.34,1.45,.64,1)}
   #buddy.duck svg{transform:translateY(86px);transition-duration:.24s;transition-timing-function:cubic-bezier(.55,0,.85,.36)}
   #buddy.peek svg{transform:translateY(48px)}   /* just the eyes over the edge */
-  #buddy.up svg{transform:translateY(12px)}     /* perched, feet over the edge */
+  #buddy.up svg{transform:translateY(11px)}     /* perched, feet over the edge */
   #buddy .rig{transform-origin:26px 34px;transition:transform .5s ease}
   #buddy .bodygrp{transform-origin:26px 44px}
   #buddy .gaze{transition:transform .35s ease-out}
@@ -151,6 +157,18 @@
   @keyframes flap{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-24deg)}}
 
   /* the box he's perched on: a soft lift, and a little dip when he lands on it */
+  /* the tools: a hard hat for the engineering sections, a .py chip balanced
+     on his head at skills, an EOF pennant planted at the footer */
+  #buddy .prop{opacity:0;transition:opacity .25s}
+  #buddy[data-prop="hat"] .prop-hat{opacity:1}
+  #buddy[data-prop="chip"] .prop-chip{opacity:1;transform-box:fill-box;transform-origin:bottom center;animation:chipwobble 3.2s ease-in-out infinite}
+  @keyframes chipwobble{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(4deg)}}
+  #buddy[data-prop="flag"] .prop-flag{opacity:1}
+  #buddy .pennant{transform-box:fill-box;transform-origin:left center;animation:flagwave 2.2s ease-in-out infinite}
+  @keyframes flagwave{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.82)}}
+  /* the "labeled" stamp that pops off a box when Bobbie inspects the data work */
+  .labelpop{position:absolute;z-index:52;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--mint);background:var(--mint-deep);border:1px solid var(--mint-dim);border-radius:4px;padding:3px 8px;pointer-events:none;animation:poprise 1.5s ease-out forwards}
+  @keyframes poprise{0%{opacity:0;transform:translateY(6px) scale(.8)}18%{opacity:1;transform:translateY(0) scale(1.05)}30%{transform:translateY(-2px) scale(1)}100%{opacity:0;transform:translateY(-22px)}}
   .buddy-here{border-color:var(--mint-dim)!important;box-shadow:0 0 20px rgba(159,216,180,.12);transition:border-color .3s,box-shadow .3s}
   .box-dip{animation:boxdip .32s ease-out}
   @keyframes boxdip{30%{transform:translateY(2.5px)}100%{transform:none}}
@@ -376,6 +394,25 @@
       }
       ctx.stroke();
     }
+    // the plotter pen: rides the mint line as if it were drawing it live
+    {
+      const L = lines[0];
+      const px = ((t*38*dpr) % (W + 160*dpr)) - 80*dpr;
+      const yAt = x => H*L.base
+        + Math.sin(x*L.f/dpr + t*L.drift + L.p)*L.a*dpr*0.9
+        + Math.sin(x*L.f*2.7/dpr - t*L.drift*0.6 + L.p)*L.a*dpr*0.35;
+      if (px > 0 && px < W){
+        const x0 = Math.max(0, px - 90*dpr);
+        ctx.beginPath(); ctx.strokeStyle = 'rgba(159,216,180,.85)'; ctx.lineWidth = 2*dpr;
+        for(let x = x0; x <= px; x += 2*dpr){ x === x0 ? ctx.moveTo(x, yAt(x)) : ctx.lineTo(x, yAt(x)); }
+        ctx.stroke();
+        const py = yAt(px);
+        ctx.strokeStyle = 'rgba(159,216,180,.9)'; ctx.lineWidth = 1*dpr;
+        ctx.beginPath(); ctx.moveTo(px, py - 7*dpr); ctx.lineTo(px, py + 7*dpr); ctx.stroke();
+        ctx.fillStyle = '#9fd8b4';
+        ctx.beginPath(); ctx.arc(px, py, 2.4*dpr, 0, 7); ctx.fill();
+      }
+    }
     t += 0.012;
     requestAnimationFrame(draw);
   }
@@ -553,16 +590,16 @@
       ctx.fillStyle = MINT(0.16 + p.c * 0.12);
       ctx.beginPath(); ctx.arc(p.x, p.y, 1.1 + p.d * 0.9, 0, 7); ctx.fill();
     }
-    // knock the art back under the content so text always wins
+    // knock the art back under the content so text always wins — one wide,
+    // seamless gradient rather than hard-edged panels
     if (wrapRect){
-      const gr = ctx.createLinearGradient(wrapRect.left - 60, 0, wrapRect.left + 120, 0);
-      gr.addColorStop(0, 'rgba(25,27,26,0)'); gr.addColorStop(1, 'rgba(25,27,26,0.66)');
-      ctx.fillStyle = gr; ctx.fillRect(wrapRect.left - 60, 0, 180, H);
-      ctx.fillStyle = 'rgba(25,27,26,0.66)';
-      ctx.fillRect(wrapRect.left + 120, 0, Math.max(0, wrapRect.right - wrapRect.left - 180), H);
-      const gr2 = ctx.createLinearGradient(wrapRect.right - 60, 0, wrapRect.right + 60, 0);
-      gr2.addColorStop(0, 'rgba(25,27,26,0.66)'); gr2.addColorStop(1, 'rgba(25,27,26,0)');
-      ctx.fillStyle = gr2; ctx.fillRect(wrapRect.right - 60, 0, 120, H);
+      const L = wrapRect.left, R = wrapRect.right;
+      const gr = ctx.createLinearGradient(L - 170, 0, R + 170, 0);
+      gr.addColorStop(0, 'rgba(25,27,26,0)');
+      gr.addColorStop(Math.max(0.001, 170 / (R - L + 340)), 'rgba(25,27,26,0.55)');
+      gr.addColorStop(Math.min(0.999, 1 - 170 / (R - L + 340)), 'rgba(25,27,26,0.55)');
+      gr.addColorStop(1, 'rgba(25,27,26,0)');
+      ctx.fillStyle = gr; ctx.fillRect(L - 170, 0, R - L + 340, H);
     }
     if (reduced){
       // static: render only when scroll changes
@@ -615,6 +652,14 @@
   }
 })();
 
+// section rules draw themselves in on first view
+(function(){
+  const secs = [...document.querySelectorAll('section')];
+  if (!('IntersectionObserver' in window)){ secs.forEach(s=>s.classList.add('seen')); return; }
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('seen'); io.unobserve(e.target); } }), { threshold: 0.15 });
+  secs.forEach(s => io.observe(s));
+})();
+
 // scrollspy
 (function(){
   const links = [...document.querySelectorAll('#nav a')];
@@ -664,9 +709,23 @@
           <circle class="eye" cx="31.5" cy="23" r="2.1" fill="var(--mint)"/>
         </g>
         <path class="mouth" d="M21 30 Q26 34 31 30" fill="none" stroke="var(--mint)" stroke-width="2" stroke-linecap="round"/>
+        <g class="prop prop-hat">
+          <path d="M15 9 Q26 -3 37 9 L37 10 L15 10 Z" fill="var(--bg)" stroke="var(--mint)" stroke-width="2"/>
+          <path d="M12 10 L40 10" stroke="var(--mint)" stroke-width="2.4" stroke-linecap="round"/>
+        </g>
+        <g class="prop prop-chip">
+          <rect x="15" y="-7" width="22" height="13" rx="3" fill="var(--bg)" stroke="var(--mint)" stroke-width="1.8"/>
+          <text x="26" y="3" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="var(--mint)">.py</text>
+        </g>
+      </g>
+      <g class="prop prop-flag">
+        <path d="M46 46 L46 8" stroke="var(--mint)" stroke-width="1.8" stroke-linecap="round"/>
+        <path class="pennant" d="M46 9 L60 13 L46 18 Z" fill="var(--mint)" opacity=".85"/>
+        <text x="47" y="30" font-family="JetBrains Mono, monospace" font-size="6.5" fill="var(--mint-dim)" transform="rotate(90 47 30)">EOF</text>
       </g>
     </g>
-  </svg>`;
+  </svg>
+  <div class="ledge"></div>`;
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
   bubble.innerHTML = '<div class="cap" hidden></div><div class="txt"></div>';
@@ -678,7 +737,7 @@
     "\u201CDaniel spent the budget on the resume, not on my arms.\u201D",
     "\u201CLegs were cut in scope review. Daniel says it was a design choice.\u201D",
     "\u201CI\u2019m a few KB of hand-written JavaScript. No framework. I feel lighter than I look.\u201D",
-    "\u201CThis page has zero dependencies and exactly one of me.\u201D",
+    "\u201CThe ledge? I bring it everywhere. Daniel refused to draw me floors.\u201D",
     "\u201CYou scroll faster than the p95 recruiter. I keep metrics. I made them up, but so does every dashboard.\u201D",
     "\u201CEverything I say is sourced from the resume. I\u2019m witty, not creative with facts.\u201D",
     "\u201CStill here. Click me for the 45-second tour \u2014 zero dependencies, one opinionated guide.\u201D"
@@ -761,7 +820,10 @@
   }
 
   function setGlow(i, onoff){
-    if (i === -1 || !anchors[i].boxy) return;
+    if (i === -1) return;
+    // only boxes with a full visible border can glow; a bare .item lighting
+    // one stray rule looked broken, so those just get the dip
+    if (!anchors[i].el.matches('.card, .stats, figure.fig')) return;
     anchors[i].el.classList.toggle('buddy-here', onoff);
   }
   function dipBox(i){
@@ -801,6 +863,7 @@
         buddy.classList.add('up', a.tier);
         setTimeout(()=>buddy.classList.remove('moving'), reduced ? 0 : 340);
         dipBox(i); setGlow(i, true); gazeAt(i);
+        setProp(i); stampIfData(i);
         busy = false;
         if (queued !== -1 && queued !== cur){ const q = queued; queued = -1; moveTo(q, then); return; }
         queued = -1;
@@ -813,6 +876,29 @@
     if (reduced){ dive(); surface(); return; }
     if (from === -1){ dive(); setTimeout(surface, 60); }
     else { dive(); setTimeout(surface, 280); }
+  }
+
+  // which tool he brings out where
+  function setProp(i){
+    const el = anchors[i].el;
+    buddy.dataset.prop =
+      el.closest('#engineering') || el.closest('#projects') ? 'hat' :
+      el.closest('#skills') ? 'chip' :
+      el.matches('footer') ? 'flag' : '';
+  }
+  // at the data-annotation work he does what the work is: stamps the box as labeled
+  function stampIfData(i){
+    if (reduced) return;
+    const el = anchors[i].el;
+    if (!el.closest('#applied')) return;
+    const r = el.getBoundingClientRect();
+    const tag = document.createElement('div');
+    tag.className = 'labelpop';
+    tag.textContent = '✓ LABELED';
+    tag.style.left = (r.right + scrollX - 96) + 'px';
+    tag.style.top = (r.top + scrollY + 10) + 'px';
+    document.body.appendChild(tag);
+    setTimeout(()=>tag.remove(), 1600);
   }
 
   function landedSay(a){
@@ -893,7 +979,7 @@
     saidStep = tourStep;
     const n = tourStep + 1;
     say(TOUR[tourStep].text, tourStep === TOUR.length - 1 ? 5800 : 5200,
-        { tell: true, cap: n === 1 ? `1/${TOUR.length} · SCROLL TO TAKE OVER` : `TOUR · ${n}/${TOUR.length}`, keep: 5200 });
+        { tell: true, cap: n === 1 ? `TOUR ${n}/${TOUR.length} · AUTOPLAYS — SCROLL TO EXIT` : `TOUR ${n}/${TOUR.length} · CLICK ME TO SKIP AHEAD`, keep: 5200 });
   }
   function startTour(){
     if (!on || touring) return;
@@ -911,11 +997,12 @@
     if (!on) return;
     if (touring){ tourStep++; tourStop(); } else startTour();
   });
-  const takeOver = e=>{ if (e.type === 'pointerdown' && e.target && sprite.contains(e.target)) return; endTour(true); };
+  // the tour autoplays; stray clicks should never kill it — only an actual
+  // scroll or a key means the visitor has taken the wheel
+  const takeOver = ()=> endTour(true);
   addEventListener('wheel', takeOver, { passive: true });
-  addEventListener('touchstart', takeOver, { passive: true });
+  addEventListener('touchmove', takeOver, { passive: true });
   addEventListener('keydown', takeOver);
-  addEventListener('pointerdown', takeOver);
 
   function scheduleBlink(){
     clearTimeout(blinkT);
