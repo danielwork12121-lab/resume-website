@@ -1084,7 +1084,7 @@
       bubbleT = null, idleQuipT = null, blinkT = null, gagT = null,
       keepBubbleUntil = 0, firstLanding = true, hoverIdx = -1, hoverT = null,
       touring = false, toured = false, tourStep = 0, tourSaidT = null, saidStep = -1, onHide = null,
-      dragging = false, wasDrag = false, greeted = false;
+      dragging = false, wasDrag = false, greeted = false, moveGen = 0;
 
   // present by default; a visitor who hides him has that respected on return
   try { on = localStorage.getItem('buddy') !== '0'; } catch(e){}
@@ -1130,6 +1130,7 @@
     if (i === -1 || (i === cur && buddy.classList.contains('up'))){ if (then) then(); return; }
     if (busy){ queued = i; return; }
     busy = true;
+    const myGen = ++moveGen;
     const from = cur;
     setGlow(from, false);
     if (performance.now() > keepBubbleUntil) hush();
@@ -1139,11 +1140,13 @@
       buddy.classList.add('duck', 'moving');
     };
     const surface = () => {
+      if (myGen !== moveGen) return;   // a grab (or another move) superseded this one mid-flight
       cur = i;
       placeHolder(i);
       buddy.classList.remove('duck');
       const a = anchors[i];
       const landed = () => {
+        if (myGen !== moveGen) return;
         setTimeout(()=>buddy.classList.remove('moving'), reduced ? 0 : 340);
         fixBox(i, a.tier); setGlow(i, true); gazeAt(i);
         setProp(i); stampFor(i);
@@ -1183,6 +1186,7 @@
     sprite.style.animation = `hop ${ms / hops}ms ease-in-out ${hops}`;
     gaze.style.transform = `translate(${dx > 0 ? 2 : -2}px, ${dy > 0 ? 1.5 : -1}px)`;
     setTimeout(()=>{
+      if (myGen !== moveGen) return;
       buddy.classList.add('jump'); buddy.style.transform = ''; buddy.style.transitionDuration = ''; sprite.style.animation = '';
       cur = i; placeHolder(i); void buddy.offsetWidth;
       buddy.classList.remove('jump', 'travel');
@@ -1452,24 +1456,47 @@
   // pick him up and drop him on any box — he reacts to wherever he lands. Miss the content
   // column entirely and he takes a quick stumble instead of vanishing or freezing mid-air.
   let dragDX = 0, dragDY = 0, dragStartX = 0, dragStartY = 0, dragMoved = 0, dragSamples = [];
+  // he's grabbable at every moment, no exceptions — mid-tour, mid-skit, mid-flight, mid-anything.
+  // The grab always wins: every in-flight animation checks moveGen and quietly stands down.
+  function interrupt(){
+    moveGen++;                                  // stales out any pending moveTo/throw completion
+    clearTimeout(pointT); clearTimeout(hoverT); clearTimeout(tourSaidT); clearTimeout(scrollDeb);
+    clearTimeout(gagT); clearTimeout(bubbleT);
+    unmark(); hideCallout(); hush();
+    if (touring){ touring = false; }
+    setGlow(cur, false);
+    busy = false; queued = -1; cur = -1; hoverIdx = -1;
+    buddy.style.transform = ''; buddy.style.transitionDuration = ''; sprite.style.animation = '';
+    rig.style.transform = ''; rig.style.transition = '';
+    buddy.classList.remove('up', 'peek', 'squash', 'soft', 'wow', 'nod', 'duck', 'moving', 'travel',
+      'jump', 'drop', 'slide-l', 'slide-r', 'climb', 'throwing', 'splat', 'reassembling', 'fallen',
+      'point-r', 'point-l', 'hammer', 'kneel');
+  }
   sprite.addEventListener('pointerdown', e=>{
-    if (!on || touring || busy || !buddy.classList.contains('up') || e.button > 0) return;
+    // grabbing always registers, whatever he's doing — the interrupt itself waits for real
+    // movement (below), so a plain click still starts the tour with no visual hiccup
+    if (!on || e.button > 0) return;
     e.preventDefault();
-    greet();
     dragging = true; dragMoved = 0; wasDrag = false; dragSamples = [];
     dragStartX = e.clientX; dragStartY = e.clientY;
-    const bx = parseFloat(buddy.style.left) || 0, by = parseFloat(buddy.style.top) || 0;
-    dragDX = e.clientX + scrollX - bx; dragDY = e.clientY + scrollY - by;
-    hideCallout(); clearTimeout(pointT); unmark(); buddy.classList.remove('point-r', 'point-l');
-    setGlow(cur, false);
-    buddy.classList.remove('up', 'peek', 'squash', 'soft', 'wow', 'nod');
-    buddy.classList.add('dragging');
     try { sprite.setPointerCapture(e.pointerId); } catch(err){}
   });
   sprite.addEventListener('pointermove', e=>{
     if (!dragging) return;
     dragMoved = Math.max(dragMoved, Math.abs(e.clientX - dragStartX), Math.abs(e.clientY - dragStartY));
-    if (dragMoved > 6) wasDrag = true;
+    if (!wasDrag && dragMoved > 6){
+      // a real drag, confirmed — cancel whatever he was doing and take him from wherever he
+      // actually, visually is right now (mid-transition-safe: rect, not the stale style.left/top)
+      wasDrag = true;
+      greet();
+      const r = buddy.getBoundingClientRect();
+      interrupt();
+      buddy.style.left = (r.left + scrollX) + 'px';
+      buddy.style.top = (r.top + scrollY) + 'px';
+      dragDX = e.clientX - r.left; dragDY = e.clientY - r.top;
+      buddy.classList.add('dragging');
+    }
+    if (!wasDrag) return;
     buddy.style.left = (e.clientX + scrollX - dragDX) + 'px';
     buddy.style.top = (e.clientY + scrollY - dragDY) + 'px';
     const now = performance.now();
@@ -1509,7 +1536,9 @@
     else stumble();
   });
   sprite.addEventListener('lostpointercapture', () => {
-    if (dragging){ dragging = false; buddy.classList.remove('dragging'); rig.style.transform = ''; stumble(); }
+    if (!dragging) return;
+    dragging = false; buddy.classList.remove('dragging'); rig.style.transform = '';
+    if (wasDrag) stumble();   // capture was lost mid-drag — treat it like a miss, not a lost click
   });
 
   // a miss: he tips over where he landed, rights himself, and hops back onto the nearest section —
@@ -1525,6 +1554,7 @@
     "\u201CI\u2019ve had worse code reviews.\u201D"
   ];
   function throwBuddy(vx, vy){
+    const myGen = ++moveGen;
     const speed = Math.hypot(vx, vy) || 0.001, ux = vx / speed, uy = vy / speed;
     const x0 = parseFloat(buddy.style.left) || 0, y0 = parseFloat(buddy.style.top) || 0;
     const vpLeft = scrollX + 4, vpRight = scrollX + innerWidth - 68, vpTop = scrollY + 4, vpBottom = scrollY + innerHeight - 86;
@@ -1539,22 +1569,25 @@
     buddy.style.transitionDuration = dur + 'ms';
     buddy.style.transform = `translate(${x1 - x0}px, ${y1 - y0}px)`;
     setTimeout(()=>{
+      if (myGen !== moveGen) return;
       buddy.classList.add('jump');
       buddy.style.transform = ''; buddy.style.transitionDuration = '';
       buddy.style.left = x1 + 'px'; buddy.style.top = y1 + 'px';
       void buddy.offsetWidth;
       buddy.classList.remove('jump', 'throwing', 'moving');
-      splatThenReassemble();
+      splatThenReassemble(myGen);
     }, dur);
   }
-  function splatThenReassemble(){
+  function splatThenReassemble(myGen){
     if (reduced){ buddy.classList.remove('fallen'); cur = -1; pickAnchor(); return; }
     buddy.classList.add('splat');
     say(THROW_LINES[Math.floor(Math.random() * THROW_LINES.length)], 1600);
     setTimeout(()=>{
+      if (myGen !== moveGen) return;
       buddy.classList.remove('splat');
       buddy.classList.add('reassembling');
       setTimeout(()=>{
+        if (myGen !== moveGen) return;
         buddy.classList.remove('reassembling', 'fallen');
         cur = -1; pickAnchor();
       }, 620);
