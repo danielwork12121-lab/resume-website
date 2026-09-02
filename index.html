@@ -134,6 +134,8 @@
   #buddy.up.squash .bodygrp{animation:squash .45s cubic-bezier(.34,1.56,.64,1),breathe 3.6s ease-in-out .45s infinite}
   @keyframes squash{0%{transform:scale(1.14,.8)}45%{transform:scale(.94,1.08)}100%{transform:scale(1,1)}}
   #buddy.up.soft .bodygrp{animation:softland .4s ease-out,breathe 3.6s ease-in-out .4s infinite}
+  #buddy.up.nod .bodygrp{animation:nod .36s ease-out,breathe 3.6s ease-in-out .36s infinite}
+  @keyframes nod{0%{transform:none}35%{transform:translateY(4px) scale(1.04,.94)}100%{transform:none}}
   @keyframes softland{0%{transform:scale(1.05,.95)}100%{transform:scale(1,1)}}
   #buddy.up.wow .bodygrp{animation:wow .8s cubic-bezier(.34,1.4,.64,1),breathe 3.6s ease-in-out .8s infinite}
   @keyframes wow{0%{transform:scale(1.14,.8)}28%{transform:translateY(-14px) scale(.95,1.1)}52%{transform:translateY(0) scale(1.07,.93)}72%{transform:translateY(-5px) scale(.98,1.03)}100%{transform:none}}
@@ -175,14 +177,17 @@
 
   .bubble{position:absolute;left:0;top:0;z-index:51;max-width:250px;background:#242825;border:1px solid var(--line);border-radius:10px;border-bottom-right-radius:2px;padding:10px 13px;font-size:12.5px;color:var(--ink);line-height:1.5;opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s;pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,.35)}
   .bubble.l{border-bottom-right-radius:10px;border-bottom-left-radius:2px}
-  .bubble.show{opacity:1;transform:translateY(0)}
+  .bubble.show{opacity:1;transform:translateY(0);pointer-events:auto;cursor:pointer;user-select:none}
+  .bubble:hover{border-color:var(--mint-dim)}
+  .bubble .hint{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--ink-faint);text-align:right;margin-top:6px}
+  .bubble:hover .hint{color:var(--mint-dim)}
   .bubble .cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--mint-dim);margin-bottom:5px}
   .bubble .txt{font-style:italic}
   .bubble.tell .txt{font-style:normal;color:var(--ink)}
   @media (max-width:900px){#buddy,.bubble{display:none!important}}
   @media (prefers-reduced-motion:reduce){
     #buddy svg,#buddy .rig,#buddy .gaze,.bubble{transition:none}
-    #buddy .leg,#buddy.moving .leg,#buddy.blink .eye,#buddy.up .bodygrp,#buddy.up.squash .bodygrp,#buddy.up.soft .bodygrp,#buddy.up.wow .bodygrp,#buddy.wow .eye,#buddy.wow .wing{animation:none}
+    #buddy .leg,#buddy.moving .leg,#buddy.blink .eye,#buddy.up .bodygrp,#buddy.up.squash .bodygrp,#buddy.up.soft .bodygrp,#buddy.up.nod .bodygrp,#buddy.up.wow .bodygrp,#buddy.wow .eye,#buddy.wow .wing{animation:none}
     .box-dip{animation:none}
   }
 </style>
@@ -728,10 +733,10 @@
   <div class="ledge"></div>`;
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
-  bubble.innerHTML = '<div class="cap" hidden></div><div class="txt"></div>';
+  bubble.innerHTML = '<div class="cap" hidden></div><div class="txt"></div><div class="hint"></div>';
   document.body.appendChild(buddy); document.body.appendChild(bubble);
   const rig = buddy.querySelector('.rig'), gaze = buddy.querySelector('.gaze'), sprite = buddy.querySelector('svg');
-  const cap = bubble.querySelector('.cap'), txt = bubble.querySelector('.txt');
+  const cap = bubble.querySelector('.cap'), txt = bubble.querySelector('.txt'), hint = bubble.querySelector('.hint');
 
   const IDLE_QUIPS = [
     "\u201CDaniel spent the budget on the resume, not on my arms.\u201D",
@@ -799,7 +804,7 @@
   let on = false, cur = -1, busy = false, queued = -1,
       bubbleT = null, idleQuipT = null, blinkT = null, gagT = null,
       keepBubbleUntil = 0, firstLanding = true, hoverIdx = -1, hoverT = null,
-      touring = false, toured = false, tourStep = 0, tourT = null, tourSaidT = null, saidStep = -1;
+      touring = false, toured = false, tourStep = 0, tourSaidT = null, saidStep = -1, onHide = null;
 
   try { on = localStorage.getItem('buddy') === '1'; } catch(e){}
 
@@ -904,12 +909,12 @@
   function landedSay(a){
     if (firstLanding){
       firstLanding = false;
-      say(INTRO, 6500, { tell: true, cap: 'BOBBIE', keep: 6500 });
-      setTimeout(()=>{ if (on && !touring && !toured) say(OFFER, 4500, { tell: true, cap: 'BOBBIE', keep: 2000 }); }, 7200);
+      say(INTRO, 11000, { tell: true, cap: 'BOBBIE', keep: 6500,
+        then: ()=>setTimeout(()=>{ if (on && !touring && !toured && !bubble.classList.contains('show')) say(OFFER, undefined, { tell: true, cap: 'BOBBIE', keep: 2000 }); }, 500) });
     } else if (touring){
       tourSay();
     } else if (a.quip && performance.now() > keepBubbleUntil){
-      say(a.quip, 3600);
+      say(a.quip);
     }
   }
 
@@ -932,18 +937,31 @@
     if (best !== cur && (!curVisible || bd + 70 < dCur)) moveTo(best);
   }
 
+  // the visitor sets the pace: a click on the bubble (or on Bobbie) moves on.
+  // Quips still fall away on their own after a generous, length-based grace
+  // period so nothing sits over the page forever; tour lines wait for the click.
   function say(text, ms, o){
     o = o || {};
     bubble.classList.toggle('tell', !!o.tell);
     cap.textContent = o.cap || ''; cap.hidden = !o.cap;
     txt.textContent = text;
+    hint.textContent = o.hint === undefined ? 'OK' : o.hint;
     bubble.classList.add('show');
     keepBubbleUntil = o.keep ? performance.now() + o.keep : 0;
+    onHide = o.then || null;
     placeBubble();
     clearTimeout(bubbleT);
-    bubbleT = setTimeout(()=>bubble.classList.remove('show'), ms || 4200);
+    if (ms === undefined) ms = 2600 + text.length * 55;
+    if (ms) bubbleT = setTimeout(hush, ms);
   }
-  function hush(){ clearTimeout(bubbleT); bubble.classList.remove('show'); }
+  function hush(){
+    clearTimeout(bubbleT); bubble.classList.remove('show');
+    const cb = onHide; onHide = null; if (cb) cb();
+  }
+  function nod(){
+    if (reduced || !buddy.classList.contains('up')) return;
+    buddy.classList.remove('nod'); void buddy.offsetWidth; buddy.classList.add('nod');
+  }
   function placeBubble(){
     const bw = bubble.offsetWidth, bh = bubble.offsetHeight;
     const hx = parseFloat(buddy.style.left) || 0, hy = parseFloat(buddy.style.top) || 0;
@@ -962,8 +980,8 @@
 
   // ---- the tour: Bobbie leads, the page follows ----
   function tourStop(){
-    clearTimeout(tourT); clearTimeout(tourSaidT);
-    if (tourStep >= TOUR.length){ touring = false; return; }
+    clearTimeout(tourSaidT);
+    if (tourStep >= TOUR.length){ touring = false; hush(); return; }
     const s = TOUR[tourStep];
     const r = anchors[s.idx].el.getBoundingClientRect();
     const top = scrollY + r.top - (innerHeight * 0.42 - Math.min(r.height/2, 110));
@@ -972,34 +990,47 @@
     else moveTo(s.idx);
     // if the landing runs late, speak anyway so the tour keeps its rhythm
     tourSaidT = setTimeout(tourSay, 1600);
-    tourT = setTimeout(()=>{ tourStep++; tourStop(); }, tourStep === TOUR.length - 1 ? 6000 : 5600);
   }
+  function tourNext(){ tourStep++; tourStop(); }
   function tourSay(){
     if (!touring || saidStep === tourStep) return;
     saidStep = tourStep;
     const n = tourStep + 1;
-    say(TOUR[tourStep].text, tourStep === TOUR.length - 1 ? 5800 : 5200,
-        { tell: true, cap: n === 1 ? `TOUR ${n}/${TOUR.length} · AUTOPLAYS — SCROLL TO EXIT` : `TOUR ${n}/${TOUR.length} · CLICK ME TO SKIP AHEAD`, keep: 5200 });
+    const last = tourStep === TOUR.length - 1;
+    say(TOUR[tourStep].text, 0,
+        { tell: true, cap: n === 1 ? `TOUR ${n}/${TOUR.length} · SCROLL TO EXIT` : `TOUR ${n}/${TOUR.length}`,
+          hint: last ? 'DONE' : 'NEXT ›', keep: 1e9 });
   }
   function startTour(){
     if (!on || touring) return;
     touring = true; toured = true; tourStep = 0; saidStep = -1; hoverIdx = -1; clearTimeout(hoverT);
-    say("Follow me.", 1400, { tell: true, cap: 'TOUR', keep: 1400 });
+    say("Follow me.", 1400, { tell: true, cap: 'TOUR', hint: '', keep: 1400 });
     setTimeout(()=>{ if (touring) tourStop(); }, 700);
   }
   function endTour(interrupted){
     if (!touring) return;
-    touring = false; clearTimeout(tourT); clearTimeout(tourSaidT);
-    if (interrupted) say("Okay, you drive. I’ll be around.", 3200, { tell: true, keep: 3200 });
+    touring = false; clearTimeout(tourSaidT);
+    if (interrupted) say("Okay, you drive. I’ll be around.", undefined, { tell: true, keep: 3200 });
   }
   sprite.addEventListener('click', e=>{
     e.stopPropagation();
     if (!on) return;
-    if (touring){ tourStep++; tourStop(); } else startTour();
+    if (touring) tourNext(); else startTour();
   });
-  // the tour autoplays; stray clicks should never kill it — only an actual
-  // scroll or a key means the visitor has taken the wheel
-  const takeOver = ()=> endTour(true);
+  bubble.addEventListener('click', e=>{
+    e.stopPropagation();
+    if (!on) return;
+    nod();
+    if (touring) tourNext(); else hush();
+  });
+  // the tour waits for the visitor: click, Enter, Space or → moves to the next
+  // stop; a scroll, Escape or any other key means they have taken the wheel
+  const takeOver = e=>{
+    if (e.type === 'keydown' && touring){
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight'){ e.preventDefault(); tourNext(); return; }
+    }
+    endTour(true);
+  };
   addEventListener('wheel', takeOver, { passive: true });
   addEventListener('touchmove', takeOver, { passive: true });
   addEventListener('keydown', takeOver);
@@ -1017,7 +1048,7 @@
       if (on && !touring && !bubble.classList.contains('show'))
         say(IDLE_QUIPS[Math.floor(Math.random()*IDLE_QUIPS.length)], 5200);
       scheduleIdleQuip();
-    }, 10000 + Math.random()*9000);
+    }, 18000 + Math.random()*17000);
   }
   // little bits of business while he's perched: a lean over the edge to read
   // his box, a hop that makes it dip, a duck-and-peek, a glance around
