@@ -131,20 +131,9 @@
   footer .colophon{margin:0;font-family:var(--mono);font-size:var(--t-meta);color:var(--ink-faint);letter-spacing:.04em}
   footer .colophon:first-of-type{margin-top:8px}
 
-  /* ---------- Buddy, the companion / guide (opt-in) ---------- */
-  .buddy-toggle{display:flex;align-items:center;gap:8px;margin-top:16px;background:none;border:0;padding:0;cursor:pointer;font-family:var(--mono);font-size:var(--t-meta);letter-spacing:.12em;color:var(--ink-faint)}
-  .buddy-toggle:hover{color:var(--ink-dim)}
-  .buddy-toggle{align-items:flex-start}
-  .buddy-toggle .lbl{display:flex;flex-direction:column;gap:3px;text-align:left}
-  .buddy-toggle small{font-family:var(--sans);font-size:var(--t-meta);letter-spacing:0;color:var(--ink-faint)}
-  .buddy-toggle .sw{flex-shrink:0;margin-top:1px;width:28px;height:16px;border-radius:8px;border:1px solid var(--line);background:var(--bg2);position:relative;transition:background .2s,border-color .2s}
-  .buddy-toggle .sw::before{content:"";position:absolute;inset:-1px;border-radius:9px;border:1px solid var(--mint);opacity:0;pointer-events:none}
-  .buddy-toggle.pulse .sw::before{animation:ring 1.4s cubic-bezier(0.23,1,0.32,1) 1.2s 2}
-  @keyframes ring{0%{opacity:.8;transform:scale(1)}100%{opacity:0;transform:scale(1.9)}}
-  .buddy-toggle .sw::after{content:"";position:absolute;top:2px;left:2px;width:10px;height:10px;border-radius:50%;background:var(--ink-faint);transition:transform 160ms cubic-bezier(0.23,1,0.32,1),background .2s}
-  .buddy-toggle[aria-pressed="true"]{color:var(--mint)}
-  .buddy-toggle[aria-pressed="true"] .sw{background:var(--mint-deep);border-color:var(--mint-dim)}
-  .buddy-toggle[aria-pressed="true"] .sw::after{transform:translateX(12px);background:var(--mint)}
+  /* ---------- Buddy, the companion / guide (on by default; a plain link hides him) ---------- */
+  .buddy-toggle{display:inline-block;margin-top:16px;background:none;border:0;padding:0;cursor:pointer;font-family:var(--mono);font-size:var(--t-meta);letter-spacing:.08em;color:var(--ink-faint);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line)}
+  .buddy-toggle:hover{color:var(--ink-dim);text-decoration-color:var(--ink-faint)}
 
   /* Buddy lives IN the page now: an absolutely-positioned window whose bottom
      edge sits on the current box's top border. He slides up out of it to perch
@@ -166,6 +155,33 @@
   #buddy.dragging svg{cursor:grabbing;transform:translateY(20px) scale(1.06);transition:transform 90ms cubic-bezier(0.23,1,0.32,1);filter:brightness(1.1)}
   #buddy.dragging{transition:none}
   #buddy.fallen svg{transform:translateY(28px)}
+  #buddy.throwing .rig{animation:throwspin var(--tdur,300ms) linear}
+  @keyframes throwspin{from{transform:rotate(0)}to{transform:rotate(1080deg)}}
+  /* impact: a fast, flat squash — a beat, not a wince — then he reassembles just as fast */
+  #buddy.splat .bodygrp{animation:splatBody 170ms cubic-bezier(0.23,1,0.32,1) forwards}
+  @keyframes splatBody{to{transform:scale(1.55,.2)}}
+  #buddy.splat .leg{animation:splatLegL 170ms cubic-bezier(0.23,1,0.32,1) forwards}
+  @keyframes splatLegL{to{transform:translate(-10px,-15px) rotate(-34deg)}}
+  #buddy.splat .legR{animation:splatLegR 170ms cubic-bezier(0.23,1,0.32,1) forwards}
+  @keyframes splatLegR{to{transform:translate(10px,-15px) rotate(34deg)}}
+  #buddy.splat .armL{animation:splatArmL 170ms cubic-bezier(0.23,1,0.32,1) forwards}
+  @keyframes splatArmL{to{transform:translate(-15px,-7px) rotate(-42deg)}}
+  #buddy.splat .armR{animation:splatArmR 170ms cubic-bezier(0.23,1,0.32,1) forwards}
+  @keyframes splatArmR{to{transform:translate(15px,-7px) rotate(42deg)}}
+  #buddy.splat .eye{animation:splatEye 170ms cubic-bezier(0.23,1,0.32,1) forwards}
+  @keyframes splatEye{to{transform:translate(0,5px) scale(.7)}}
+  #buddy.reassembling .bodygrp{animation:reassembleBody 380ms cubic-bezier(0.34,1.56,0.64,1) both}
+  @keyframes reassembleBody{0%{transform:scale(1.55,.2)}100%{transform:none}}
+  #buddy.reassembling .leg{animation:reassembleLegL 380ms cubic-bezier(0.34,1.56,0.64,1) 40ms both}
+  @keyframes reassembleLegL{0%{transform:translate(-10px,-15px) rotate(-34deg)}100%{transform:none}}
+  #buddy.reassembling .legR{animation:reassembleLegR 380ms cubic-bezier(0.34,1.56,0.64,1) 75ms both}
+  @keyframes reassembleLegR{0%{transform:translate(10px,-15px) rotate(34deg)}100%{transform:none}}
+  #buddy.reassembling .armL{animation:reassembleArmL 380ms cubic-bezier(0.34,1.56,0.64,1) 115ms both}
+  @keyframes reassembleArmL{0%{transform:translate(-15px,-7px) rotate(-42deg)}100%{transform:none}}
+  #buddy.reassembling .armR{animation:reassembleArmR 380ms cubic-bezier(0.34,1.56,0.64,1) 155ms both}
+  @keyframes reassembleArmR{0%{transform:translate(15px,-7px) rotate(42deg)}100%{transform:none}}
+  #buddy.reassembling .eye{animation:reassembleEye 380ms cubic-bezier(0.34,1.56,0.64,1) 195ms both}
+  @keyframes reassembleEye{0%{transform:translate(0,5px) scale(.7)}100%{transform:none}}
   @media (hover:hover) and (pointer:fine){
     #buddy.up:not(.moving) .bodygrp{transition:filter 160ms ease-out}
     #buddy.up:not(.moving):hover .bodygrp{filter:brightness(1.12)}
@@ -185,6 +201,12 @@
   #buddy .arm{transform-box:view-box;transition:transform .4s cubic-bezier(0.23,1,0.32,1)}
   #buddy .armL{transform-origin:13.5px 32px;animation:swayL 4.4s ease-in-out infinite}
   #buddy .armR{transform-origin:38.5px 32px;animation:swayR 4.4s ease-in-out .2s infinite}
+  /* he's not greeted yet: eager, waving hello with the free arm */
+  #buddy.waving .armR{animation:wave 850ms cubic-bezier(0.45,0,0.55,1) infinite}
+  @keyframes wave{0%,100%{transform:rotate(-92deg)}50%{transform:rotate(-125deg)}}
+  #buddy.waving .armL{animation:swayL 4.4s ease-in-out infinite}
+  #buddy.waving .eye{animation:wideEye 850ms ease-in-out infinite}
+  @keyframes wideEye{0%,50%,100%{transform:scaleY(1)}25%{transform:scaleY(1.12)}}
   @keyframes swayL{0%,100%{transform:rotate(2deg)}50%{transform:rotate(-2deg)}}
   @keyframes swayR{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
   #buddy.moving .armL{animation:swingL .3s ease-in-out infinite}
@@ -330,10 +352,10 @@
   @media (prefers-reduced-motion:reduce){
     #buddy svg,#buddy .rig,#buddy .gaze{transition:none}
     .buddy-dock{transition:opacity 180ms ease;transform:none}
-    .labelpop,#buddy .prop-chip,#buddy .pennant,.buddy-toggle.pulse .sw::before{animation:none}
+    .labelpop,#buddy .prop-chip,#buddy .pennant{animation:none}
     .nav-ind{transition:none}
-    #buddy .leg,#buddy.moving .leg,#buddy.blink .eye,#buddy.up .bodygrp,#buddy.up.squash .bodygrp,#buddy.up.soft .bodygrp,#buddy.up.nod .bodygrp,#buddy.up.wow .bodygrp,#buddy.wow .eye{animation:none}
-    .box-dip,.box-fix,.bob-read,#buddy.climb svg,#buddy .arm,.pop,.bbox,.sketch,.sketch path{animation:none}
+    #buddy .leg,#buddy.moving .leg,#buddy.blink .eye,#buddy.up .bodygrp,#buddy.up.squash .bodygrp,#buddy.up.soft .bodygrp,#buddy.up.nod .bodygrp,#buddy.up.wow .bodygrp,#buddy.wow .eye,#buddy.waving .armR,#buddy.waving .eye{animation:none}
+    .box-dip,.box-fix,.bob-read,#buddy.climb svg,#buddy .arm,.pop,.bbox,.sketch,.sketch path,#buddy.throwing .rig,#buddy.splat .bodygrp,#buddy.splat .leg,#buddy.splat .arm,#buddy.splat .eye,#buddy.reassembling .bodygrp,#buddy.reassembling .leg,#buddy.reassembling .arm,#buddy.reassembling .eye{animation:none}
     .callout{transition:opacity 160ms ease;transform:translate(-50%,-100%)}
     .callout.show{transform:translate(-50%,-100%)}
     .bob-mark::after{animation:none;transform:none}
@@ -359,7 +381,7 @@
     </nav>
     <hr>
     <div class="status"><span class="dot"></span>Open to Summer 2027<br>SWE / ML internships</div>
-    <button class="buddy-toggle" id="buddyToggle" aria-pressed="false" title="Buddy is a small guide who lives behind the boxes and perches on whatever you’re reading. Off by default."><span class="sw"></span><span class="lbl">BUDDY · GUIDE<small>Turn on a 45-second guided tour</small></span></button>
+    <button class="buddy-toggle" id="buddyToggle" aria-pressed="true" title="Buddy lives on the page. Pick him up and drop him on a section for more detail, or hide him here.">Hide guide</button>
     <div class="buddy-dock" id="buddyDock" aria-live="polite">
       <div class="dock-head">
         <svg class="dock-face" viewBox="0 0 52 46" aria-hidden="true"><ellipse cx="26" cy="23" rx="14" ry="20" fill="var(--bg)" stroke="var(--mint)" stroke-width="2"/><circle cx="20.5" cy="20" r="1.9" fill="var(--mint)"/><circle cx="31.5" cy="20" r="1.9" fill="var(--mint)"/><path d="M21 27 Q26 31 31 27" fill="none" stroke="var(--mint)" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -1058,13 +1080,14 @@
   const toggle = document.getElementById('buddyToggle');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  let on = false, cur = -1, busy = false, queued = -1,
+  let on = true, cur = -1, busy = false, queued = -1,
       bubbleT = null, idleQuipT = null, blinkT = null, gagT = null,
       keepBubbleUntil = 0, firstLanding = true, hoverIdx = -1, hoverT = null,
       touring = false, toured = false, tourStep = 0, tourSaidT = null, saidStep = -1, onHide = null,
-      dragging = false, wasDrag = false;
+      dragging = false, wasDrag = false, greeted = false;
 
-  try { on = localStorage.getItem('buddy') === '1'; } catch(e){}
+  // present by default; a visitor who hides him has that respected on return
+  try { on = localStorage.getItem('buddy') !== '0'; } catch(e){}
 
   // where the perch window sits for an anchor: bottom edge overlapping the
   // box's top border by a few px, so his feet dangle over the front of it.
@@ -1322,6 +1345,7 @@
   }
 
   function landedSay(a){
+    if (!greeted){ buddy.classList.add('waving'); return; }   // waving, not talking, until he's picked up
     if (firstLanding){
       firstLanding = false;
       say(INTRO, 11000, { tell: true, cap: 'BUDDY', keep: 6500,
@@ -1412,20 +1436,27 @@
     touring = false; clearTimeout(tourSaidT);
     if (interrupted) say("Okay, you drive. I’ll be around.", undefined, { tell: true, keep: 3200 });
   }
+  function greet(){
+    if (greeted) return;
+    greeted = true;
+    buddy.classList.remove('waving');
+  }
   sprite.addEventListener('click', e=>{
     e.stopPropagation();
     if (wasDrag){ wasDrag = false; return; }   // a drag ending on him shouldn't also start the tour
     if (!on) return;
+    greet();
     if (touring) tourNext(); else startTour();
   });
 
   // pick him up and drop him on any box — he reacts to wherever he lands. Miss the content
   // column entirely and he takes a quick stumble instead of vanishing or freezing mid-air.
-  let dragDX = 0, dragDY = 0, dragStartX = 0, dragStartY = 0, dragMoved = 0;
+  let dragDX = 0, dragDY = 0, dragStartX = 0, dragStartY = 0, dragMoved = 0, dragSamples = [];
   sprite.addEventListener('pointerdown', e=>{
     if (!on || touring || busy || !buddy.classList.contains('up') || e.button > 0) return;
     e.preventDefault();
-    dragging = true; dragMoved = 0; wasDrag = false;
+    greet();
+    dragging = true; dragMoved = 0; wasDrag = false; dragSamples = [];
     dragStartX = e.clientX; dragStartY = e.clientY;
     const bx = parseFloat(buddy.style.left) || 0, by = parseFloat(buddy.style.top) || 0;
     dragDX = e.clientX + scrollX - bx; dragDY = e.clientY + scrollY - by;
@@ -1441,6 +1472,9 @@
     if (dragMoved > 6) wasDrag = true;
     buddy.style.left = (e.clientX + scrollX - dragDX) + 'px';
     buddy.style.top = (e.clientY + scrollY - dragDY) + 'px';
+    const now = performance.now();
+    dragSamples.push({ x: e.clientX, y: e.clientY, t: now });
+    while (dragSamples.length > 2 && now - dragSamples[0].t > 90) dragSamples.shift();
     if (!reduced){
       const lean = Math.max(-22, Math.min(22, (e.movementX || 0) * 3.2));
       rig.style.transform = `rotate(${lean}deg)`;
@@ -1463,7 +1497,15 @@
       const d = Math.hypot(dropX - cx, dropY - cy);
       if (d < hitD){ hitD = d; hit = i; }
     }
-    if (hit !== -1){ cur = -1; moveTo(hit); }
+    if (hit !== -1){ cur = -1; moveTo(hit); return; }
+    // a real flick, not just a slow reposition — release velocity decides which
+    const s0 = dragSamples[0];
+    let vx = 0, vy = 0;
+    if (s0 && e.timeStamp - s0.t > 8){
+      const dt = (performance.now()) - s0.t || 16;
+      vx = (e.clientX - s0.x) / dt; vy = (e.clientY - s0.y) / dt;
+    }
+    if (!reduced && Math.hypot(vx, vy) > 0.85) throwBuddy(vx, vy);
     else stumble();
   });
   sprite.addEventListener('lostpointercapture', () => {
@@ -1477,6 +1519,47 @@
     "\u201CThat wasn\u2019t the landing I planned.\u201D",
     "\u201COkay \u2014 back to the content.\u201D"
   ];
+  const THROW_LINES = [
+    "\u201CWorth it.\u201D",
+    "\u201COkay. Reassembling.\u201D",
+    "\u201CI\u2019ve had worse code reviews.\u201D"
+  ];
+  function throwBuddy(vx, vy){
+    const speed = Math.hypot(vx, vy) || 0.001, ux = vx / speed, uy = vy / speed;
+    const x0 = parseFloat(buddy.style.left) || 0, y0 = parseFloat(buddy.style.top) || 0;
+    const vpLeft = scrollX + 4, vpRight = scrollX + innerWidth - 68, vpTop = scrollY + 4, vpBottom = scrollY + innerHeight - 86;
+    let t = 1400;
+    if (ux > .001) t = Math.min(t, (vpRight - x0) / ux); else if (ux < -.001) t = Math.min(t, (vpLeft - x0) / ux);
+    if (uy > .001) t = Math.min(t, (vpBottom - y0) / uy); else if (uy < -.001) t = Math.min(t, (vpTop - y0) / uy);
+    t = Math.max(20, t);
+    const x1 = x0 + ux * t, y1 = y0 + uy * t;
+    const dur = Math.max(140, Math.min(420, t / 2.6));
+    buddy.classList.add('fallen', 'throwing', 'moving');
+    buddy.style.setProperty('--tdur', dur + 'ms');
+    buddy.style.transitionDuration = dur + 'ms';
+    buddy.style.transform = `translate(${x1 - x0}px, ${y1 - y0}px)`;
+    setTimeout(()=>{
+      buddy.classList.add('jump');
+      buddy.style.transform = ''; buddy.style.transitionDuration = '';
+      buddy.style.left = x1 + 'px'; buddy.style.top = y1 + 'px';
+      void buddy.offsetWidth;
+      buddy.classList.remove('jump', 'throwing', 'moving');
+      splatThenReassemble();
+    }, dur);
+  }
+  function splatThenReassemble(){
+    if (reduced){ buddy.classList.remove('fallen'); cur = -1; pickAnchor(); return; }
+    buddy.classList.add('splat');
+    say(THROW_LINES[Math.floor(Math.random() * THROW_LINES.length)], 1600);
+    setTimeout(()=>{
+      buddy.classList.remove('splat');
+      buddy.classList.add('reassembling');
+      setTimeout(()=>{
+        buddy.classList.remove('reassembling', 'fallen');
+        cur = -1; pickAnchor();
+      }, 620);
+    }, 190);
+  }
   function stumble(){
     buddy.classList.add('fallen');
     if (!reduced){
@@ -1607,13 +1690,14 @@
     const idx = el ? indexOf.get(el) : -1;
     if (idx === hoverIdx) return;
     hoverIdx = idx; clearTimeout(hoverT);
-    if (idx !== -1 && idx !== cur) hoverT = setTimeout(()=>{ if (on && !touring && hoverIdx === idx) moveTo(idx); }, 320);
+    if (idx !== -1 && idx !== cur) hoverT = setTimeout(()=>{ if (on && !touring && hoverIdx === idx){ greet(); moveTo(idx); } }, 320);
   }, {passive:true});
   addEventListener('resize', ()=>{ if (on && cur !== -1) placeHolder(cur); });
 
   function setOn(v){
     on = v;
     toggle.setAttribute('aria-pressed', v ? 'true' : 'false');
+    toggle.textContent = v ? 'Hide guide' : 'Show guide';
     try { localStorage.setItem('buddy', v ? '1' : '0'); } catch(e){}
     if (v){
       buddy.classList.add('on');
@@ -1629,10 +1713,8 @@
       clearTimeout(idleQuipT); clearTimeout(blinkT); clearTimeout(gagT); clearTimeout(hoverT);
     }
   }
-  toggle.addEventListener('click', e=>{ e.stopPropagation(); toggle.classList.remove('pulse'); setOn(!on); });
-  // first visit only: one soft ring on the switch so the guide gets noticed once
-  try { if (!on && !localStorage.getItem('buddy-seen')){ toggle.classList.add('pulse'); localStorage.setItem('buddy-seen', '1'); } } catch(e){}
-  if (on) setOn(true); // restore a previous opt-in; default stays off
+  toggle.addEventListener('click', e=>{ e.stopPropagation(); setOn(!on); });
+  setOn(on);   // present by default; a visitor who hid him before finds him hidden again
 })();
 </script>
 </body></html>
