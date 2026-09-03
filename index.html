@@ -418,7 +418,7 @@
     </nav>
     <hr>
     <div class="status"><span class="dot"></span>Open to Summer 2027<br>SWE / ML internships</div>
-    <button class="buddy-toggle" id="buddyToggle" aria-pressed="true" title="Buddy lives on the page. Pick him up and drop him on a section for more detail, or hide him here.">Hide guide</button>
+    <button class="buddy-toggle" id="buddyToggle" aria-pressed="false" title="An animated character who can walk you through this CV — entirely optional.">Meet the guide</button>
     <div id="buddyLive" class="sr-only" aria-live="polite"></div>
   </aside>
 
@@ -1210,14 +1210,15 @@
   const toggle = document.getElementById('buddyToggle');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  let on = true, cur = -1, busy = false, queued = -1,
+  let on = false, cur = -1, busy = false, queued = -1,
       bubbleT = null, idleQuipT = null, blinkT = null, gagT = null,
       keepBubbleUntil = 0, hoverIdx = -1, hoverT = null,
       touring = false, toured = false, tourStep = 0, tourSaidT = null, saidStep = -1, onHide = null,
       dragging = false, wasDrag = false, greeted = false, moveGen = 0;
 
-  // present by default; a visitor who hides him has that respected on return
-  try { on = localStorage.getItem('buddy') !== '0'; } catch(e){}
+  // strictly opt-in: nothing renders, nothing waves, until a visitor deliberately
+  // asks for him — a visitor who's turned him on before finds that respected on return
+  try { on = localStorage.getItem('buddy') === '1'; } catch(e){}
 
   // where the perch window sits for an anchor: bottom edge overlapping the
   // box's top border by a few px, so his feet dangle over the front of it.
@@ -1922,7 +1923,7 @@
   function setOn(v){
     on = v;
     toggle.setAttribute('aria-pressed', v ? 'true' : 'false');
-    toggle.textContent = v ? 'Hide guide' : 'Show guide';
+    toggle.textContent = v ? 'Hide guide' : 'Meet the guide';
     try { localStorage.setItem('buddy', v ? '1' : '0'); } catch(e){}
     if (v){
       buddy.classList.add('on');
