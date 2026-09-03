@@ -158,6 +158,10 @@
      document position — otherwise scrolling away from where he first landed would
      carry him off-screen and leave him unreachable */
   #buddy.home{position:fixed;left:20px;top:auto;bottom:22px}
+  /* mid-scroll: grips his current screen spot (left/top set inline at the moment of the
+     grab) instead of scrolling away with the document, so a long scroll never leaves him
+     behind off-screen — see the scroll handler for the handoff back to document position */
+  #buddy.holding{position:fixed}
   #buddy.jump,#buddy.jump svg{transition:none!important}
   #buddy.slide-l{transform:translateX(-150px)}
   #buddy.slide-r{transform:translateX(150px)}
@@ -1256,7 +1260,7 @@
     if (i === -1 || (i === cur && buddy.classList.contains('up'))){ if (then) then(); return; }
     if (busy){ queued = i; return; }
     busy = true;
-    buddy.classList.remove('home');   // leaving the fixed home spot for document-anchored perching
+    buddy.classList.remove('home', 'holding');   // leaving any fixed-position state for document-anchored perching
     const myGen = ++moveGen;
     const from = cur;
     setGlow(from, false);
@@ -1640,7 +1644,7 @@
     rig.style.transform = ''; rig.style.transition = '';
     buddy.classList.remove('up', 'peek', 'squash', 'soft', 'wow', 'nod', 'duck', 'moving', 'travel',
       'jump', 'drop', 'slide-l', 'slide-r', 'climb', 'throwing', 'splat', 'reassembling', 'fallen',
-      'point-r', 'point-l', 'hammer', 'kneel', 'home');
+      'point-r', 'point-l', 'hammer', 'kneel', 'home', 'holding');
   }
   sprite.addEventListener('pointerdown', e=>{
     // grabbing always registers, whatever he's doing — the interrupt itself waits for real
@@ -1858,14 +1862,37 @@
   let scrollDeb = null;
   addEventListener('scroll', ()=>{
     if (!on || touring || dragging) return;
-    if (!greeted){   // stays put at home, but his (document-positioned) invite still needs to track him
-      clearTimeout(scrollDeb);
-      if (callout.classList.contains('show')) scrollDeb = setTimeout(showCallout, 80);
+    if (!greeted){
+      // buddy himself is position:fixed at home, so he never needs to move on scroll — but
+      // the callout is always document-anchored, so its left/top bake in scrollX/scrollY at
+      // the moment it's set. Debouncing this call meant a long scroll left it several
+      // scroll-ticks stale, drifting up the screen exactly like buddy used to. Every tick,
+      // not the trailing edge — the same document/viewport mismatch, same fix.
+      if (callout.classList.contains('show')) showCallout();
       return;
     }
+    // a real scroll gesture runs for a while before it settles — pickAnchor used to wait
+    // for that settle before doing anything, so a sustained scroll carried him (document-
+    // anchored) straight off the top of the screen and left him invisible for the whole
+    // gesture. He now grips his current screen position the instant a scroll starts, so he
+    // never disappears, then lets go and hops to the new nearest box once it actually stops.
+    if (cur !== -1 && !busy && !buddy.classList.contains('holding')){
+      const r = buddy.getBoundingClientRect();
+      buddy.style.left = r.left + 'px'; buddy.style.top = r.top + 'px';
+      buddy.classList.add('holding');
+    }
+    if (buddy.classList.contains('holding') && callout.classList.contains('show')) showCallout();
     hoverIdx = -1; clearTimeout(hoverT);
     clearTimeout(scrollDeb);
-    scrollDeb = setTimeout(pickAnchor, 120);
+    scrollDeb = setTimeout(()=>{
+      if (buddy.classList.contains('holding')){
+        const r = buddy.getBoundingClientRect();
+        buddy.classList.remove('holding');
+        buddy.style.left = (r.left + scrollX) + 'px';
+        buddy.style.top = (r.top + scrollY) + 'px';
+      }
+      pickAnchor();
+    }, 120);
   }, {passive:true});
   let lpx = -1, lpy = -1;
   let gazeRaf = 0, gazeNear = false;
