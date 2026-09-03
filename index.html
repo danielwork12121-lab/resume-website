@@ -993,19 +993,24 @@
   const mainEl = document.querySelector('main'), sideEl = document.querySelector('.side');
   const DEFAULT_BW = 220, MIN_BW = 92;
   function showCallout(){
-    if (!on || !buddy.classList.contains('up') || cur === -1) return;
+    if (!on || !buddy.classList.contains('up')) return;
     const br = buddy.getBoundingClientRect();
     const mx = br.left + br.width / 2, my = br.top + br.height * 0.42;
     const mainR = mainEl.getBoundingClientRect(), sideR = sideEl.getBoundingClientRect();
     const gap = 8, pad = 6;
     // right and left aren't fixed-width: this is a single narrow content column, so
     // "beside him" only really works when the real margin outside that column can fit
-    // a readable bubble — otherwise it's narrowed to fit, or (below MIN_BW) skipped
-    const rightW = Math.min(DEFAULT_BW, innerWidth - mainR.right - gap - pad);
+    // a readable bubble — otherwise it's narrowed to fit, or (below MIN_BW) skipped.
+    // Both are measured from wherever he actually is, not always from the column —
+    // when he's parked left of it entirely (his pre-tour home spot in the sidebar),
+    // "beside him" means the gap between him and the column, not the far side of it.
+    const rightX = br.right < mainR.left ? br.right : mainR.right;
+    const rightLimit = br.right < mainR.left ? mainR.left : innerWidth;
+    const rightW = Math.min(DEFAULT_BW, rightLimit - rightX - gap - pad);
     const leftW = Math.min(DEFAULT_BW, mainR.left - sideR.right - gap - pad);
     function measure(w){ callout.style.maxWidth = Math.max(w, MIN_BW) + 'px'; return { w: callout.offsetWidth, h: callout.offsetHeight }; }
     const candidates = [];
-    if (rightW >= MIN_BW){ const { w, h } = measure(rightW); candidates.push({ side: 'right', w, h, x: mainR.right + gap, y: my - h / 2 }); }
+    if (rightW >= MIN_BW){ const { w, h } = measure(rightW); candidates.push({ side: 'right', w, h, x: rightX + gap, y: my - h / 2 }); }
     if (leftW >= MIN_BW){ const { w, h } = measure(leftW); candidates.push({ side: 'left', w, h, x: mainR.left - gap - w, y: my - h / 2 }); }
     // below/above also get a few gap distances, not just the nearest one — this is a
     // single narrow column, so the nearest gap is often mid-line, but reaching a little
@@ -1073,8 +1078,6 @@
     "\u201CEverything I say is sourced from the resume. I\u2019m witty, not creative with facts.\u201D",
     "\u201CStill here. Click me for the guided tour \u2014 zero dependencies, one opinionated guide.\u201D"
   ];
-  const INTRO = "Hi \u2014 I\u2019m Buddy, resident of this page. Daniel wrote me in vanilla JS: no framework, no build step.";
-  const OFFER = "Click me for the guided tour. He debugged me longer than he\u2019ll admit.";
 
   // the boxes Buddy can perch on, in document order, with how big a deal each
   // one is (big beats get a hop on landing, small ones a quiet settle)
@@ -1085,20 +1088,20 @@
   const LINES = [
     ['.hero h1', "\u201CThat\u2019s the name. I\u2019m the easter egg. We split the work evenly.\u201D"],
     ['figure.fig', "\u201CThis chart is hand-drawn canvas at 60fps. The forecast is the only part of this page that guesses.\u201D"],
-    ['.stats', "\u201CFour numbers, zero padding. I checked the sources \u2014 they compile.\u201D"],
-    ['#education .item', "\u201CCS plus a second major in Math. He optimizes for hard problems; I optimize for ledge stability.\u201D"],
+    ['.stats', "\u201CA hackathon, a product, a lab, and a warehouse floor \u2014 four numbers, four different worlds. Most resumes only have one.\u201D"],
+    ['#education .item', "\u201CA theory-heavy second major most engineers skip. Probably why the papers below hold up to review.\u201D"],
     ['#research .item', "\u201CTwo papers before his first college final. Peer review is just code review with higher stakes.\u201D"],
     ['#projects .card:nth-child(1)', "\u201CTop 2% of 14,022. Primary model with automatic fallback \u2014 Daniel doesn\u2019t trust single points of failure. Except me.\u201D"],
     ['#projects .card:nth-child(2)', "\u201CA game that preserves sugar painting \u2014 top 18 of 2,589 teams. The physics are sweeter than they had to be.\u201D"],
     ['#projects .card:nth-child(3)', "\u201CShipped for visually impaired learners; engagement up 40% in pilot. The rare demo where \u2018it works\u2019 met \u2018it matters.\u2019\u201D"],
-    ['#projects .card:nth-child(4)', "\u201C300+ paying users in month one. Revenue shipped before my legs. I\u2019ve seen the roadmap \u2014 it\u2019s revenue again.\u201D"],
+    ['#projects .card:nth-child(4)', "\u201CAn astrology app that turned a profit in 30 days. The least trusting category on earth converted anyway.\u201D"],
     ['#engineering .item:nth-child(2)', "\u201CCo-founder who also does the plumbing: inference pipeline, backend, frontend. The org chart is a dot.\u201D"],
     ['#engineering .item:nth-child(3)', "\u201C14,022 entered. 350 remain. He wrote prompts until the model behaved. I know the feeling.\u201D"],
-    ['#engineering .item:nth-child(4)', "\u201CTop 18 of 2,589, shipped with a UI/UX designer. Yes \u2014 an engineer who works with designers. They exist.\u201D"],
+    ['#engineering .item:nth-child(4)', "\u201CFrontend and backend, on a game-jam clock. No time to specialize when the deadline doesn\u2019t negotiate.\u201D"],
     ['#applied .item:nth-child(2)', "\u201CHe wrote the taxonomy that labels the data that trains the model that edits your videos. House-that-Jack-built, but multimodal.\u201D"],
     ['#applied .item:nth-child(3)', "\u201C10,000+ frames labeled, plus guidelines that made other people\u2019s labels agree. Consistency is a feature.\u201D"],
-    ['#leadership .item:nth-child(2)', "\u201CFounded the school\u2019s first CS club; it became the biggest club on campus. Growth hacking, but with for-loops.\u201D"],
-    ['#leadership .item:nth-child(3)', "\u201CRepresented 700+ students in two languages. A diplomatic API, stable under load.\u201D"],
+    ['#leadership .item:nth-child(2)', "\u201CNot inherited \u2014 built from nothing, at a school that didn\u2019t have one yet. \u2018Founder\u2019 is the hardest line on a resume to earn.\u201D"],
+    ['#leadership .item:nth-child(3)', "\u201CPolicy meetings in a second language, at sixteen. Comfort with ambiguity a transcript can\u2019t show.\u201D"],
     ['#leadership .item:nth-child(4)', "\u201CThe only high schooler on the volunteer roster of a televised fintech competition. The badge said staff; the job said everything.\u201D"],
     ['#skills', "\u201CEverything in this stack is load-bearing. Nothing here is keyword confetti.\u201D"],
     ['footer', "\u201CEnd of page. The email is real and he reads it. Mention me \u2014 I\u2019m due a performance review.\u201D"]
@@ -1164,7 +1167,7 @@
 
   let on = true, cur = -1, busy = false, queued = -1,
       bubbleT = null, idleQuipT = null, blinkT = null, gagT = null,
-      keepBubbleUntil = 0, firstLanding = true, hoverIdx = -1, hoverT = null,
+      keepBubbleUntil = 0, hoverIdx = -1, hoverT = null,
       touring = false, toured = false, tourStep = 0, tourSaidT = null, saidStep = -1, onHide = null,
       dragging = false, wasDrag = false, greeted = false, moveGen = 0;
 
@@ -1469,15 +1472,21 @@
 
   function landedSay(a){
     if (!greeted){ buddy.classList.add('waving'); return; }   // waving, not talking, until he's picked up
-    if (touring){
-      tourSay();
-    } else if (firstLanding){
-      firstLanding = false;
-      say(INTRO, 11000, { tell: true, cap: 'BUDDY', keep: 6500,
-        then: ()=>setTimeout(()=>{ if (on && !touring && !toured && !callout.classList.contains('show')) say(OFFER, undefined, { tell: true, cap: 'BUDDY', keep: 2000 }); }, 500) });
-    } else if (a.quip && performance.now() > keepBubbleUntil){
-      say(a.quip);
-    }
+    if (touring) tourSay();
+    else if (a.quip && performance.now() > keepBubbleUntil) say(a.quip);
+  }
+
+  // his resting spot before anyone's engaged with him: bottom-left of whatever the
+  // visitor is looking at right now, not anchored to a box — a jump-up-and-wave hello,
+  // with a small standing invite rather than a button doing the introducing for him
+  function showHome(){
+    cur = -1;
+    buddy.style.left = (scrollX + 20) + 'px';
+    buddy.style.top = (scrollY + Math.max(160, innerHeight - 108)) + 'px';
+    buddy.classList.remove('squash', 'soft', 'peek', 'duck');
+    buddy.classList.add('up', 'wow', 'waving');
+    setTimeout(()=>buddy.classList.remove('wow'), 900);
+    say('Click me if you want a guide', 0, { tell: true, hint: '' });
   }
 
   // pick the box nearest the viewport's focal line, with a deadband so he
@@ -1552,8 +1561,6 @@
   function startTour(){
     if (!on || touring) return;
     touring = true; toured = true; tourStep = 0; saidStep = -1; hoverIdx = -1; clearTimeout(hoverT);
-    firstLanding = false;   // starting the tour is itself the introduction — its own stop 1
-                             // shouldn't get swapped out for the generic "hi, I'm Buddy" line
     say("Follow me.", 1400, { tell: true, cap: 'TOUR', hint: '', keep: 1400 });
     setTimeout(()=>{ if (touring) tourStop(); }, 700);
   }
@@ -1565,7 +1572,7 @@
   function greet(){
     if (greeted) return;
     greeted = true;
-    buddy.classList.remove('waving');
+    buddy.classList.remove('waving', 'wow');
   }
   sprite.addEventListener('click', e=>{
     e.stopPropagation();
@@ -1743,6 +1750,7 @@
   callout.addEventListener('click', e=>{
     e.stopPropagation();
     if (!on) return;
+    if (!greeted){ greet(); startTour(); return; }   // the standing invite is itself the "click me"
     nod();
     if (touring) tourNext(); else hush();
   });
@@ -1808,7 +1816,7 @@
   // a lingering pointer over a box is the next best
   let scrollDeb = null;
   addEventListener('scroll', ()=>{
-    if (!on || touring || dragging) return;
+    if (!on || touring || dragging || !greeted) return;   // stays put at home until he's actually engaged
     hoverIdx = -1; clearTimeout(hoverT);
     clearTimeout(scrollDeb);
     scrollDeb = setTimeout(pickAnchor, 120);
@@ -1834,7 +1842,7 @@
     const idx = el ? indexOf.get(el) : -1;
     if (idx === hoverIdx) return;
     hoverIdx = idx; clearTimeout(hoverT);
-    if (idx !== -1 && idx !== cur) hoverT = setTimeout(()=>{ if (on && !touring && hoverIdx === idx){ greet(); moveTo(idx); } }, 320);
+    if (idx !== -1 && idx !== cur && greeted) hoverT = setTimeout(()=>{ if (on && !touring && hoverIdx === idx) moveTo(idx); }, 320);
   }, {passive:true});
   addEventListener('resize', ()=>{ if (on && cur !== -1) placeHolder(cur); });
 
@@ -1845,8 +1853,8 @@
     try { localStorage.setItem('buddy', v ? '1' : '0'); } catch(e){}
     if (v){
       buddy.classList.add('on');
-      cur = -1; busy = false; queued = -1; firstLanding = true;
-      pickAnchor();
+      cur = -1; busy = false; queued = -1;
+      if (greeted) pickAnchor(); else showHome();
       scheduleBlink(); scheduleIdleQuip(); scheduleGag();
     } else {
       endTour(false);
