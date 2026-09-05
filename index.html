@@ -9,7 +9,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <meta name="twitter:card" content="summary">
-</head><body style="margin:0">
+<meta property="og:url" content="https://daniel-li-portfolio.vercel.app/">
+<link rel="canonical" href="https://daniel-li-portfolio.vercel.app/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23191b1a'/%3E%3Ctext x='16' y='23.5' text-anchor='middle' font-family='Playfair Display,Georgia,serif' font-weight='700' font-size='21' fill='%239fd8b4'%3EZ%3C/text%3E%3C/svg%3E">
 <style>
   :root{color-scheme:dark;
     --bg:#191b1a; --bg2:#1e211f; --panel:#1c1f1d; --line:#2c302d;
@@ -24,7 +26,8 @@
   }
   @media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
   body{background:var(--bg);color:var(--ink);font-family:var(--sans);margin:0;line-height:1.6;font-size:16px}
-  a{color:var(--mint);text-decoration:none}
+  a{color:var(--mint);text-decoration:none;text-underline-offset:.16em;text-decoration-thickness:1px}
+  a,button{touch-action:manipulation;-webkit-tap-highlight-color:rgba(159,216,180,.18)}
   a:hover{text-decoration:underline}
   :focus-visible{outline:2px solid var(--mint);outline-offset:3px}
   .skip-link{position:absolute;left:16px;top:-60px;z-index:200;background:var(--mint);color:#12251a;font-family:var(--mono);font-size:var(--t-label);font-weight:600;padding:10px 16px;border-radius:6px;transition:top 160ms cubic-bezier(0.23,1,0.32,1)}
@@ -60,10 +63,10 @@
   .status .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#59c47f;margin-right:8px;vertical-align:1px}
 
   /* ---------- hero ---------- */
-  .chip{display:inline-block;font-family:var(--mono);font-size:var(--t-meta);letter-spacing:.22em;color:var(--mint);background:var(--mint-deep);padding:8px 12px;border-radius:4px}
-  h1{font-family:var(--serif);font-weight:700;font-size:clamp(40px,6vw,62px);line-height:1.05;margin:24px 0 12px;text-wrap:balance}
-  .tag{font-family:var(--serif);font-style:italic;font-size:clamp(19px,2.4vw,23px);color:var(--ink);font-weight:500;margin:0 0 24px}
-  .bio{max-width:var(--measure);font-size:var(--t-lead);line-height:1.6;color:var(--ink-dim);margin:0 0 28px}
+  h1{font-family:var(--serif);font-weight:700;font-size:clamp(40px,6vw,62px);line-height:1.05;margin:0 0 12px;text-wrap:balance}
+  .tag{font-family:var(--serif);font-style:italic;font-size:clamp(19px,2.4vw,23px);color:var(--ink);font-weight:500;margin:0 0 14px;text-wrap:balance}
+  .dateline{display:block;font-family:var(--mono);font-size:var(--t-meta);letter-spacing:.18em;color:var(--mint-dim);margin:0 0 26px}
+  .bio{max-width:var(--measure);font-size:var(--t-lead);line-height:1.6;color:var(--ink-dim);margin:0 0 28px;text-wrap:pretty}
   .btns{display:flex;flex-wrap:wrap;gap:12px}
   .btn{display:inline-block;padding:10px 18px;border-radius:6px;font-size:var(--t-body);font-weight:500;border:1px solid var(--line);color:var(--ink)}
   .btn:hover{border-color:var(--mint-dim);text-decoration:none}
@@ -71,7 +74,7 @@
   .btn.primary:hover{filter:brightness(1.06)}
 
   /* ---------- fig chart ---------- */
-  figure.fig{margin:48px 0 0;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--bg2);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+  figure.fig{margin:24px 0 0;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--bg2);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
   .figwrap{position:relative}
   .fig canvas{display:block;width:100%;height:120px}
   .fig .fx{position:absolute;top:0;bottom:0;right:20%;border-left:1px dashed #3a403c}
@@ -81,20 +84,20 @@
   figcaption b{color:var(--ink-dim);font-weight:700}
 
   /* ---------- stats ---------- */
-  .stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:6px;margin-top:40px;overflow:hidden}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:6px;margin-top:44px;overflow:hidden}
   .stat{padding:20px 24px;border-left:1px solid var(--line)}
   .stat:first-child{border-left:0}
-  .stat .n{font-family:var(--mono);font-weight:700;font-size:26px;line-height:1.2;color:var(--mint);font-variant-numeric:tabular-nums}
-  .stat .c{font-size:var(--t-label);color:var(--ink-faint);margin-top:8px;line-height:1.45}
+  .stat .n{font-family:var(--serif);font-weight:700;font-size:30px;line-height:1.15;letter-spacing:-.01em;color:var(--mint);font-variant-numeric:tabular-nums}
+  .stat .c{font-size:var(--t-label);color:var(--ink-faint);margin-top:8px;line-height:1.45;text-wrap:balance}
 
   /* ---------- sections ---------- */
   section{margin-top:80px;scroll-margin-top:40px}
   h2{font-family:var(--mono);font-size:var(--t-meta);font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--mint);margin:0 0 12px}
   h2::after{content:"";display:block;width:44px;border-top:1px solid var(--mint-dim);margin-top:12px;opacity:.5;transform:scaleX(0);transform-origin:left;transition:transform 300ms cubic-bezier(0.23,1,0.32,1) .15s}
   section.seen h2::after{transform:scaleX(1)}
-  .item{padding:24px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:152px minmax(0,1fr);column-gap:24px}
+  .item{padding:24px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:168px minmax(0,1fr);column-gap:24px;align-items:baseline}
   .item>.row{display:contents}
-  .item .when{grid-column:1;grid-row:1;padding-top:9px;white-space:normal;line-height:1.5}
+  .item .when{grid-column:1;grid-row:1;line-height:1.5}
   .item h3{grid-column:2;grid-row:1}
   .item .role,.item p,.item ul,.item .award{grid-column:2}
   .item .award{justify-self:start}
@@ -103,11 +106,12 @@
   h3{font-family:var(--serif);font-size:var(--t-h3);font-weight:700;margin:0;text-wrap:balance}
   .role{color:var(--mint-dim);font-size:var(--t-label);margin-top:4px}
   .when{font-family:var(--mono);font-size:var(--t-meta);color:var(--ink-faint);white-space:nowrap;font-variant-numeric:tabular-nums}
-  .item p, .item li{color:var(--ink-dim);font-size:var(--t-body);max-width:var(--measure)}
+  .item p, .item li{color:var(--ink-dim);font-size:var(--t-body);max-width:var(--measure);text-wrap:pretty}
   .item p{margin:12px 0 0}
   .item ul{margin:12px 0 0;padding-left:20px}
   .item li{margin-top:8px}
   .award{display:inline-block;font-size:var(--t-meta);font-weight:600;color:var(--mint);background:var(--mint-deep);border:1px solid var(--mint-dim);border-radius:4px;padding:4px 10px;margin-top:12px;letter-spacing:.04em}
+  .award svg{width:11px;height:11px;fill:currentColor;vertical-align:-1px;margin-right:6px}
   /* on-site proof photos — small, honest, click through to the full frame */
   .proof{grid-column:2;display:flex;gap:10px;margin-top:14px}
   .proof-item{all:unset;cursor:pointer;display:block;border:1px solid var(--line);border-radius:6px;overflow:hidden;width:84px;height:105px;flex-shrink:0;transition:border-color 160ms cubic-bezier(0.23,1,0.32,1),transform 160ms cubic-bezier(0.23,1,0.32,1)}
@@ -130,15 +134,17 @@
   .card h3 a:hover{text-decoration:none}
   .card h3 a::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:1px;background:var(--mint);transform:scaleX(0);transform-origin:left;transition:transform 150ms cubic-bezier(0.23,1,0.32,1)}
   @media (hover:hover) and (pointer:fine){.card h3 a:hover::after,.card h3 a:focus-visible::after{transform:scaleX(1)}}
-  .card .desc{color:var(--ink-dim);font-size:var(--t-body);margin:0;flex:1}
+  .card .desc{color:var(--ink-dim);font-size:var(--t-body);margin:0;flex:1;text-wrap:pretty}
   .tags{display:flex;flex-wrap:wrap;gap:8px}
   .tags span{font-family:var(--mono);font-size:var(--t-meta);color:var(--ink-dim);background:var(--bg2);border-radius:4px;padding:4px 8px}
   .card .links{display:flex;gap:16px;font-size:var(--t-label);font-family:var(--mono)}
   .card .links a{display:inline-flex;align-items:center;gap:6px}
   .ext-icon,.card .links a::before{content:"";display:inline-block;width:11px;height:11px;background:currentColor;opacity:.8;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9 9 3M4.5 3H9v4.5'/%3E%3C/svg%3E") no-repeat center/contain;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9 9 3M4.5 3H9v4.5'/%3E%3C/svg%3E") no-repeat center/contain}
   .btn .ext-icon{margin-left:6px;vertical-align:-1px}
+  .mail-icon{display:inline-block;width:12px;height:12px;margin-right:8px;vertical-align:-1px;background:currentColor;opacity:.9;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='black' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='1.25' y='2.5' width='9.5' height='7' rx='1.2'/%3E%3Cpath d='m1.5 3.4 4.5 3.3 4.5-3.3'/%3E%3C/svg%3E") no-repeat center/contain;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='black' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='1.25' y='2.5' width='9.5' height='7' rx='1.2'/%3E%3Cpath d='m1.5 3.4 4.5 3.3 4.5-3.3'/%3E%3C/svg%3E") no-repeat center/contain}
   .card .note{font-family:var(--mono);font-size:var(--t-meta);color:var(--ink-faint)}
-  .ctx{font-size:var(--t-meta);font-weight:600;color:var(--mint-dim);letter-spacing:.06em}
+  .ctx{font-size:var(--t-meta);font-weight:600;color:var(--mint-dim);letter-spacing:.06em;line-height:1.5;text-wrap:balance}
+  .card .ctx{margin-top:-4px}
 
   /* ---------- skills ---------- */
   .skillgroup{margin-top:24px}
@@ -151,7 +157,7 @@
   footer .colophon{margin:0;font-family:var(--mono);font-size:var(--t-meta);color:var(--ink-faint);letter-spacing:.04em}
   footer .colophon:first-of-type{margin-top:8px}
 
-  /* ---------- Buddy, the companion / guide (on by default; a plain link hides him) ---------- */
+  /* ---------- Buddy, the companion / guide (strictly opt-in; a plain link summons him) ---------- */
   .buddy-toggle{display:inline-block;margin-top:16px;background:none;border:0;padding:0;cursor:pointer;font-family:var(--mono);font-size:var(--t-meta);letter-spacing:.08em;color:var(--ink-faint);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line)}
   .buddy-toggle:hover{color:var(--ink-dim);text-decoration-color:var(--ink-faint)}
 
@@ -330,7 +336,7 @@
   /* the "labeled" stamp that pops off a box when Buddy inspects the data work */
   .labelpop{position:absolute;z-index:52;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--mint);background:var(--mint-deep);border:1px solid var(--mint-dim);border-radius:4px;padding:3px 8px;pointer-events:none;animation:poprise 1.5s ease-out forwards}
   @keyframes poprise{0%{opacity:0;transform:translateY(6px) scale(.8)}18%{opacity:1;transform:translateY(0) scale(1.05)}30%{transform:translateY(-2px) scale(1)}100%{opacity:0;transform:translateY(-22px)}}
-  .buddy-here{border-color:var(--mint-dim)!important;box-shadow:0 0 20px rgba(159,216,180,.12);transition:border-color .3s,box-shadow .3s}
+  .buddy-here{border-color:var(--mint-dim)!important;transition:border-color .3s}
   .box-dip{animation:boxdip .32s ease-out}
   /* he shoves the box straight when he lands on a big one */
   .box-fix{animation:boxfix .5s cubic-bezier(0.23,1,0.32,1)}
@@ -371,7 +377,7 @@
     nav a.on{border-bottom-color:var(--mint)}
     .nav-ind{display:none}
     .side hr{display:none}
-    h1{margin-top:18px}
+    h1{margin-top:8px}
     .stats{grid-template-columns:1fr 1fr}
     .stat:nth-child(odd){border-left:0}
     .stat:nth-child(n+3){border-top:1px solid var(--line)}
@@ -385,10 +391,13 @@
   }
   @media (max-width:480px){
     .wrap{padding:32px 18px 64px}
-    .chip{letter-spacing:.16em}
+    .dateline{letter-spacing:.12em}
     h1{font-size:36px}
-    .stats{grid-template-columns:1fr}
-    .stat{border-left:0}
+    /* stats read as a ledger: number, then its caption on the same line */
+    .stats{grid-template-columns:1fr;margin-top:36px}
+    .stat{border-left:0;display:flex;align-items:baseline;gap:14px;padding:14px 18px}
+    .stat .n{flex:0 0 96px;font-size:24px}
+    .stat .c{margin-top:0}
     .stat+.stat{border-top:1px solid var(--line)}
     .item{display:block}
     .item>.row{display:flex;flex-direction:column-reverse;align-items:flex-start;gap:4px}
@@ -404,7 +413,38 @@
     .callout,.callout.show{transition:opacity 160ms ease;transform:none}
     .bob-mark::after{animation:none;transform:none}
     #buddy{transition:opacity .3s}
-    .btn,.buddy-toggle,nav a,.card .links a,footer a,.card h3 a::after{transition:none}
+    .btn,.buddy-toggle,nav a,.card .links a,footer a,.card h3 a::after,.skip-link,.proof-item{transition:none}
+    h2::after{transition:none;transform:none}
+  }
+
+  /* ---------- print: the same CV in ink on paper, without the stage ---------- */
+  @media print{
+    :root{color-scheme:light;--bg:#fff;--bg2:#f3f4f2;--panel:#fff;--line:#c6cac6;--ink:#151715;--ink-dim:#383d39;--ink-faint:#5b615c;--mint:#1e6a45;--mint-deep:#e7f2eb;--mint-dim:#2c7a52;
+      --t-meta:10px;--t-label:11px;--t-body:12px;--t-lead:13.5px;--t-h3:17px}
+    html{scroll-behavior:auto}
+    body{background:#fff;font-size:12px;line-height:1.5}
+    #spine,#buddy,.callout,.skip-link,.buddy-toggle,nav,.side hr,figure.fig,.proof,.lightbox,.labelpop,.pop,.bbox,.sketch{display:none!important}
+    .wrap{display:block;max-width:none;padding:0}
+    .side{position:static;display:flex;align-items:center;gap:16px;margin-bottom:24px}
+    .avatar{width:64px;height:64px;outline:none}
+    main{max-width:none}
+    h1{font-size:32px}
+    .tag{font-size:17px}
+    .bio{margin-bottom:18px}
+    .btn,.btn.primary{background:none;color:var(--ink);border-color:var(--line);padding:6px 10px}
+    .btns a[href^="http"]::after,.card .links a::after{content:" " attr(href);font-family:var(--mono);font-size:10px;color:var(--ink-faint);word-break:break-all}
+    .stats{margin-top:18px}
+    .stat{padding:12px 16px}
+    .stat .n{font-size:22px}
+    section{margin-top:24px}
+    .item{padding:14px 0}
+    .item li{margin-top:4px}
+    .grid{gap:12px;margin-top:14px}
+    .card{box-shadow:none;padding:14px;gap:8px}
+    .skillgroup{margin-top:14px}
+    .item,.card,.skillgroup{break-inside:avoid}
+    h2::after{transform:none}
+    footer{margin-top:32px}
   }
 </style>
 </head>
@@ -432,26 +472,15 @@
 
   <main id="main" tabindex="-1">
     <div class="hero">
-      <span class="chip">ATLANTA, GA&nbsp;&nbsp;·&nbsp;&nbsp;GEORGIA TECH</span>
       <h1>Zilin “Daniel” Li</h1>
       <p class="tag">CS + Math, building and publishing applied AI</p>
+      <span class="dateline">ATLANTA, GA&nbsp;&nbsp;·&nbsp;&nbsp;GEORGIA TECH</span>
       <p class="bio">I split my time between research that gets peer-reviewed and products that get used — a Springer-published reading aid for visually impaired learners on one side, a pet-personality app with paying users on the other. Expected graduation May 2028.</p>
       <div class="btns">
-        <a class="btn primary" href="mailto:zli3381@gatech.edu">✉ zli3381@gatech.edu</a>
+        <a class="btn primary" href="mailto:zli3381@gatech.edu"><span class="mail-icon" aria-hidden="true"></span>zli3381@gatech.edu</a>
         <a class="btn" href="https://www.linkedin.com/in/zilin-daniel-li/" target="_blank" rel="noopener">LinkedIn<span class="ext-icon" aria-hidden="true"></span></a>
         <a class="btn" href="https://github.com/danielwork12121-lab" target="_blank" rel="noopener">GitHub<span class="ext-icon" aria-hidden="true"></span></a>
       </div>
-
-      <figure class="fig">
-        <div class="figwrap">
-          <canvas id="fig1" height="120"></canvas>
-          <div class="fx"></div><div class="flabel">forecast →</div>
-        </div>
-        <figcaption>
-          <span>fig. 1 — <b>multi-scale trend decomposition</b>, after <i>Structure-Aware MLP for Time-Series Forecasting</i></span>
-          <span>13 public<br>datasets</span>
-        </figcaption>
-      </figure>
 
       <div class="stats">
         <div class="stat"><div class="n">Top 2%</div><div class="c">ByteDance TRAE hackathon, 14,022 entrants</div></div>
@@ -459,6 +488,17 @@
         <div class="stat"><div class="n">13</div><div class="c">public datasets benchmarked</div></div>
         <div class="stat"><div class="n">3</div><div class="c">research papers, published or under review</div></div>
       </div>
+
+      <figure class="fig">
+        <div class="figwrap">
+          <canvas id="fig1" height="120" role="img" aria-label="Three decomposed time-series components, drawn as animated lines, with the forecast region marked to the right"></canvas>
+          <div class="fx"></div><div class="flabel">forecast →</div>
+        </div>
+        <figcaption>
+          <span>fig. 1 — <b>multi-scale trend decomposition</b>, after <i>Structure-Aware MLP for Time-Series Forecasting</i></span>
+          <span>13 public<br>datasets</span>
+        </figcaption>
+      </figure>
     </div>
 
     <section id="education">
@@ -480,7 +520,7 @@
           <li><b>Co-first author</b>, “Structure-Aware MLP for Time-Series Forecasting” — built a PyTorch model encoding periodicity and trend shocks, matching or outperforming Transformer baselines on 13 datasets at lower complexity; under review at IEEE ICDE 2026.</li>
           <li><b>Co-author</b>, “Predict Backbone, Graft Dynamics” (GRAFT) — decoupled forecasting framework pairing a backbone predictor with a retrieval-based dynamics-grafting module; improved MSE/MAE by an average 4.6%/3.9% across 7 benchmarks, 4 horizons, and 6 backbones (87% win rate); submitted to NeurIPS 2026.</li>
         </ul>
-        <span class="award">★ BEST SESSION PRESENTER — AIET 2024</span>
+        <span class="award"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2l2.95 6.25 6.85.75-5.1 4.65 1.4 6.75L12 17.15 5.9 20.6l1.4-6.75-5.1-4.65 6.85-.75z"/></svg>BEST SESSION PRESENTER — AIET 2024</span>
       </div>
     </section>
 
@@ -488,29 +528,29 @@
       <h2>Projects</h2>
       <div class="grid">
         <div class="card" data-quip="&#8220;3 espresso shots and a broken build pipeline. Worth it.&#8221;">
-          <span class="ctx">BYTEDANCE TRAE HACKATHON · TOP 2% OF 14,022</span>
           <h3><a href="https://stab-it.vercel.app" target="_blank" rel="noopener">Stab It</a></h3>
+          <span class="ctx">BYTEDANCE TRAE HACKATHON&nbsp;· TOP 2% OF 14,022</span>
           <p class="desc">AI-powered reflection app: pin a worry, talk it through with an LLM, and revisit it on a schedule. Dual-mode AI endpoint with automatic model fallback, lightweight memory retrieval, and dual deployment for global and mainland-China access.</p>
           <div class="tags"><span>Node.js</span><span>Express</span><span>Vanilla JS</span><span>Doubao / Volcengine Ark</span><span>MiniMax</span><span>Vercel</span></div>
           <div class="links"><a href="https://stab-it.vercel.app" target="_blank" rel="noopener">Live demo</a><a href="https://github.com/danielwork12121-lab/stab-it" target="_blank" rel="noopener">GitHub</a></div>
         </div>
         <div class="card" data-quip="&#8220;Top 18 of 2,589. Sugar first, sleep later.&#8221;">
-          <span class="ctx">TENCENT “AI CAN DO IT” · TOP 18 OF 2,589 · FINALS</span>
           <h3><a href="https://uncletian.xyz" target="_blank" rel="noopener">Uncle Tian’s Sugaria</a></h3>
-          <p class="desc">A browser game about Uncle Tian making traditional Chinese sugar paintings — a story-driven experience with four skill-based mini-games spanning sugar cooking, spreading, and drawing, preserving the folk craft of 糖画.</p>
+          <span class="ctx">TENCENT “AI CAN DO IT”&nbsp;· TOP 18 OF 2,589&nbsp;· FINALS</span>
+          <p class="desc">A browser game about Uncle Tian making traditional Chinese sugar paintings — a story-driven experience with four skill-based mini-games spanning sugar cooking, spreading, and drawing, preserving the folk craft of <span lang="zh">糖画</span>.</p>
           <div class="tags"><span>HTML5 Canvas</span><span>JavaScript</span><span>Vite</span><span>Vercel</span></div>
           <div class="links"><a href="https://uncletian.xyz" target="_blank" rel="noopener">Play it</a><a href="https://github.com/danielwork12121-lab/Uncle-Tang-s-Sugar-Painting" target="_blank" rel="noopener">GitHub</a></div>
         </div>
         <div class="card" data-quip="&#8220;Peer-reviewed. The reviewers were less scary than the deadline.&#8221;">
-          <span class="ctx">SPRINGER AIET 2024 · PUBLISHED PAPER CODE</span>
           <h3><a href="https://github.com/danielwork12121-lab/LLM-Reading-Aid-Visually-Impaired" target="_blank" rel="noopener">LLM Reading Aid for Visually Impaired</a></h3>
+          <span class="ctx">SPRINGER AIET 2024&nbsp;· PUBLISHED PAPER CODE</span>
           <p class="desc">Code for the published paper: an LLM-powered news reader for visually impaired learners with personalized summaries and recommendations — the pilot raised daily platform engagement 40%.</p>
           <div class="tags"><span>Python</span><span>Flask</span><span>Vue.js</span><span>LLM</span></div>
           <div class="links"><a href="https://github.com/danielwork12121-lab/LLM-Reading-Aid-Visually-Impaired" target="_blank" rel="noopener">GitHub</a></div>
         </div>
         <div class="card" data-quip="&#8220;300+ paying users. My legs were not in the budget either.&#8221;">
-          <span class="ctx">CO-FOUNDED · 300+ PAYING USERS IN MONTH ONE</span>
           <h3>Hachi</h3>
+          <span class="ctx">CO-FOUNDED&nbsp;· 300+ PAYING USERS IN MONTH ONE</span>
           <p class="desc">AI consumer app generating personalized pet-personality profiles by combining Chinese Bazi astrology logic with Volcengine LLM APIs — inference pipeline, backend, and frontend owned end-to-end. <b>$800+ revenue</b> in the first month.</p>
           <div class="tags"><span>Volcengine LLM API</span><span>AI inference pipeline</span><span>Full-stack</span></div>
           <div class="note">Hosted in mainland China — no public link.</div>
@@ -807,7 +847,7 @@
       for (const [bx, by, sx, sy] of [[x, y, 1, 1], [x + rw, y, -1, 1], [x, y + rh, 1, -1], [x + rw, y + rh, -1, -1]]){
         ctx.beginPath(); ctx.moveTo(bx + sx * L, by); ctx.lineTo(bx, by); ctx.lineTo(bx, by + sy * L); ctx.stroke();
       }
-      ctx.fillStyle = GRAY(0.5 * al); ctx.font = '9px JetBrains Mono, monospace';
+      ctx.fillStyle = GRAY(0.32 * al); ctx.font = '9px JetBrains Mono, monospace';
       ctx.fillText(['frame', 'label', 'ok', 'cls 03', 'review'][g % 5], x + 4, y - 5);
     }
     const sy = ((t * 0.05) % (H + 200)) - 100;
@@ -925,20 +965,23 @@
   const links = [...document.querySelectorAll('#nav a')];
   const secs = links.map(a => document.querySelector(a.getAttribute('href')));
   const ind = document.querySelector('.nav-ind');
+  // i === -1 means the hero is on screen: no section is current, so nothing is lit
   function set(i){
     links.forEach((a,j)=>{ a.classList.toggle('on', j===i); if (j===i) a.setAttribute('aria-current','true'); else a.removeAttribute('aria-current'); });
-    if (ind){ const a = links[i]; ind.style.transform = 'translateY(' + a.offsetTop + 'px)'; ind.style.height = a.offsetHeight + 'px'; }
+    if (!ind) return;
+    if (i < 0){ ind.style.height = '0px'; return; }
+    const a = links[i]; ind.style.transform = 'translateY(' + a.offsetTop + 'px)'; ind.style.height = a.offsetHeight + 'px';
   }
   function spy(){
-    if ((window.scrollY||0) < 60){ set(0); return; }
+    if ((window.scrollY||0) < 60){ set(-1); return; }
     let i = secs.findIndex(s => s.getBoundingClientRect().top > 130);
     if (i === -1) i = secs.length;
-    set(Math.max(0, i-1));
+    set(i-1);
   }
   links.forEach((a,j)=>a.addEventListener('click', ()=>set(j)));
   addEventListener('scroll', spy, {passive:true});
   addEventListener('load', spy);
-  set(0); setTimeout(spy, 600);
+  set(-1); setTimeout(spy, 600);
 })();
 
 // ---------- Buddy, the companion / guide (opt-in) ----------
@@ -1939,7 +1982,7 @@
     }
   }
   toggle.addEventListener('click', e=>{ e.stopPropagation(); setOn(!on); });
-  setOn(on);   // present by default; a visitor who hid him before finds him hidden again
+  setOn(on);   // hidden by default; a visitor who summoned him before finds him waiting again
 })();
 </script>
 </body></html>
