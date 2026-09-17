@@ -475,9 +475,9 @@
       <a href="#education">Education</a>
       <a href="#applied">Internships &amp; Applied Experience</a>
       <a href="#research">Research &amp; Publications</a>
-      <a href="#projects">Projects</a>
-      <a href="#engineering">Engineering &amp; Products</a>
       <a href="#independent-research">Independent Research</a>
+      <a href="#engineering">Engineering &amp; Products</a>
+      <a href="#projects">Projects</a>
       <a href="#leadership">Leadership</a>
       <a href="#skills">Skills</a>
     </nav>
@@ -564,6 +564,42 @@
       </div>
     </section>
 
+
+    <section id="independent-research">
+      <h2>Independent Research</h2>
+      <div class="item">
+        <div class="row"><h3>News-Conditioned Modeling of Firm Characteristics for Stock Return Prediction</h3><span class="when">Sep 2026 – Present</span></div>
+        <div class="role">Independent Undergraduate Research — Georgia Tech</div>
+        <p>Financial news breaks daily; the accounting characteristics that describe a firm’s fundamentals only get refreshed on a quarterly or annual disclosure cycle. This project tests whether news should close that gap — updating a characteristic’s <b>value</b> between disclosures (<b>State Updating</b>) and/or changing how <b>predictive</b> that characteristic is, independent of its value (<b>Effectiveness Modulation</b>) — extending the Gu-Kelly-Xiu 94-characteristic empirical asset-pricing framework beyond its static, periodic updates.</p>
+        <div class="rstats">
+          <div class="rstat"><b>3.7M</b><span>CRSP-merged panel rows</span></div>
+          <div class="rstat"><b>0.14%</b><span>out-of-sample R² baseline, matching published GKX benchmarks</span></div>
+          <div class="rstat"><b>2</b><span>data-leakage bugs caught &amp; fixed</span></div>
+          <div class="rstat"><b>30 yrs</b><span>coefficient-stability window, 1987–2016</span></div>
+        </div>
+        <ul>
+          <li>Built a leakage-safe, expanding-window ML pipeline (Ridge, Lasso, Elastic Net, Gradient Boosting) over the panel, with a strict time-series train/validate/test split — always tested on future data, never shuffled.</li>
+          <li>Established a correctly measured floor before testing the news hypothesis: out-of-sample R² baselines (up to 0.14%, pooled 1987–2016) matching the published Gu-Kelly-Xiu benchmarks.</li>
+          <li>Caught and fixed two data-leakage bugs during development — an unconverted annualized T-bill rate, and a risk-free-rate column that had leaked into the feature matrix.</li>
+          <li>Validated the pipeline with a 30-year coefficient-stability diagnostic (1987–2016) that recovers well-known equity anomalies — momentum, reversal, size, value — with consistent sign across three decades.</li>
+        </ul>
+        <p>Closest prior work — Patton &amp; Verardo (2012), <i>“Does Beta Move with News?”</i> — tests a single channel on a single characteristic with a causal event-study design. This project tests both channels across the full 94-characteristic panel with a predictive, out-of-sample framework.</p>
+        <p><b>Current stage:</b> baseline and diagnostics complete. Next: building the news layer and testing both hypotheses.</p>
+      </div>
+    </section>
+
+    <section id="engineering">
+      <h2>Engineering &amp; Products</h2>
+      <div class="item">
+        <div class="row"><h3>Hachi</h3><span class="when">Jul 2026 – Present</span></div>
+        <div class="role">Co-Founder &amp; Core Software Engineer</div>
+        <ul>
+          <li>Co-founded an AI consumer app generating personalized pet-personality profiles by combining Chinese Bazi astrology logic with Volcengine LLM APIs; owned the inference pipeline, backend, and frontend end-to-end.</li>
+          <li>Grew to <b>300+ paying users</b> and <b>$800+ in revenue</b> within the first month of launch.</li>
+        </ul>
+      </div>
+    </section>
+
     <section id="projects">
       <h2>Projects</h2>
       <div class="grid">
@@ -591,43 +627,16 @@
       </div>
     </section>
 
-    <section id="engineering">
-      <h2>Engineering &amp; Products</h2>
-      <div class="item">
-        <div class="row"><h3>Hachi</h3><span class="when">Jul 2026 – Present</span></div>
-        <div class="role">Co-Founder &amp; Core Software Engineer</div>
-        <ul>
-          <li>Co-founded an AI consumer app generating personalized pet-personality profiles by combining Chinese Bazi astrology logic with Volcengine LLM APIs; owned the inference pipeline, backend, and frontend end-to-end.</li>
-          <li>Grew to <b>300+ paying users</b> and <b>$800+ in revenue</b> within the first month of launch.</li>
-        </ul>
-      </div>
-    </section>
-
-    <section id="independent-research">
-      <h2>Independent Research</h2>
-      <div class="item">
-        <div class="row"><h3>News-Conditioned Modeling of Firm Characteristics for Stock Return Prediction</h3><span class="when">Sep 2026 – Present</span></div>
-        <div class="role">Independent Undergraduate Research — Georgia Tech</div>
-        <p>Financial news breaks daily; the accounting characteristics that describe a firm’s fundamentals only get refreshed on a quarterly or annual disclosure cycle. This project tests whether news should close that gap — updating a characteristic’s <b>value</b> between disclosures (<b>State Updating</b>) and/or changing how <b>predictive</b> that characteristic is, independent of its value (<b>Effectiveness Modulation</b>) — extending the Gu-Kelly-Xiu 94-characteristic empirical asset-pricing framework beyond its static, periodic updates.</p>
-        <div class="rstats">
-          <div class="rstat"><b>3.7M</b><span>CRSP-merged panel rows</span></div>
-          <div class="rstat"><b>0.14%</b><span>out-of-sample R² baseline, matching published GKX benchmarks</span></div>
-          <div class="rstat"><b>2</b><span>data-leakage bugs caught &amp; fixed</span></div>
-          <div class="rstat"><b>30 yrs</b><span>coefficient-stability window, 1987–2016</span></div>
-        </div>
-        <ul>
-          <li>Built a leakage-safe, expanding-window ML pipeline (Ridge, Lasso, Elastic Net, Gradient Boosting) over the panel, with a strict time-series train/validate/test split — always tested on future data, never shuffled.</li>
-          <li>Established a correctly measured floor before testing the news hypothesis: out-of-sample R² baselines (up to 0.14%, pooled 1987–2016) matching the published Gu-Kelly-Xiu benchmarks.</li>
-          <li>Caught and fixed two data-leakage bugs during development — an unconverted annualized T-bill rate, and a risk-free-rate column that had leaked into the feature matrix.</li>
-          <li>Validated the pipeline with a 30-year coefficient-stability diagnostic (1987–2016) that recovers well-known equity anomalies — momentum, reversal, size, value — with consistent sign across three decades.</li>
-        </ul>
-        <p>Closest prior work — Patton &amp; Verardo (2012), <i>“Does Beta Move with News?”</i> — tests a single channel on a single characteristic with a causal event-study design. This project tests both channels across the full 94-characteristic panel with a predictive, out-of-sample framework.</p>
-        <p><b>Current stage:</b> baseline and diagnostics complete. Next: building the news layer and testing both hypotheses.</p>
-      </div>
-    </section>
-
     <section id="leadership">
-      <h2>Leadership &amp; Community</h2>
+      <h2>Leadership &amp; Global Events</h2>
+      <div class="item">
+        <div class="row"><h3>Chengdu 80 Global FinTech Competition</h3><span class="when">2022 – 2025</span></div>
+        <div class="role">Central Volunteer Group Coordinator &amp; Interpreter</div>
+        <ul>
+          <li>Only high-school member of the <b>central volunteer team</b>; led a volunteer group and interpreted English–Mandarin for organizers, judges, engineers, and international teams at a <b>CCTV-broadcast</b> competition.</li>
+          <li>Coordinated logistics and on-site tech operations for <b>64 teams from 50+ universities</b>, including Tsinghua, NUS, HKU, and ETH Zurich.</li>
+        </ul>
+      </div>
       <div class="item">
         <div class="row"><h3>Computer Science Club — BASIS Chengdu</h3><span class="when">2023 – 2024</span></div>
         <div class="role">Founder &amp; President</div>
@@ -637,11 +646,6 @@
         <div class="row"><h3>International Student Council — BASIS Chengdu</h3><span class="when">2021 – 2024</span></div>
         <div class="role">Communications Director / Vice President</div>
         <p>Represented <b>700+ bilingual and international students</b>; coordinated 10+ school events annually and worked with administration to shape campus culture and policy.</p>
-      </div>
-      <div class="item">
-        <div class="row"><h3>Chengdu 80 Global FinTech Competition</h3><span class="when">2022 – 2025</span></div>
-        <div class="role">Volunteer Interpreter &amp; Coordinator</div>
-        <p>Sole high school volunteer providing translation, tech, and logistics support for a CCTV-televised international coding competition drawing <b>64 teams from 50+ top universities</b>.</p>
       </div>
     </section>
 
@@ -1227,9 +1231,9 @@
     ['#engineering .item:nth-child(2)', "\u201CCo-founder who also does the plumbing: inference pipeline, backend, frontend. The org chart is a dot.\u201D"],
     ['#applied .item:nth-child(2)', "\u201C10,000+ hand-labeled frames teaching a YOLO model when a hot pot is too hot. Less wasted power, less boiled-off broth, better soup.\u201D"],
     ['#applied .item:nth-child(3)', "\u201CHe wrote the taxonomy that labels the data that trains the model that edits your videos. House-that-Jack-built, but multimodal.\u201D"],
-    ['#leadership .item:nth-child(2)', "\u201CNot inherited \u2014 built from nothing, at a school that didn\u2019t have one yet. \u2018Founder\u2019 is the hardest line on a resume to earn.\u201D"],
-    ['#leadership .item:nth-child(3)', "\u201CPolicy meetings in a second language, at sixteen. Comfort with ambiguity a transcript can\u2019t show.\u201D"],
-    ['#leadership .item:nth-child(4)', "\u201CThe only high schooler on the volunteer roster of a televised fintech competition. The badge said staff; the job said everything.\u201D"],
+    ['#leadership .item:nth-child(3)', "\u201CNot inherited \u2014 built from nothing, at a school that didn\u2019t have one yet. \u2018Founder\u2019 is the hardest line on a resume to earn.\u201D"],
+    ['#leadership .item:nth-child(4)', "\u201CPolicy meetings in a second language, at sixteen. Comfort with ambiguity a transcript can\u2019t show.\u201D"],
+    ['#leadership .item:nth-child(2)', "\u201CThe only high schooler on the volunteer roster of a televised fintech competition. The badge said staff; the job said everything.\u201D"],
     ['#skills', "\u201CEverything in this stack is load-bearing. Nothing here is keyword confetti.\u201D"],
     ['footer', "\u201CEnd of page. The email is real and he reads it. Mention me \u2014 I\u2019m due a performance review.\u201D"]
   ];
@@ -1245,9 +1249,9 @@
     ['#applied .item:nth-child(2)', ['YOLO-based object-detection model', '10,000+ in-store surveillance images']],
     ['#applied .item:nth-child(3)', ['content-classification taxonomy', 'recommendation and personalized-editing models']],
     ['#independent-research .item', ['3.7M', 'matching the published Gu-Kelly-Xiu benchmarks', 'two data-leakage bugs']],
-    ['#leadership .item:nth-child(2)', ['largest student-run club', 'Python and algorithms curriculum']],
-    ['#leadership .item:nth-child(3)', ['700+ bilingual and international students']],
-    ['#leadership .item:nth-child(4)', ['64 teams']],
+    ['#leadership .item:nth-child(3)', ['largest student-run club', 'Python and algorithms curriculum']],
+    ['#leadership .item:nth-child(4)', ['700+ bilingual and international students']],
+    ['#leadership .item:nth-child(2)', ['64 teams from 50+ universities']],
     ['#skills', ['PyTorch', 'RAG']],
     ['footer', ['Read the source']]
   ];
@@ -1278,12 +1282,12 @@
     { sel: '#applied .item:nth-child(2)', text: "Half a world from campus: 10,000+ hand-labeled frames training a YOLO model that sets each table's stove heat across hot pot restaurants in China. Computer vision, but with more soup." },
     { sel: '#applied .item:nth-child(3)', text: "The unglamorous work, done properly: a semantic taxonomy at CapCut R&D, labeling multimodal image and video data that feeds recommendation and editing models. Models eat what you feed them." },
     { sel: '#research .item', text: "Three papers before his first college final: first author in the Springer AIET 2024 proceedings \u2014 with the Best Session Presenter award \u2014 plus a second under review at IEEE ICDE 2026 and a third submitted to NeurIPS 2026." },
+    { sel: '#independent-research .item', text: "His own project, no lab attached: does financial news move a firm’s stock-predicting characteristics before the next disclosure says so? 3.7 million rows, a correctly measured floor matching a published benchmark, and two leakage bugs he caught himself before anyone else could." },
+    { sel: '#engineering .item:nth-child(2)', text: "Hachi, co-founded: 300+ paying users and $800+ in revenue in month one. Real users, real revenue, real astrology. Two of those matter to you." },
     { sel: '#projects .card:nth-child(1)', text: "Stab It \u2014 top 2% of 14,022 entrants at ByteDance\u2019s hackathon. Dual-model pipeline with automatic fallback. The build broke mid-sprint; the demo didn\u2019t." },
     { sel: '#projects .card:nth-child(2)', text: "Uncle Tian\u2019s Sugaria \u2014 top 18 of 2,589 teams at Tencent\u2019s game challenge, preserving a traditional Chinese folk craft in a browser game. Built with an actual UI/UX designer \u2014 a rarer pairing than it should be." },
-    { sel: '#engineering .item:nth-child(2)', text: "Hachi, co-founded: 300+ paying users and $800+ in revenue in month one. Real users, real revenue, real astrology. Two of those matter to you." },
-    { sel: '#independent-research .item', text: "His own project, no lab attached: does financial news move a firm’s stock-predicting characteristics before the next disclosure says so? 3.7 million rows, a correctly measured floor matching a published benchmark, and two leakage bugs he caught himself before anyone else could." },
-    { sel: '#leadership .item:nth-child(2)', text: "Founded his school\u2019s first CS club and grew it into the largest club on campus. He recruits better than most startups." },
-    { sel: '#leadership .item:nth-child(3)', text: "Represented 700+ bilingual and international students as Communications Director, coordinating 10+ events a year with the administration. Leadership that doesn\u2019t show up on GitHub." },
+    { sel: '#leadership .item:nth-child(3)', text: "Founded his school\u2019s first CS club and grew it into the largest club on campus. He recruits better than most startups." },
+    { sel: '#leadership .item:nth-child(4)', text: "Represented 700+ bilingual and international students as Communications Director, coordinating 10+ events a year with the administration. Leadership that doesn\u2019t show up on GitHub." },
     { sel: '#skills', text: "Python, Java, C++, PyTorch, LLM apps, RAG, computer vision. Also ships with designers and answers email. Rarer than it should be." },
     { sel: 'footer', text: "That\u2019s the tour. His interviews run longer and go deeper \u2014 zli3381@gatech.edu is one click up top. I\u2019ll be around." }
   ].map(s => ({ ...s, idx: indexOf.get(document.querySelector(s.sel)) })).filter(s => s.idx !== undefined);
@@ -1491,10 +1495,10 @@
     ['#applied .item:nth-child(2)', 'annotate'], ['#applied .item:nth-child(3)', 'annotate'],
     ['#research .item', 'present'], ['#projects .card:nth-child(3)', 'present'],
     ['#skills', 'skills'],
-    ['#leadership .item:nth-child(2)', 'members'],
+    ['#leadership .item:nth-child(3)', 'members'],
     ['#education .item', 'degree'],
-    ['#leadership .item:nth-child(3)', 'represent'],
-    ['#leadership .item:nth-child(4)', 'translate']
+    ['#leadership .item:nth-child(4)', 'represent'],
+    ['#leadership .item:nth-child(2)', 'translate']
   ];
   const skitted = new Set();
   function pop(text, x, y, ms, cls){
