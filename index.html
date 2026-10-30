@@ -501,7 +501,7 @@
       </div>
 
       <div class="stats">
-        <div class="stat"><div class="n">Top 2%</div><div class="c">ByteDance TRAE hackathon, 14,022 entrants</div></div>
+        <div class="stat"><div class="n">Top 1%</div><div class="c">ByteDance TRAE hackathon, 37,000+ entrants</div></div>
         <div class="stat"><div class="n">300+</div><div class="c">paying users on Hachi, month one</div></div>
         <div class="stat"><div class="n">13</div><div class="c">public datasets benchmarked</div></div>
         <div class="stat"><div class="n">3</div><div class="c">research papers, published or under review</div></div>
@@ -558,9 +558,17 @@
         <ul>
           <li><b>First author</b>, “LLM-Powered Reading Aid for Visually Impaired Online Learners” — designed an LLM pipeline that converts news into personalized audio summaries, raising daily engagement 40% in pilot deployment. Published in the Springer AIET 2024 proceedings.</li>
           <li><b>Co-first author</b>, “Structure-Aware MLP for Time-Series Forecasting” — built a PyTorch model encoding periodicity and trend shocks, matching or outperforming Transformer baselines on 13 datasets at lower complexity; under review at IEEE ICDE 2026.</li>
-          <li><b>Co-author</b>, “Predict Backbone, Graft Dynamics” (GRAFT) — decoupled forecasting framework pairing a backbone predictor with a retrieval-based dynamics-grafting module; improved MSE/MAE by an average 4.6%/3.9% across 7 benchmarks, 4 horizons, and 6 backbones (87% win rate); submitted to NeurIPS 2026.</li>
+          <li><b>Co-author</b>, “Predict Backbone, Graft Dynamics” (GRAFT) — decoupled forecasting framework pairing a backbone predictor with a retrieval-based dynamics-grafting module; improved MSE/MAE by an average of 4.3% across 7 benchmarks, 4 horizons, and 6 backbones (87% win rate); submitted to NeurIPS 2026.</li>
         </ul>
         <span class="award"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2l2.95 6.25 6.85.75-5.1 4.65 1.4 6.75L12 17.15 5.9 20.6l1.4-6.75-5.1-4.65 6.85-.75z"/></svg>BEST SESSION PRESENTER — AIET 2024</span>
+      </div>
+      <div class="item">
+        <div class="row"><h3>AMS Therapeutics</h3><span class="when">Sep 2026 – Present</span></div>
+        <div class="role">Georgia Tech Undergraduate Researcher — EEG Biomarkers for ASD, Epilepsy &amp; TBI</div>
+        <ul>
+          <li>One of 3 Georgia Tech researchers selected to support EEG-biomarker research at this clinical-stage pediatric-neurology biopharmaceutical startup, briefing company leadership weekly.</li>
+          <li>Built a four-category framework for how EEG biomarkers are used in ASD treatment research, yielding a 92%-accuracy drug-response signature and a biomarker that cuts simulated trial sample-size needs by ~38%.</li>
+        </ul>
       </div>
     </section>
 
@@ -605,7 +613,7 @@
       <div class="grid">
         <div class="card" data-quip="&#8220;3 espresso shots and a broken build pipeline. Worth it.&#8221;">
           <h3><a href="https://stab-it.vercel.app" target="_blank" rel="noopener">Stab It</a></h3>
-          <span class="ctx">BYTEDANCE TRAE HACKATHON&nbsp;· TOP 2% OF 14,022</span>
+          <span class="ctx">BYTEDANCE TRAE HACKATHON&nbsp;· TOP 1% OF 37,000+</span>
           <p class="desc">AI-powered reflection app: pin a worry, talk it through with an LLM, and revisit it on a schedule. Dual-mode AI endpoint with automatic model fallback, lightweight memory retrieval, and dual deployment for global and mainland-China access.</p>
           <div class="tags"><span>Node.js</span><span>Express</span><span>Vanilla JS</span><span>Doubao / Volcengine Ark</span><span>MiniMax</span><span>Vercel</span></div>
           <div class="links"><a href="https://stab-it.vercel.app" target="_blank" rel="noopener">Live demo</a><a href="https://github.com/danielwork12121-lab/stab-it" target="_blank" rel="noopener">GitHub</a></div>
@@ -623,6 +631,13 @@
           <p class="desc">Code for the published paper: an LLM-powered news reader for visually impaired learners with personalized summaries and recommendations — the pilot raised daily platform engagement 40%.</p>
           <div class="tags"><span>Python</span><span>Flask</span><span>Vue.js</span><span>LLM</span></div>
           <div class="links"><a href="https://github.com/danielwork12121-lab/LLM-Reading-Aid-Visually-Impaired" target="_blank" rel="noopener">GitHub</a></div>
+        </div>
+        <div class="card" data-quip="&#8220;2nd place Visa, 6th place Apify. Two tracks, one weekend, zero sleep.&#8221;">
+          <h3><a href="https://rivet-rose.vercel.app" target="_blank" rel="noopener">Rivet</a></h3>
+          <span class="ctx">CAL HACKS 13.0&nbsp;· 2ND PLACE VISA TRACK&nbsp;· 6TH PLACE APIFY TRACK</span>
+          <p class="desc">Two-sided marketplace matching infrastructure operators with robotics providers via pooled bounties. Built the real-time Convex backend (live-sync subscriptions, mutations, cron for stuck work), Clerk auth, an Apify robot-spec scraper, and Visa payment integration.</p>
+          <div class="tags"><span>Convex</span><span>Clerk</span><span>Apify</span><span>Visa API</span></div>
+          <div class="links"><a href="https://rivet-rose.vercel.app" target="_blank" rel="noopener">Live demo</a></div>
         </div>
       </div>
     </section>
@@ -1215,7 +1230,7 @@
   // the boxes Buddy can perch on, in document order, with how big a deal each
   // one is (big beats get a hop on landing, small ones a quiet settle)
   const ANCHOR_SEL = '.hero h1, figure.fig, .stats, #education .item, #research .item, #projects .card, #engineering .item, #independent-research .item, #applied .item, #leadership .item, #skills, footer';
-  const BIG = ['.stats', '#research .item', '#projects .card:nth-child(1)', '#engineering .item:nth-child(2)', '#independent-research .item'];
+  const BIG = ['.stats', '#research .item:nth-child(1)', '#projects .card:nth-child(1)', '#engineering .item:nth-child(2)', '#independent-research .item'];
   const SMALL = ['#education .item', '#skills', 'footer'];
   // what Buddy says about each box he lands on \u2014 all of it checks out
   const LINES = [
@@ -1223,9 +1238,9 @@
     ['figure.fig', "\u201CThis chart is hand-drawn canvas at 60fps. The forecast is the only part of this page that guesses.\u201D"],
     ['.stats', "\u201CA hackathon, a startup, a benchmark suite, and a peer-review record \u2014 four numbers, four different worlds. Most resumes only have one.\u201D"],
     ['#education .item', "\u201CA theory-heavy second major most engineers skip. Probably why the papers below hold up to review.\u201D"],
-    ['#research .item', "\u201CThree papers before his first college final. Peer review is just code review with higher stakes.\u201D"],
+    ['#research .item:nth-child(1)', "\u201CThree papers before his first college final. Peer review is just code review with higher stakes.\u201D"],
     ['#independent-research .item', "\u201CIndependent means no lab, no advisor, no permission slip. 3.7 million rows, and he still caught his own leaks before anyone else could.\u201D"],
-    ['#projects .card:nth-child(1)', "\u201CTop 2% of 14,022. Primary model with automatic fallback \u2014 Daniel doesn\u2019t trust single points of failure. Except me.\u201D"],
+    ['#projects .card:nth-child(1)', "\u201CTop 1% of 37,000+. Primary model with automatic fallback \u2014 Daniel doesn\u2019t trust single points of failure. Except me.\u201D"],
     ['#projects .card:nth-child(2)', "\u201CA game that preserves sugar painting \u2014 top 18 of 2,589 teams. The physics are sweeter than they had to be.\u201D"],
     ['#projects .card:nth-child(3)', "\u201CShipped for visually impaired learners; engagement up 40% in pilot. The rare demo where \u2018it works\u2019 met \u2018it matters.\u2019\u201D"],
     ['#engineering .item:nth-child(2)', "\u201CCo-founder who also does the plumbing: inference pipeline, backend, frontend. The org chart is a dot.\u201D"],
@@ -1241,7 +1256,7 @@
   const MARKS = [
     ['figure.fig', ['multi-scale trend decomposition']],
     ['#education .item', ['Second Major in Mathematics']],
-    ['#research .item', ['First author', 'raising daily engagement 40%', 'matching or outperforming Transformer baselines']],
+    ['#research .item:nth-child(1)', ['First author', 'raising daily engagement 40%', 'matching or outperforming Transformer baselines']],
     ['#projects .card:nth-child(1)', ['automatic model fallback', 'dual deployment for global and mainland-China access']],
     ['#projects .card:nth-child(2)', ['four skill-based mini-games']],
     ['#projects .card:nth-child(3)', ['raised daily platform engagement 40%']],
@@ -1256,7 +1271,7 @@
     ['footer', ['Read the source']]
   ];
   const STAMPS = [
-    ['#research .item', '✓ PUBLISHED'],
+    ['#research .item:nth-child(1)', '✓ PUBLISHED'],
     ['#projects .card:nth-child(1)', '● LIVE'],
     ['#projects .card:nth-child(2)', '● LIVE'],
     ['#projects .card:nth-child(3)', '✓ OPEN SOURCE'],
@@ -1281,10 +1296,10 @@
     { sel: '#education .item', text: "B.S. Computer Science, second major in Mathematics, Georgia Tech, class of 2028. The math major wasn\u2019t required. He added it anyway." },
     { sel: '#applied .item:nth-child(2)', text: "Half a world from campus: 10,000+ hand-labeled frames training a YOLO model that sets each table's stove heat across hot pot restaurants in China. Computer vision, but with more soup." },
     { sel: '#applied .item:nth-child(3)', text: "The unglamorous work, done properly: a semantic taxonomy at CapCut R&D, labeling multimodal image and video data that feeds recommendation and editing models. Models eat what you feed them." },
-    { sel: '#research .item', text: "Three papers before his first college final: first author in the Springer AIET 2024 proceedings \u2014 with the Best Session Presenter award \u2014 plus a second under review at IEEE ICDE 2026 and a third submitted to NeurIPS 2026." },
+    { sel: '#research .item:nth-child(1)', text: "Three papers before his first college final: first author in the Springer AIET 2024 proceedings \u2014 with the Best Session Presenter award \u2014 plus a second under review at IEEE ICDE 2026 and a third submitted to NeurIPS 2026." },
     { sel: '#independent-research .item', text: "His own project, no lab attached: does financial news move a firm’s stock-predicting characteristics before the next disclosure says so? 3.7 million rows, a correctly measured floor matching a published benchmark, and two leakage bugs he caught himself before anyone else could." },
     { sel: '#engineering .item:nth-child(2)', text: "Hachi, co-founded: 300+ paying users and $800+ in revenue in month one. Real users, real revenue, real astrology. Two of those matter to you." },
-    { sel: '#projects .card:nth-child(1)', text: "Stab It \u2014 top 2% of 14,022 entrants at ByteDance\u2019s hackathon. Dual-model pipeline with automatic fallback. The build broke mid-sprint; the demo didn\u2019t." },
+    { sel: '#projects .card:nth-child(1)', text: "Stab It \u2014 top 1% of 37,000+ entrants at ByteDance\u2019s hackathon. Dual-model pipeline with automatic fallback. The build broke mid-sprint; the demo didn\u2019t." },
     { sel: '#projects .card:nth-child(2)', text: "Uncle Tian\u2019s Sugaria \u2014 top 18 of 2,589 teams at Tencent\u2019s game challenge, preserving a traditional Chinese folk craft in a browser game. Built with an actual UI/UX designer \u2014 a rarer pairing than it should be." },
     { sel: '#leadership .item:nth-child(3)', text: "Founded his school\u2019s first CS club and grew it into the largest club on campus. He recruits better than most startups." },
     { sel: '#leadership .item:nth-child(4)', text: "Represented 700+ bilingual and international students as Communications Director, coordinating 10+ events a year with the administration. Leadership that doesn\u2019t show up on GitHub." },
@@ -1493,7 +1508,7 @@
     ['#engineering .item:nth-child(2)', 'users'],
     ['#projects .card:nth-child(2)', 'sugar'],
     ['#applied .item:nth-child(2)', 'annotate'], ['#applied .item:nth-child(3)', 'annotate'],
-    ['#research .item', 'present'], ['#projects .card:nth-child(3)', 'present'],
+    ['#research .item:nth-child(1)', 'present'], ['#projects .card:nth-child(3)', 'present'],
     ['#skills', 'skills'],
     ['#leadership .item:nth-child(3)', 'members'],
     ['#education .item', 'degree'],
